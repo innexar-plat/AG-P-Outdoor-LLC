@@ -10,7 +10,50 @@ import { resolve } from "path";
 config({ path: resolve(process.cwd(), ".env.local") });
 
 import { db } from "../src/lib/db";
-import { settings, pageSeo, siteImages } from "../src/lib/schema";
+import { auth } from "../src/lib/auth";
+import { updateUser } from "../src/lib/queries/users";
+import { eq } from "drizzle-orm";
+import { settings, pageSeo, siteImages, user } from "../src/lib/schema";
+
+const ADMIN_BOOTSTRAP_EMAIL = process.env.ADMIN_BOOTSTRAP_EMAIL;
+const ADMIN_BOOTSTRAP_PASSWORD = process.env.ADMIN_BOOTSTRAP_PASSWORD;
+const ADMIN_BOOTSTRAP_NAME = process.env.ADMIN_BOOTSTRAP_NAME ?? "Admin";
+
+async function bootstrapFirstAdminIfMissing() {
+  // If we already have an admin user, don't touch auth tables.
+  const [existingAdmin] = await db.select().from(user).where(eq(user.role, "admin")).limit(1);
+  if (existingAdmin) return;
+
+  if (!ADMIN_BOOTSTRAP_EMAIL || !ADMIN_BOOTSTRAP_PASSWORD) {
+    // Seed for placeholders/site settings only; safe to run without admin bootstrap.
+    return;
+  }
+
+  const email = ADMIN_BOOTSTRAP_EMAIL.trim();
+  const password = ADMIN_BOOTSTRAP_PASSWORD;
+  if (!email || password.length < 8) return;
+
+  try {
+    const result = await auth.api.signUpEmail({
+      body: {
+        name: ADMIN_BOOTSTRAP_NAME,
+        email,
+        password,
+      },
+    });
+
+    const userId = result?.user?.id;
+    if (!userId) return;
+
+    await updateUser(userId, { role: "admin" });
+  } catch (err) {
+    // If the email already exists (unique constraint), just promote it to admin.
+    const [existingUser] = await db.select().from(user).where(eq(user.email, email)).limit(1);
+    const userId = existingUser?.id;
+    if (!userId) throw err;
+    await updateUser(userId, { role: "admin" });
+  }
+}
 
 const DEFAULT_SETTINGS_KEYS = [
   "company_name",
@@ -90,6 +133,8 @@ async function seed() {
   }
 
   console.log("Seed done: settings, page_seo, site_images.");
+
+  await bootstrapFirstAdminIfMissing();
 }
 
 seed().catch((err) => {
