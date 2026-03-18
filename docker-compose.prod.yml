@@ -62,9 +62,9 @@ services:
       - "3000:3000"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.agp-web-http.rule=Host(`agpoutdoor.com`) && PathPrefix(`/`)"
+      - "traefik.http.routers.agp-web-http.rule=Host(`agpoutdoor.com`) && PathPrefix(`/`) && !PathPrefix(`/admin`)"
       - "traefik.http.routers.agp-web-http.priority=1"
-      - "traefik.http.routers.agp-web-https.rule=Host(`agpoutdoor.com`) && PathPrefix(`/`)"
+      - "traefik.http.routers.agp-web-https.rule=Host(`agpoutdoor.com`) && PathPrefix(`/`) && !PathPrefix(`/admin`)"
       - "traefik.http.routers.agp-web-https.priority=1"
       - "traefik.http.routers.agp-web-https.tls=true"
       - "traefik.http.routers.agp-web-https.tls.certresolver=letsencrypt"

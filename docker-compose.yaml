@@ -58,9 +58,9 @@ services:
       - "traefik.enable=true"
       # Route public website by domain (Coolify auto labels may be misconfigured,
       # so we force the rules explicitly).
-      - "traefik.http.routers.agp-web-http.rule=Host(`agpoutdoor.com`) && PathPrefix(`/`)"
       - "traefik.http.routers.agp-web-http.priority=1"
-      - "traefik.http.routers.agp-web-https.rule=Host(`agpoutdoor.com`) && PathPrefix(`/`)"
+      - "traefik.http.routers.agp-web-http.rule=Host(`agpoutdoor.com`) && PathPrefix(`/`) && !PathPrefix(`/admin`)"
+      - "traefik.http.routers.agp-web-https.rule=Host(`agpoutdoor.com`) && PathPrefix(`/`) && !PathPrefix(`/admin`)"
       - "traefik.http.routers.agp-web-https.priority=1"
       - "traefik.http.routers.agp-web-https.tls=true"
       - "traefik.http.routers.agp-web-https.tls.certresolver=letsencrypt"
