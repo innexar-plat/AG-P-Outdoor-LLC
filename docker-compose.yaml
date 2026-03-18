@@ -2,6 +2,8 @@ version: "3.9"
 services:
   sqld:
     image: ghcr.io/tursodatabase/libsql-server:latest
+    labels:
+      - "traefik.enable=false"
     # Importante: NÃO publicar 8080 no host (senão bate com o coolify-proxy:8080).
     # Dentro da rede Docker, o admin fala com "http://sqld:8080".
     volumes:
@@ -10,6 +12,8 @@ services:
       - SQLD_NODE=primary
   minio:
     image: minio/minio:latest
+    labels:
+      - "traefik.enable=false"
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -31,6 +35,8 @@ services:
     restart: "no"
     depends_on:
       - minio
+    labels:
+      - "traefik.enable=false"
     entrypoint: >
       /bin/sh -c "
       until mc alias set local http://minio:9000 ${MINIO_ROOT_USER:-agpoutdoor-minio} ${MINIO_ROOT_PASSWORD:-please-change-me-very-soon} >/dev/null 2>&1 && mc ready local >/dev/null 2>&1; do
@@ -48,6 +54,16 @@ services:
     command: ["npm", "run", "start", "--prefix", "apps/web"]
     ports:
       - "3000:3000"
+    labels:
+      - "traefik.enable=true"
+      # Route public website by domain (Coolify auto labels may be misconfigured,
+      # so we force the rules explicitly).
+      - "traefik.http.routers.agp-web-http.rule=Host(`agpoutdoor.com`) && PathPrefix(`/`)"
+      - "traefik.http.routers.agp-web-http.priority=1"
+      - "traefik.http.routers.agp-web-https.rule=Host(`agpoutdoor.com`) && PathPrefix(`/`)"
+      - "traefik.http.routers.agp-web-https.priority=1"
+      - "traefik.http.routers.agp-web-https.tls=true"
+      - "traefik.http.routers.agp-web-https.tls.certresolver=letsencrypt"
     env_file:
       - .env.local
   admin:
@@ -60,6 +76,15 @@ services:
     depends_on:
       - sqld
       - minio
+    labels:
+      - "traefik.enable=true"
+      # Admin panel on /admin/
+      - "traefik.http.routers.agp-admin-http.rule=Host(`agpoutdoor.com`) && PathPrefix(`/admin/`)"
+      - "traefik.http.routers.agp-admin-http.priority=10"
+      - "traefik.http.routers.agp-admin-https.rule=Host(`agpoutdoor.com`) && PathPrefix(`/admin/`)"
+      - "traefik.http.routers.agp-admin-https.priority=10"
+      - "traefik.http.routers.agp-admin-https.tls=true"
+      - "traefik.http.routers.agp-admin-https.tls.certresolver=letsencrypt"
     environment:
       # Keep S3 credentials aligned with MinIO root credentials.
       - S3_ENDPOINT=http://minio:9000
