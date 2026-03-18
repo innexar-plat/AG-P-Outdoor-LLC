@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 // Admin Next.js app is configured with basePath="/admin".
 // Keep login and public APIs accessible without auth checks.
-const PUBLIC_PATHS = ["/admin/login", "/api/auth", "/api/site", "/api/docs"];
+const PUBLIC_PATHS = ["/admin/login", "/admin/api/auth", "/api/auth", "/api/site", "/api/docs"];
 const SESSION_COOKIE = "better-auth.session_token";
 
 const CORS_ORIGINS = [
