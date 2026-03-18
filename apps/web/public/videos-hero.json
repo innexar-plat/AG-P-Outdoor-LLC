@@ -1,0 +1,76 @@
+{
+  "artificialTurf": [
+    {
+      "id": "soccer-ball",
+      "title": "Classic Soccer Ball on Artificial Turf",
+      "use": "futebol",
+      "mixkitPage": "https://mixkit.co/free-stock-video/classic-soccer-ball-on-artificial-turf-101290/",
+      "mixkitSrc": "https://assets.mixkit.co/orz4rpkdi3er2h7kfbtj1j2rcnmc",
+      "duration": "0:14",
+      "resolution": "720x1080"
+    },
+    {
+      "id": "golf-putt",
+      "title": "Precision Putt on Artificial Turf",
+      "use": "campo-golfe",
+      "mixkitPage": "https://mixkit.co/free-stock-video/precision-putt-on-artificial-turf-101279/",
+      "mixkitSrc": "https://assets.mixkit.co/lgqqzz1ehnn3poevi7dmbgc7u64k",
+      "duration": "0:06",
+      "resolution": "1080x720"
+    },
+    {
+      "id": "soccer-midair",
+      "title": "Soccer Ball in Mid-Air During Training Drill",
+      "use": "futebol",
+      "mixkitPage": "https://mixkit.co/free-stock-video/soccer-ball-in-mid-air-during-training-drill-101276/",
+      "mixkitSrc": "https://assets.mixkit.co/nk8zhk0ltkrwh84gxjc9lj85spkb",
+      "duration": "0:12",
+      "resolution": "1080x720"
+    },
+    {
+      "id": "soccer-rolling",
+      "title": "Soccer Ball Rolling Across Turf During Training",
+      "use": "futebol",
+      "mixkitPage": "https://mixkit.co/free-stock-video/soccer-ball-rolling-across-turf-during-training-101277/",
+      "mixkitSrc": "https://assets.mixkit.co/ty8ws5311k055l26by04uj2b175i",
+      "duration": "0:07",
+      "resolution": "1080x720"
+    },
+    {
+      "id": "football-bounce",
+      "title": "American Football Bouncing Slow Motion",
+      "use": "esportes",
+      "mixkitPage": "https://mixkit.co/free-stock-video/american-football-bouncing-slow-motion-101286/",
+      "mixkitSrc": "https://assets.mixkit.co/rcy65b698op399djttb6i68a9w90",
+      "duration": "0:03",
+      "resolution": "1080x720"
+    }
+  ],
+  "grassPatio": [
+    {
+      "id": "grass-field",
+      "title": "Green Grass Field (Pexels)",
+      "use": "patio-residencial",
+      "pexelsSearch": "https://www.pexels.com/search/videos/green%20grass%20field/",
+      "note": "Baixe em pexels.com - use para hero home/patio"
+    },
+    {
+      "id": "lawn-backyard",
+      "title": "Lawn Backyard (Pexels)",
+      "use": "patio-residencial",
+      "pexelsSearch": "https://www.pexels.com/search/videos/lawn%20backyard/",
+      "note": "Baixe em pexels.com"
+    }
+  ],
+  "playground": [
+    {
+      "id": "playground-kids",
+      "title": "Playground (Mixkit)",
+      "use": "playground",
+      "mixkitSearch": "https://mixkit.co/free-stock-video/playground/",
+      "note": "54 videos - nenhum em grama artificial, mas playgrounds ao ar livre"
+    }
+  ],
+  "defaultHero": "https://assets.mixkit.co/lgqqzz1ehnn3poevi7dmbgc7u64k",
+  "license": "Mixkit Free License - uso comercial permitido sem atribuição"
+}

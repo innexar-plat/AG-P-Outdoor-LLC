@@ -1,0 +1,23 @@
+# Dev image: monorepo with Node, run npm run dev:web or dev:admin
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy package files for install
+COPY package.json package-lock.json ./
+COPY apps/admin/package.json apps/admin/
+COPY apps/web/package.json apps/web/
+
+RUN npm install --legacy-peer-deps
+
+# Copy source (overridden by volume in compose)
+COPY . .
+
+# Entrypoint: ensure deps when volume is empty, then run command
+COPY docker-dev-entrypoint.sh /docker-dev-entrypoint.sh
+RUN chmod +x /docker-dev-entrypoint.sh
+ENTRYPOINT ["/docker-dev-entrypoint.sh"]
+
+EXPOSE 3000 3001
+
+CMD ["npm", "run", "dev"]

@@ -1,0 +1,19 @@
+# Dependencies
+node_modules
+
+# Next.js build output
+.next
+
+# Coverage reports
+coverage
+apps/admin/coverage
+
+# Local dev artifacts
+out.html
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
