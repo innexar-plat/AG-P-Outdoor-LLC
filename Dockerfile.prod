@@ -10,7 +10,12 @@ COPY package.json package-lock.json ./
 COPY apps/admin/package.json apps/admin/
 COPY apps/web/package.json apps/web/
 
+# Coolify may pass NODE_ENV=production as a build-time variable.
+# With npm, that can lead to devDependencies being skipped, breaking the build
+# (e.g. tools like `concurrently` are devDependencies).
+ENV NODE_ENV=development
 RUN npm ci --legacy-peer-deps
+ENV NODE_ENV=production
 
 # Copy source
 COPY . .
