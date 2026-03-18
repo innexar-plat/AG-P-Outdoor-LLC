@@ -11,6 +11,9 @@ apps/admin/coverage
 # Local dev artifacts
 out.html
 
+# Large media files
+apps/web/public/*.mp4
+
 # Logs
 *.log
 
