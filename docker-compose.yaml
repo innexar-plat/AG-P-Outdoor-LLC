@@ -16,8 +16,8 @@ services:
     volumes:
       - minio_data:/data
     environment:
-      - MINIO_ROOT_USER=minioadmin
-      - MINIO_ROOT_PASSWORD=minioadmin
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER:-agpoutdoor-minio}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-please-change-me-very-soon}
     command: server /data --console-address ":9001"
     healthcheck:
       # Ensure MinIO is ready before running the init container.
@@ -31,7 +31,7 @@ services:
       - minio
     entrypoint: >
       /bin/sh -c "
-      until mc alias set local http://minio:9000 minioadmin minioadmin >/dev/null 2>&1 && mc ready local >/dev/null 2>&1; do
+      until mc alias set local http://minio:9000 ${MINIO_ROOT_USER:-agpoutdoor-minio} ${MINIO_ROOT_PASSWORD:-please-change-me-very-soon} >/dev/null 2>&1 && mc ready local >/dev/null 2>&1; do
         echo 'Waiting for MinIO...';
         sleep 2;
       done;
@@ -58,6 +58,11 @@ services:
     depends_on:
       - sqld
       - minio
+    environment:
+      # Keep S3 credentials aligned with MinIO root credentials.
+      - S3_ENDPOINT=http://minio:9000
+      - S3_ACCESS_KEY_ID=${MINIO_ROOT_USER:-agpoutdoor-minio}
+      - S3_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD:-please-change-me-very-soon}
     env_file:
       - .env.local
 volumes:

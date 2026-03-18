@@ -18,8 +18,8 @@ services:
     volumes:
       - minio_data:/data
     environment:
-      - MINIO_ROOT_USER=minioadmin
-      - MINIO_ROOT_PASSWORD=minioadmin
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER:-agpoutdoor-minio}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-please-change-me-very-soon}
     command: server /data --console-address ":9001"
     healthcheck:
       # `mc ready local` needs the `local` alias; set it first using the MinIO
@@ -36,7 +36,7 @@ services:
         condition: service_healthy
     entrypoint: >
       /bin/sh -c "
-      until mc alias set local http://minio:9000 minioadmin minioadmin >/dev/null 2>&1 && mc ready local >/dev/null 2>&1; do
+      until mc alias set local http://minio:9000 ${MINIO_ROOT_USER:-agpoutdoor-minio} ${MINIO_ROOT_PASSWORD:-please-change-me-very-soon} >/dev/null 2>&1 && mc ready local >/dev/null 2>&1; do
         echo 'Waiting for MinIO...';
         sleep 2;
       done;
@@ -74,8 +74,8 @@ services:
       - BETTER_AUTH_URL=http://localhost:3001
       - NEXT_PUBLIC_APP_URL=http://localhost:3001
       - S3_ENDPOINT=http://minio:9000
-      - S3_ACCESS_KEY_ID=minioadmin
-      - S3_SECRET_ACCESS_KEY=minioadmin
+      - S3_ACCESS_KEY_ID=${MINIO_ROOT_USER:-agpoutdoor-minio}
+      - S3_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD:-please-change-me-very-soon}
       - S3_BUCKET_NAME=uploads
       - S3_PUBLIC_URL=http://localhost:9000/uploads
       - S3_REGION=us-east-1
