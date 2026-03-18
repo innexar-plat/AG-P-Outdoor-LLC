@@ -1,0 +1,30 @@
+# Production image for monorepo apps
+# Builds both web and admin apps and then runs whichever app is selected by the compose command.
+
+FROM node:20-alpine AS base
+
+WORKDIR /app
+
+# Install dependencies (monorepo) first
+COPY package.json package-lock.json ./
+COPY apps/admin/package.json apps/admin/
+COPY apps/web/package.json apps/web/
+
+RUN npm ci --legacy-peer-deps
+
+# Copy source
+COPY . .
+
+# Build both apps into /dist
+RUN npm run build
+
+# Runtime stage (same as base for simplicity, but could switch to smaller runtime)
+FROM node:20-alpine AS runtime
+WORKDIR /app
+
+COPY --from=base /app /app
+
+ENV NODE_ENV=production
+
+# Default is to run web in preview mode; override via docker-compose command for admin.
+CMD ["npm", "run", "start", "--prefix", "apps/web"]
