@@ -62,9 +62,9 @@ services:
       - "3000:3000"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.agp-web-http.rule=Host(`agpoutdoor.com`) && PathPrefix(`/`) && !PathPrefix(`/admin`)"
+      - "traefik.http.routers.agp-web-http.rule=Host(`agpoutdoor.com`) && PathPrefix(`/`) && !PathPrefix(`/admin`) && !PathPrefix(`/api`) && !PathPrefix(`/login`)"
       - "traefik.http.routers.agp-web-http.priority=1"
-      - "traefik.http.routers.agp-web-https.rule=Host(`agpoutdoor.com`) && PathPrefix(`/`) && !PathPrefix(`/admin`)"
+      - "traefik.http.routers.agp-web-https.rule=Host(`agpoutdoor.com`) && PathPrefix(`/`) && !PathPrefix(`/admin`) && !PathPrefix(`/api`) && !PathPrefix(`/login`)"
       - "traefik.http.routers.agp-web-https.priority=1"
       - "traefik.http.routers.agp-web-https.tls=true"
       - "traefik.http.routers.agp-web-https.tls.certresolver=letsencrypt"
@@ -93,6 +93,22 @@ services:
       - "traefik.http.routers.agp-admin-https.priority=100"
       - "traefik.http.routers.agp-admin-https.tls=true"
       - "traefik.http.routers.agp-admin-https.tls.certresolver=letsencrypt"
+      # Auth redirect/login pages may hit /login (no /admin prefix).
+      - "traefik.http.routers.agp-admin-login-http.rule=Host(`agpoutdoor.com`) && PathPrefix(`/login`)"
+      - "traefik.http.routers.agp-admin-login-http.priority=200"
+      - "traefik.http.routers.agp-admin-login-http.middlewares=agp-admin-strip"
+      - "traefik.http.routers.agp-admin-login-https.rule=Host(`agpoutdoor.com`) && PathPrefix(`/login`)"
+      - "traefik.http.routers.agp-admin-login-https.priority=200"
+      - "traefik.http.routers.agp-admin-login-https.tls=true"
+      - "traefik.http.routers.agp-admin-login-https.tls.certresolver=letsencrypt"
+      # Public API calls from the browser typically use /api/*.
+      - "traefik.http.routers.agp-admin-api-http.rule=Host(`agpoutdoor.com`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.agp-admin-api-http.priority=200"
+      - "traefik.http.routers.agp-admin-api-http.middlewares=agp-admin-strip"
+      - "traefik.http.routers.agp-admin-api-https.rule=Host(`agpoutdoor.com`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.agp-admin-api-https.priority=200"
+      - "traefik.http.routers.agp-admin-api-https.tls=true"
+      - "traefik.http.routers.agp-admin-api-https.tls.certresolver=letsencrypt"
     environment:
       - NODE_ENV=production
       - DATABASE_URL=http://sqld:8080
