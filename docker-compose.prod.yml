@@ -86,10 +86,10 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.middlewares.agp-admin-strip.stripprefix.prefixes=/admin"
-      - "traefik.http.routers.agp-admin-http.rule=Host(`agpoutdoor.com`) && PathPrefix(`/admin/`)"
+      - "traefik.http.routers.agp-admin-http.rule=Host(`agpoutdoor.com`) && PathPrefix(`/admin`)"
       - "traefik.http.routers.agp-admin-http.priority=100"
       - "traefik.http.routers.agp-admin-http.middlewares=agp-admin-strip"
-      - "traefik.http.routers.agp-admin-https.rule=Host(`agpoutdoor.com`) && PathPrefix(`/admin/`)"
+      - "traefik.http.routers.agp-admin-https.rule=Host(`agpoutdoor.com`) && PathPrefix(`/admin`)"
       - "traefik.http.routers.agp-admin-https.priority=100"
       - "traefik.http.routers.agp-admin-https.tls=true"
       - "traefik.http.routers.agp-admin-https.tls.certresolver=letsencrypt"

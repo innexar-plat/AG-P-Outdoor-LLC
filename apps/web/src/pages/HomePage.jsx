@@ -48,109 +48,85 @@ const HomePage = () => {
     title: "Final Walk-Through & Care Instructions",
     description: "We ensure you're 100% satisfied and provide maintenance tips to keep your turf looking perfect."
   }];
-  const gallery = [{
-    url: 'https://images.unsplash.com/photo-1587936491365-48f95355007f',
-    title: 'Residential Backyard Turf'
-  }, {
-    url: 'https://images.unsplash.com/photo-1682173044097-d14202e43fe3',
-    title: 'Custom Putting Green'
-  }, {
-    url: 'https://images.unsplash.com/photo-1581062778574-8ce5c4db882',
-    title: 'Pet-Friendly Installation'
-  }, {
-    url: 'https://images.unsplash.com/photo-1578133231222-537ed648fae9',
-    title: 'Commercial Landscape'
-  }, {
-    url: 'https://images.unsplash.com/photo-1593177326901-7b65560a0c9b',
-    title: 'Modern Outdoor Space'
-  }, {
-    url: 'https://images.unsplash.com/photo-1617123705162-63e0a4d8c4f1',
-    title: 'Backyard Transformation'
-  }, {
-    url: 'https://images.unsplash.com/photo-1702725162964-7f9ad868cf15',
-    title: 'Luxury Turf Installation'
-  }, {
-    url: 'https://images.unsplash.com/photo-1583533360572-a204e7f9ae3ab',
-    title: 'Professional Finish'
-  }];
-  const reviews = [{
-    name: "Michael Rodriguez",
-    location: "Orlando, FL",
-    project: "Residential Turf",
-    rating: 5,
-    text: "AG&P transformed our backyard! The base preparation was meticulous, and the drainage system works perfectly. No more muddy paws!"
-  }, {
-    name: "Sarah Thompson",
-    location: "Winter Garden, FL",
-    project: "Putting Green",
-    rating: 5,
-    text: "Our custom putting green is incredible. The attention to detail and professional installation exceeded our expectations."
-  }, {
-    name: "David Chen",
-    location: "Windermere, FL",
-    project: "Pet Turf",
-    rating: 5,
-    text: "Best decision we made for our dogs. The turf drains perfectly and stays clean. AG&P's team was professional and efficient."
-  }, {
-    name: "Jennifer Martinez",
-    location: "Ocoee, FL",
-    project: "Residential Turf",
-    rating: 5,
-    text: "From quote to completion, AG&P was outstanding. Our yard looks amazing year-round with zero maintenance!"
-  }, {
-    name: "Robert Williams",
-    location: "Clermont, FL",
-    project: "Commercial Turf",
-    rating: 5,
-    text: "AG&P installed turf at our business property. Professional, on-time, and the results are stunning. Highly recommend!"
-  }, {
-    name: "Lisa Anderson",
-    location: "Kissimmee, FL",
-    project: "Backyard Turf",
-    rating: 5,
-    text: "The team explained every step of the process. The base prep and installation were done to perfection. Love our new yard!"
-  }];
-  const [dynamicGallery, setDynamicGallery] = useState(gallery);
-  const [dynamicReviews, setDynamicReviews] = useState(reviews);
+  // Filled from Admin panel data (no Unsplash placeholders).
+  const [dynamicGallery, setDynamicGallery] = useState([]);
+  const [dynamicReviews, setDynamicReviews] = useState([]);
   useEffect(() => {
     fetchSeo('home').then((data) => data && setSeo(data));
   }, []);
 
   useEffect(() => {
-    fetchSiteImages('home').then((data) => {
-      if (!Array.isArray(data)) return;
-      const gal = data.find((s) => s.slotKey === 'home_gallery' || s.slotKey === 'gallery');
-      const items = gal?.carouselItems;
-      let parsed = [];
-      if (items) {
-        try {
-          parsed = Array.isArray(items) ? items : JSON.parse(items || '[]');
-        } catch {}
-      }
-      if (parsed.length > 0) {
-        setDynamicGallery(parsed.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0)).map((i) => ({ url: i.url, title: i.altText || '' })));
+    let cancelled = false;
+
+    const loadGallery = async () => {
+      const portfolio = await fetchPortfolio();
+      if (cancelled) return;
+
+      if (Array.isArray(portfolio) && portfolio.length > 0) {
+        setDynamicGallery(
+          portfolio
+            .filter((item) => item.imageUrl && item.title)
+            .slice(0, 8)
+            .map((item) => ({
+              url: item.imageUrl,
+              title: item.title,
+            }))
+        );
         return;
       }
-      fetchPortfolio().then((portfolio) => {
-        if (portfolio && portfolio.length > 0) {
-          setDynamicGallery(portfolio.slice(0, 8).map((item) => ({
-            url: item.imageUrl,
-            title: item.title,
-          })));
+
+      // Fallback: some deployments may store home gallery in site images/carousels.
+      const data = await fetchSiteImages('home');
+      let parsed = [];
+
+      if (Array.isArray(data)) {
+        const gal = data.find((s) => s.slotKey === 'home_gallery' || s.slotKey === 'gallery');
+        const items = gal?.carouselItems;
+
+        if (items) {
+          try {
+            parsed = Array.isArray(items) ? items : JSON.parse(items || '[]');
+          } catch {
+            parsed = [];
+          }
         }
-      });
-    });
-    fetchTestimonials().then((data) => {
-      if (data && data.length > 0) {
-        setDynamicReviews(data.slice(0, 6).map((t) => ({
-          name: t.name,
-          location: t.location || '',
-          project: '',
-          rating: t.rating,
-          text: t.text,
-        })));
       }
-    });
+
+      if (!cancelled && parsed.length > 0) {
+        setDynamicGallery(
+          parsed
+            .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+            .map((i) => ({ url: i.url, title: i.altText || '' }))
+            .filter((i) => i.url)
+        );
+      }
+    };
+
+    const loadReviews = async () => {
+      const data = await fetchTestimonials();
+      if (cancelled) return;
+
+      if (Array.isArray(data) && data.length > 0) {
+        setDynamicReviews(
+          data.slice(0, 6).map((t) => ({
+            name: t.name,
+            location: t.location || '',
+            project: '',
+            rating: t.rating,
+            text: t.text,
+          }))
+        );
+      } else {
+        setDynamicReviews([]);
+      }
+    };
+
+    loadGallery();
+    loadReviews();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
   const faqs = [{
     question: "How long does artificial turf last?",
@@ -288,24 +264,26 @@ const HomePage = () => {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {dynamicGallery.map((image, index) => <motion.div key={index} initial={{
-            opacity: 0,
-            scale: 0.9
-          }} whileInView={{
-            opacity: 1,
-            scale: 1
-          }} viewport={{
-            once: true
-          }} transition={{
-            delay: index * 0.05
-          }} className="relative group overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300">
-                <img src={image.url} alt={image.title} className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-                  <p className="text-white font-semibold p-4">{image.title}</p>
-                </div>
-              </motion.div>)}
-          </div>
+          {dynamicGallery.length > 0 && (
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {dynamicGallery.map((image, index) => <motion.div key={index} initial={{
+              opacity: 0,
+              scale: 0.9
+            }} whileInView={{
+              opacity: 1,
+              scale: 1
+            }} viewport={{
+              once: true
+            }} transition={{
+              delay: index * 0.05
+            }} className="relative group overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300">
+                  <img src={image.url} alt={image.title} className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                    <p className="text-white font-semibold p-4">{image.title}</p>
+                  </div>
+                </motion.div>)}
+            </div>
+          )}
 
           <div className="text-center mt-8">
             <Link to="/gallery">
@@ -338,29 +316,31 @@ const HomePage = () => {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {dynamicReviews.map((review, index) => <motion.div key={index} initial={{
-            opacity: 0,
-            y: 20
-          }} whileInView={{
-            opacity: 1,
-            y: 0
-          }} viewport={{
-            once: true
-          }} transition={{
-            delay: index * 0.1
-          }} className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
-                <div className="flex items-center mb-4">
-                  {[...Array(review.rating)].map((_, i) => <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />)}
-                </div>
-                <p className="text-gray-700 mb-4 italic">"{review.text}"</p>
-                <div className="border-t border-gray-200 pt-4">
-                  <p className="font-bold text-[#2c3e50]">{review.name}</p>
-                  <p className="text-sm text-gray-600">{review.location}</p>
-                  <p className="text-xs text-[#2d5016] font-semibold mt-1">{review.project}</p>
-                </div>
-              </motion.div>)}
-          </div>
+          {dynamicReviews.length > 0 && (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {dynamicReviews.map((review, index) => <motion.div key={index} initial={{
+              opacity: 0,
+              y: 20
+            }} whileInView={{
+              opacity: 1,
+              y: 0
+            }} viewport={{
+              once: true
+            }} transition={{
+              delay: index * 0.1
+            }} className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                  <div className="flex items-center mb-4">
+                    {[...Array(review.rating)].map((_, i) => <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />)}
+                  </div>
+                  <p className="text-gray-700 mb-4 italic">"{review.text}"</p>
+                  <div className="border-t border-gray-200 pt-4">
+                    <p className="font-bold text-[#2c3e50]">{review.name}</p>
+                    <p className="text-sm text-gray-600">{review.location}</p>
+                    {review.project && <p className="text-xs text-[#2d5016] font-semibold mt-1">{review.project}</p>}
+                  </div>
+                </motion.div>)}
+            </div>
+          )}
 
           <div className="text-center mt-8">
             <Link to="/reviews">
