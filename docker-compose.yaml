@@ -1,15 +1,13 @@
 version: "3.9"
-
 services:
   sqld:
     image: ghcr.io/tursodatabase/libsql-server:latest
-    ports:
-      - "8080:8080"
+    # Importante: NÃO publicar 8080 no host (senão bate com o coolify-proxy:8080).
+    # Dentro da rede Docker, o admin fala com "http://sqld:8080".
     volumes:
       - sqld_data:/var/lib/sqld
     environment:
       - SQLD_NODE=primary
-
   minio:
     image: minio/minio:latest
     ports:
@@ -21,25 +19,18 @@ services:
       - MINIO_ROOT_USER=minioadmin
       - MINIO_ROOT_PASSWORD=minioadmin
     command: server /data --console-address ":9001"
-    healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
   minio-init:
     image: minio/mc:latest
     depends_on:
-      minio:
-        condition: service_healthy
+      - minio
     entrypoint: >
       /bin/sh -c "
       mc alias set local http://minio:9000 minioadmin minioadmin;
+      until mc ready local; do echo 'Waiting for MinIO...'; sleep 2; done;
       mc mb local/uploads --ignore-existing;
       mc anonymous set download local/uploads;
       echo 'MinIO bucket ready';
       "
-
   web:
     build:
       context: .
@@ -47,11 +38,8 @@ services:
     command: ["npm", "run", "start", "--prefix", "apps/web"]
     ports:
       - "3000:3000"
-    environment:
-      - NODE_ENV=production
-      - VITE_API_URL=http://localhost:3001
-      - VITE_ADMIN_URL=http://localhost:3001
-
+    env_file:
+      - .env.local
   admin:
     build:
       context: .
@@ -62,20 +50,8 @@ services:
     depends_on:
       - sqld
       - minio
-    environment:
-      - NODE_ENV=production
-      - DATABASE_URL=http://sqld:8080
-      - BETTER_AUTH_SECRET=dev-secret-change-in-production
-      - BETTER_AUTH_URL=http://localhost:3001
-      - NEXT_PUBLIC_APP_URL=http://localhost:3001
-      - S3_ENDPOINT=http://minio:9000
-      - S3_ACCESS_KEY_ID=minioadmin
-      - S3_SECRET_ACCESS_KEY=minioadmin
-      - S3_BUCKET_NAME=uploads
-      - S3_PUBLIC_URL=http://localhost:9000/uploads
-      - S3_REGION=us-east-1
-      - S3_FORCE_PATH_STYLE=true
-
+    env_file:
+      - .env.local
 volumes:
   sqld_data:
   minio_data:
