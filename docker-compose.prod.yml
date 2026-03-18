@@ -31,6 +31,8 @@ services:
 
   minio-init:
     image: minio/mc:latest
+    # One-shot init job; prevent restart loops.
+    restart: "no"
     depends_on:
       minio:
         condition: service_healthy
