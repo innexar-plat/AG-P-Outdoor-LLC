@@ -3,8 +3,13 @@ import { motion } from 'framer-motion';
 import { ArrowRight, ChevronDown, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-/** Video local em public/ - Roteiro 5 */
-const HERO_VIDEO_URL = '/Roteiro%205.mp4';
+/**
+ * Video usado no hero.
+ *
+ * - Para dev/local: coloque o arquivo em `apps/web/public/` e defina VITE_HERO_VIDEO_URL opcionalmente.
+ * - Para contêiner ou produção: recomendo usar um URL externo (S3/MinIO) e definir VITE_HERO_VIDEO_URL.
+ */
+const HERO_VIDEO_URL = import.meta.env.VITE_HERO_VIDEO_URL || '/Roteiro%205.mp4';
 
 const containerVariants = {
   hidden: { opacity: 0 },
