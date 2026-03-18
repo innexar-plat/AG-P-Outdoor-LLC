@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  basePath: "/admin",
+  assetPrefix: "/admin/",
   experimental: {
     instrumentationHook: true,
     serverComponentsExternalPackages: ["@libsql/client", "better-auth"],
