@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS "site_images" (
   "alt_text" text,
   "updated_at" integer NOT NULL
 );
+--> statement-breakpoint
 
 CREATE TABLE IF NOT EXISTS "page_seo" (
   "page_key" text PRIMARY KEY NOT NULL,

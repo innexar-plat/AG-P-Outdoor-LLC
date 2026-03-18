@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS "user" (
   "created_at" integer NOT NULL,
   "updated_at" integer NOT NULL
 );
+--> statement-breakpoint
 
 CREATE TABLE IF NOT EXISTS "session" (
   "id" text PRIMARY KEY NOT NULL,
@@ -23,6 +24,7 @@ CREATE TABLE IF NOT EXISTS "session" (
   "user_agent" text,
   "user_id" text NOT NULL REFERENCES "user"("id") ON DELETE CASCADE
 );
+--> statement-breakpoint
 
 CREATE TABLE IF NOT EXISTS "account" (
   "id" text PRIMARY KEY NOT NULL,
@@ -39,6 +41,7 @@ CREATE TABLE IF NOT EXISTS "account" (
   "created_at" integer NOT NULL,
   "updated_at" integer NOT NULL
 );
+--> statement-breakpoint
 
 CREATE TABLE IF NOT EXISTS "verification" (
   "id" text PRIMARY KEY NOT NULL,
@@ -48,6 +51,7 @@ CREATE TABLE IF NOT EXISTS "verification" (
   "created_at" integer,
   "updated_at" integer
 );
+--> statement-breakpoint
 
 CREATE TABLE IF NOT EXISTS "blog_posts" (
   "id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -61,6 +65,7 @@ CREATE TABLE IF NOT EXISTS "blog_posts" (
   "published_at" integer,
   "created_at" integer NOT NULL
 );
+--> statement-breakpoint
 
 CREATE TABLE IF NOT EXISTS "form_submissions" (
   "id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -73,6 +78,7 @@ CREATE TABLE IF NOT EXISTS "form_submissions" (
   "read" integer NOT NULL DEFAULT 0,
   "created_at" integer NOT NULL
 );
+--> statement-breakpoint
 
 CREATE TABLE IF NOT EXISTS "settings" (
   "key" text PRIMARY KEY NOT NULL,
