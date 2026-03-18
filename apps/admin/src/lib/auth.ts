@@ -5,10 +5,12 @@ import * as schema from "./schema";
 
 /**
  * Better Auth configuration. Email + password only; no OAuth, no public signup.
+ * Next strips the app basePath before invoking route handlers, so Better Auth
+ * must use the internal /api/auth namespace instead of /admin/api/auth.
  */
 export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
-  basePath: "/admin/api/auth",
+  basePath: "/api/auth",
   database: drizzleAdapter(db, {
     provider: "sqlite",
     schema: {
