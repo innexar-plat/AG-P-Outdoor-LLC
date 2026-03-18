@@ -28,7 +28,7 @@ const PATH_MODULE_MAP: Record<string, ModuleKey> = {
  */
 export async function requireSession() {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) redirect("/login");
+  if (!session) redirect("/admin/login");
   return session;
 }
 

@@ -66,7 +66,7 @@ export function Sidebar({ role, allowedModules }: SidebarProps) {
 
   async function handleLogout() {
     await fetch("/api/auth/sign-out", { method: "POST" });
-    router.push("/login");
+    router.push("/admin/login");
     router.refresh();
   }
 

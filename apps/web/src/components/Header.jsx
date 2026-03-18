@@ -18,6 +18,10 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
 
+  const rawAdminUrl = import.meta.env.VITE_ADMIN_URL ?? 'http://localhost:3001';
+  const normalizedAdminUrl = rawAdminUrl.replace(/\/+$/, '');
+  const adminUrl = normalizedAdminUrl.endsWith('/admin') ? normalizedAdminUrl : `${normalizedAdminUrl}/admin`;
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -105,7 +109,7 @@ const Header = () => {
           {/* CTA Button */}
           <div className="hidden lg:flex items-center space-x-4">
             <a
-              href={import.meta.env.VITE_ADMIN_URL ?? 'http://localhost:3001'}
+              href={adminUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm font-medium text-header-text hover:text-header-hover transition-colors"
@@ -168,7 +172,7 @@ const Header = () => {
                   ))}
                 </div>
                 <a
-                  href={import.meta.env.VITE_ADMIN_URL ?? 'http://localhost:3001'}
+                  href={adminUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block text-sm font-medium py-2 text-header-text hover:text-header-hover"

@@ -88,7 +88,6 @@ services:
       - "traefik.http.middlewares.agp-admin-strip.stripprefix.prefixes=/admin"
       - "traefik.http.routers.agp-admin-http.rule=Host(`agpoutdoor.com`) && PathPrefix(`/admin`)"
       - "traefik.http.routers.agp-admin-http.priority=100"
-      - "traefik.http.routers.agp-admin-http.middlewares=agp-admin-strip"
       - "traefik.http.routers.agp-admin-https.rule=Host(`agpoutdoor.com`) && PathPrefix(`/admin`)"
       - "traefik.http.routers.agp-admin-https.priority=100"
       - "traefik.http.routers.agp-admin-https.tls=true"
@@ -96,7 +95,6 @@ services:
       # Auth redirect/login pages may hit /login (no /admin prefix).
       - "traefik.http.routers.agp-admin-login-http.rule=Host(`agpoutdoor.com`) && PathPrefix(`/login`)"
       - "traefik.http.routers.agp-admin-login-http.priority=200"
-      - "traefik.http.routers.agp-admin-login-http.middlewares=agp-admin-strip"
       - "traefik.http.routers.agp-admin-login-https.rule=Host(`agpoutdoor.com`) && PathPrefix(`/login`)"
       - "traefik.http.routers.agp-admin-login-https.priority=200"
       - "traefik.http.routers.agp-admin-login-https.tls=true"
@@ -104,7 +102,6 @@ services:
       # Public API calls from the browser typically use /api/*.
       - "traefik.http.routers.agp-admin-api-http.rule=Host(`agpoutdoor.com`) && PathPrefix(`/api`)"
       - "traefik.http.routers.agp-admin-api-http.priority=200"
-      - "traefik.http.routers.agp-admin-api-http.middlewares=agp-admin-strip"
       - "traefik.http.routers.agp-admin-api-https.rule=Host(`agpoutdoor.com`) && PathPrefix(`/api`)"
       - "traefik.http.routers.agp-admin-api-https.priority=200"
       - "traefik.http.routers.agp-admin-api-https.tls=true"

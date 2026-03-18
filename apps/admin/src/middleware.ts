@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const PUBLIC_PATHS = ["/login", "/api/auth", "/api/site", "/api/docs"];
+// Admin Next.js app is configured with basePath="/admin".
+// Keep login and public APIs accessible without auth checks.
+const PUBLIC_PATHS = ["/admin/login", "/api/auth", "/api/site", "/api/docs"];
 const SESSION_COOKIE = "better-auth.session_token";
 
 const CORS_ORIGINS = [
@@ -46,7 +48,7 @@ export function middleware(request: NextRequest) {
     request.cookies.has("__Secure-better-auth.session_token");
 
   if (!hasSession) {
-    const loginUrl = new URL("/login", request.url);
+    const loginUrl = new URL("/admin/login", request.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
   }

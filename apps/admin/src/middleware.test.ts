@@ -17,8 +17,8 @@ function createRequest(
 }
 
 describe("middleware", () => {
-  it("allows public path /login", () => {
-    const req = createRequest("/login");
+  it("allows public path /admin/login", () => {
+    const req = createRequest("/admin/login");
     const res = middleware(req);
     expect(res.status).toBe(200);
     expect(res.headers.get("location")).toBeNull();
@@ -53,7 +53,7 @@ describe("middleware", () => {
     const req = createRequest("/admin/dashboard");
     const res = middleware(req);
     expect(res.status).toBe(307);
-    expect(res.headers.get("location")).toContain("/login");
+    expect(res.headers.get("location")).toContain("/admin/login");
     expect(res.headers.get("location")).toContain("callbackUrl=%2Fadmin%2Fdashboard");
   });
 
@@ -61,7 +61,7 @@ describe("middleware", () => {
     const req = createRequest("/api/admin/users");
     const res = middleware(req);
     expect(res.status).toBe(307);
-    expect(res.headers.get("location")).toContain("/login");
+    expect(res.headers.get("location")).toContain("/admin/login");
   });
 
   it("allows access when session cookie is present", () => {
