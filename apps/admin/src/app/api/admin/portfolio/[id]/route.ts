@@ -7,12 +7,20 @@ import {
 } from "@/lib/queries/portfolio";
 import { z } from "zod";
 
+const mediaUrlSchema = z
+  .string()
+  .min(1)
+  .refine(
+    (value) => value.startsWith("/") || /^https?:\/\//i.test(value),
+    "Invalid media URL",
+  );
+
 const updateSchema = z.object({
   title: z.string().min(1).max(500).optional(),
   description: z.string().max(2000).optional().nullable(),
   category: z.enum(["residential", "commercial", "sports"]).optional().nullable(),
-  imageUrl: z.string().url().optional(),
-  beforeImageUrl: z.string().url().optional().nullable(),
+  imageUrl: mediaUrlSchema.optional(),
+  beforeImageUrl: mediaUrlSchema.optional().nullable(),
   sortOrder: z.number().int().optional(),
   visible: z.boolean().optional(),
 });
