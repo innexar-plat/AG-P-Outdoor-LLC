@@ -10,7 +10,7 @@ import { SiteImageSlot } from '@/components/SiteImageSlot.jsx';
  * @param {React.ReactNode} children - content overlay (title, etc.)
  * @param {string} sectionClassName - classes for the section (e.g. "relative h-[70vh] flex items-center...")
  */
-export function PageHero({ section, fallbackUrl, children, sectionClassName = 'relative h-[45vh] min-h-[320px] flex items-center justify-center overflow-hidden mt-20' }) {
+export function PageHero({ section, fallbackUrl, children, sectionClassName = 'relative h-[45vh] min-h-[320px] flex items-center justify-center overflow-hidden' }) {
   const [slot, setSlot] = useState(null);
 
   useEffect(() => {

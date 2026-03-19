@@ -112,7 +112,7 @@ const ResidentialTurfPage = () => {
       <PageHero
         section="residential-turf"
         fallbackUrl="https://images.unsplash.com/photo-1622212177067-f8927759c33a1"
-        sectionClassName="relative h-[70vh] flex items-center justify-center overflow-hidden mt-20"
+        sectionClassName="relative h-[70vh] flex items-center justify-center overflow-hidden"
       >
         <div className="relative z-10 container mx-auto px-4 text-center">
           <motion.div

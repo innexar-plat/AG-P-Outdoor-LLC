@@ -35,7 +35,7 @@ const PetTurfPage = () => {
       <PageHero
         section="pet-turf"
         fallbackUrl="https://images.unsplash.com/photo-1578133231222-537ed648fae9"
-        sectionClassName="relative h-[70vh] flex items-center justify-center overflow-hidden mt-20"
+        sectionClassName="relative h-[70vh] flex items-center justify-center overflow-hidden"
       >
         <div className="relative z-10 container mx-auto px-4 text-center">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>

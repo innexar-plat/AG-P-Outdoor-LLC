@@ -29,7 +29,7 @@ const PaversPage = () => {
       <PageHero
         section="pavers"
         fallbackUrl="https://images.unsplash.com/photo-1617123705211-63e0a4daec4f1"
-        sectionClassName="relative h-[70vh] flex items-center justify-center overflow-hidden mt-20"
+        sectionClassName="relative h-[70vh] flex items-center justify-center overflow-hidden"
       >
         <div className="relative z-10 container mx-auto px-4 text-center">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>

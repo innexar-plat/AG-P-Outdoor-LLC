@@ -28,10 +28,10 @@
     --radius: 0.5rem;
 
     /* Header & brand theme */
-    --header-text: #f1f5f9;
-    --header-text-hover: #86efac;
-    --header-accent: #4ade80;
-    --header-accent-hover: #22c55e;
+    --header-text: #1f2937;
+    --header-text-hover: #166534;
+    --header-accent: #2f6f46;
+    --header-accent-hover: #245739;
     --font-header: 'DM Sans', 'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif;
 
     /* Footer theme */

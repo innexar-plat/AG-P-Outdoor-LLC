@@ -70,7 +70,7 @@ const PuttingGreenPage = () => {
       <PageHero
         section="putting-green"
         fallbackUrl="https://images.unsplash.com/photo-1587936491365-48f95355007f"
-        sectionClassName="relative h-[70vh] flex items-center justify-center overflow-hidden mt-20"
+        sectionClassName="relative h-[70vh] flex items-center justify-center overflow-hidden"
       >
         <div className="relative z-10 container mx-auto px-4 text-center">
           <motion.div
