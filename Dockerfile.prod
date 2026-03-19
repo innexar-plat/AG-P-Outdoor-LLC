@@ -21,7 +21,8 @@ ENV NODE_ENV=production
 COPY . .
 
 # Build both apps into /dist
-RUN npm run build
+RUN npm run build --prefix apps/web \
+ && npm run build --prefix apps/admin
 
 # Runtime stage (same as base for simplicity, but could switch to smaller runtime)
 FROM node:20-alpine AS runtime
