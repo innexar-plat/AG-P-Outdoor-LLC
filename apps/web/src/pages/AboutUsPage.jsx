@@ -56,7 +56,7 @@ const AboutUsPage = () => {
             animate={{ opacity: 1, y: 0 }}
             className="max-w-4xl mx-auto text-center mb-12"
           >
-            <h1 className="text-5xl md:text-6xl font-bold text-[#2c3e50] mb-6">About {companyName}</h1>
+            <h1 className="text-5xl md:text-6xl font-bold text-[#1f3a2e] mb-6">About {companyName}</h1>
             <p className="text-xl text-gray-600">Family-owned, locally operated, and committed to excellence</p>
           </motion.div>
 
@@ -81,7 +81,7 @@ const AboutUsPage = () => {
               viewport={{ once: true }}
               className="space-y-6"
             >
-              <h2 className="text-3xl font-bold text-[#2c3e50]">Our Story</h2>
+              <h2 className="text-3xl font-bold text-[#1f3a2e]">Our Story</h2>
               <p className="text-gray-700">
                 {companyName} is a family-owned and operated artificial turf installation company. We're not a national franchise or a large corporation — we're your neighbors, committed to delivering exceptional quality and personalized service.
               </p>
@@ -113,10 +113,10 @@ const AboutUsPage = () => {
                 transition={{ delay: index * 0.1 }}
                 className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200 text-center"
               >
-                <div className="bg-gradient-to-br from-[#2d5016] to-[#1f3810] text-white w-16 h-16 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <div className="bg-gradient-to-br from-[#2f6f46] to-[#245739] text-white w-16 h-16 rounded-lg flex items-center justify-center mx-auto mb-4">
                   {item.icon}
                 </div>
-                <h3 className="text-lg font-bold text-[#2c3e50] mb-2">{item.title}</h3>
+                <h3 className="text-lg font-bold text-[#1f3a2e] mb-2">{item.title}</h3>
                 <p className="text-gray-600 text-sm">{item.description}</p>
               </motion.div>
             ))}
@@ -128,13 +128,13 @@ const AboutUsPage = () => {
       <section className="py-16 bg-gradient-to-br from-gray-50 to-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold text-[#2c3e50] mb-6">Our Service Areas</h2>
+            <h2 className="text-3xl font-bold text-[#1f3a2e] mb-6">Our Service Areas</h2>
             <p className="text-gray-600 mb-8">Proudly serving our communities</p>
             <div className="flex flex-wrap justify-center gap-3">
               {serviceAreas.map((area) => (
                 <span
                   key={area}
-                  className="bg-white px-4 py-2 rounded-full text-[#2c3e50] font-semibold border-2 border-[#2d5016] shadow-sm"
+                  className="bg-white px-4 py-2 rounded-full text-[#1f3a2e] font-semibold border-2 border-[#2f6f46] shadow-sm"
                 >
                   {area}
                 </span>

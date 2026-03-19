@@ -56,7 +56,7 @@ const BlogPage = () => {
             className="max-w-6xl mx-auto"
           >
             <div className="text-center mb-12">
-              <h1 className="text-5xl md:text-6xl font-bold text-[#2c3e50] mb-6">Blog</h1>
+              <h1 className="text-5xl md:text-6xl font-bold text-[#1f3a2e] mb-6">Blog</h1>
               <p className="text-xl text-gray-600">Expert tips, guides, and insights</p>
             </div>
 
@@ -91,11 +91,11 @@ const BlogPage = () => {
                           : ''}
                       </span>
                     </div>
-                    <h2 className="text-2xl font-bold text-[#2c3e50] mb-3">{article.title}</h2>
+                    <h2 className="text-2xl font-bold text-[#1f3a2e] mb-3">{article.title}</h2>
                     <p className="text-gray-700 mb-4 line-clamp-3">{article.excerpt}</p>
                     <Button
                       variant="outline"
-                      className="border-[#2d5016] text-[#2d5016] hover:bg-[#2d5016] hover:text-white"
+                      className="border-[#2f6f46] text-[#2f6f46] hover:bg-[#2f6f46] hover:text-white"
                       onClick={() => setSelectedArticle(article)}
                     >
                       Read More <ArrowRight className="ml-2 h-4 w-4" />
@@ -147,7 +147,7 @@ const BlogPage = () => {
                     <X className="h-5 w-5 text-gray-500" />
                   </button>
                 </div>
-                <h1 className="text-3xl font-bold text-[#2c3e50] mb-6">{selectedArticle.title}</h1>
+                <h1 className="text-3xl font-bold text-[#1f3a2e] mb-6">{selectedArticle.title}</h1>
                 <div
                   className="prose prose-lg max-w-none text-gray-700"
                   dangerouslySetInnerHTML={{ __html: selectedArticle.content }}

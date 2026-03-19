@@ -77,7 +77,7 @@ const ContactPage = () => {
             className="max-w-6xl mx-auto"
           >
             <div className="text-center mb-12">
-              <h1 className="text-5xl md:text-6xl font-bold text-[#2c3e50] mb-6">Contact Us</h1>
+              <h1 className="text-5xl md:text-6xl font-bold text-[#1f3a2e] mb-6">Contact Us</h1>
               <p className="text-xl text-gray-600">Get your free estimate today</p>
             </div>
 
@@ -85,38 +85,38 @@ const ContactPage = () => {
               {/* Contact Info */}
               <div className="space-y-8">
                 <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
-                  <h2 className="text-2xl font-bold text-[#2c3e50] mb-6">Get In Touch</h2>
+                  <h2 className="text-2xl font-bold text-[#1f3a2e] mb-6">Get In Touch</h2>
                   
                   <div className="space-y-4">
                     <a href={`tel:${site.phone}`} className="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                      <Phone className="h-6 w-6 text-[#2d5016] mr-4" />
+                      <Phone className="h-6 w-6 text-[#2f6f46] mr-4" />
                       <div>
                         <p className="text-sm text-gray-600">Call Us</p>
-                        <p className="text-lg font-semibold text-[#2c3e50]">{site.phone}</p>
+                        <p className="text-lg font-semibold text-[#1f3a2e]">{site.phone}</p>
                       </div>
                     </a>
 
                     <a href={`mailto:${site.email}`} className="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                      <Mail className="h-6 w-6 text-[#2d5016] mr-4" />
+                      <Mail className="h-6 w-6 text-[#2f6f46] mr-4" />
                       <div>
                         <p className="text-sm text-gray-600">Email Us</p>
-                        <p className="text-lg font-semibold text-[#2c3e50]">{site.email}</p>
+                        <p className="text-lg font-semibold text-[#1f3a2e]">{site.email}</p>
                       </div>
                     </a>
 
                     <div className="flex items-start p-4 bg-gray-50 rounded-lg">
-                      <MapPin className="h-6 w-6 text-[#2d5016] mr-4 mt-1" />
+                      <MapPin className="h-6 w-6 text-[#2f6f46] mr-4 mt-1" />
                       <div>
                         <p className="text-sm text-gray-600">Visit Us</p>
-                        <p className="text-lg font-semibold text-[#2c3e50]">{site.address}</p>
+                        <p className="text-lg font-semibold text-[#1f3a2e]">{site.address}</p>
                       </div>
                     </div>
 
                     <div className="flex items-start p-4 bg-gray-50 rounded-lg">
-                      <Clock className="h-6 w-6 text-[#2d5016] mr-4 mt-1" />
+                      <Clock className="h-6 w-6 text-[#2f6f46] mr-4 mt-1" />
                       <div>
                         <p className="text-sm text-gray-600 mb-2">Business Hours</p>
-                        <div className="text-sm text-[#2c3e50] space-y-1">
+                        <div className="text-sm text-[#1f3a2e] space-y-1">
                           <p><span className="font-semibold">Mon-Thu:</span> 9am - 6pm</p>
                           <p><span className="font-semibold">Friday:</span> 9am - 6pm</p>
                           <p><span className="font-semibold">Saturday:</span> 10am - 2pm</p>
@@ -142,7 +142,7 @@ const ContactPage = () => {
 
                 {/* Map */}
                 <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
-                  <h3 className="text-xl font-bold text-[#2c3e50] mb-4">Our Location</h3>
+                  <h3 className="text-xl font-bold text-[#1f3a2e] mb-4">Our Location</h3>
                   <div className="aspect-video rounded-lg overflow-hidden">
                     <iframe
                       src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3502.5!2d-81.5!3d28.5!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjjCsDMwJzAwLjAiTiA4McKwMzAnMDAuMCJX!5e0!3m2!1sen!2sus!4v1234567890"
@@ -160,7 +160,7 @@ const ContactPage = () => {
 
               {/* Contact Form */}
               <div className="bg-white rounded-xl p-8 shadow-lg border border-gray-200">
-                <h2 className="text-2xl font-bold text-[#2c3e50] mb-6">Send Us a Message</h2>
+                <h2 className="text-2xl font-bold text-[#1f3a2e] mb-6">Send Us a Message</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
                     <Label htmlFor="name">Name *</Label>
@@ -215,7 +215,7 @@ const ContactPage = () => {
                     />
                   </div>
 
-                  <Button type="submit" className="w-full bg-[#2d5016] hover:bg-[#1f3810] text-white font-semibold py-6 text-lg">
+                  <Button type="submit" className="w-full bg-[#2f6f46] hover:bg-[#245739] text-white font-semibold py-6 text-lg">
                     Send Message
                   </Button>
                 </form>

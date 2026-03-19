@@ -48,7 +48,7 @@ const PetTurfPage = () => {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto prose prose-lg text-gray-700 space-y-4">
-            <h2 className="text-3xl font-bold text-[#2c3e50]">The Ultimate Pet-Friendly Lawn Solution</h2>
+            <h2 className="text-3xl font-bold text-[#1f3a2e]">The Ultimate Pet-Friendly Lawn Solution</h2>
             <p>If you're a pet owner, you know the struggle: muddy paws, brown patches from urine, constant digging, and endless yard maintenance. Natural grass simply can't keep up with active pets, especially in Florida's climate.</p>
             <p>AG&P Outdoor LLC specializes in pet-friendly artificial turf installations designed specifically for dogs and cats. Our turf is non-toxic, antimicrobial, and built to withstand heavy pet activity while staying clean and fresh.</p>
             <p>The secret is in our enhanced drainage system. We install specialized base layers that allow urine to drain quickly and completely, preventing odors and bacteria buildup. A simple rinse with water keeps your pet area clean and hygienic.</p>
@@ -59,12 +59,12 @@ const PetTurfPage = () => {
 
       <section className="py-16 bg-gradient-to-br from-gray-50 to-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-[#2c3e50] mb-12 text-center">Pet Turf Benefits</h2>
+          <h2 className="text-4xl font-bold text-[#1f3a2e] mb-12 text-center">Pet Turf Benefits</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
             {benefits.map((benefit, index) => (
               <motion.div key={index} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }} className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
-                <div className="bg-gradient-to-br from-[#2d5016] to-[#1f3810] text-white w-16 h-16 rounded-lg flex items-center justify-center mb-4">{benefit.icon}</div>
-                <h3 className="text-xl font-bold text-[#2c3e50] mb-2">{benefit.title}</h3>
+                <div className="bg-gradient-to-br from-[#2f6f46] to-[#245739] text-white w-16 h-16 rounded-lg flex items-center justify-center mb-4">{benefit.icon}</div>
+                <h3 className="text-xl font-bold text-[#1f3a2e] mb-2">{benefit.title}</h3>
                 <p className="text-gray-600">{benefit.description}</p>
               </motion.div>
             ))}
@@ -72,7 +72,7 @@ const PetTurfPage = () => {
         </div>
       </section>
 
-      <section className="py-16 bg-gradient-to-br from-[#2d5016] to-[#1f3810]">
+      <section className="py-16 bg-gradient-to-br from-[#2f6f46] to-[#245739]">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <EstimateForm title="Request Your Free Pet Turf Estimate" />

@@ -42,7 +42,7 @@ const PaversPage = () => {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto prose prose-lg text-gray-700 space-y-4">
-            <h2 className="text-3xl font-bold text-[#2c3e50]">Elevate Your Outdoor Living</h2>
+            <h2 className="text-3xl font-bold text-[#1f3a2e]">Elevate Your Outdoor Living</h2>
             <p>Pavers are the perfect solution for creating beautiful, functional outdoor spaces. Whether you're designing a patio for entertaining, a walkway to enhance curb appeal, or a driveway that makes a statement, professional paver installation adds value and beauty to your property.</p>
             <p>At AG&P Outdoor LLC, we specialize in paver installations that combine aesthetic appeal with structural integrity. Our process includes proper base preparation, precise grading for drainage, and expert installation techniques that ensure your pavers look great and last for decades.</p>
             <p>From traditional brick pavers to modern concrete designs, we work with a variety of materials and patterns to create custom outdoor spaces that reflect your style and enhance your home's value.</p>
@@ -50,7 +50,7 @@ const PaversPage = () => {
         </div>
       </section>
 
-      <section className="py-16 bg-gradient-to-br from-[#2d5016] to-[#1f3810]">
+      <section className="py-16 bg-gradient-to-br from-[#2f6f46] to-[#245739]">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <EstimateForm title="Request Your Free Paver Installation Estimate" />

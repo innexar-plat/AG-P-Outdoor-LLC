@@ -43,7 +43,7 @@ const NaturalGrassRemovalPage = () => {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto prose prose-lg text-gray-700 space-y-4">
-            <h2 className="text-3xl font-bold text-[#2c3e50]">The Foundation of Every Great Installation</h2>
+            <h2 className="text-3xl font-bold text-[#1f3a2e]">The Foundation of Every Great Installation</h2>
             <p>Whether you're installing artificial turf, pavers, or redesigning your landscape, proper grass removal is the critical first step. Cutting corners on this phase leads to settling, drainage issues, and premature failure of your new installation.</p>
             <p>AG&P Outdoor LLC provides professional natural grass removal services that go beyond simply scraping the surface. We completely remove grass, roots, and organic material, then prepare the base according to your project's specific requirements.</p>
             <p>Our process includes excavation to the proper depth, removal of all vegetation and debris, grading for drainage, and compaction of the base layer. This creates a stable, long-lasting foundation that ensures your new installation performs beautifully for years to come.</p>
@@ -51,7 +51,7 @@ const NaturalGrassRemovalPage = () => {
         </div>
       </section>
 
-      <section className="py-16 bg-gradient-to-br from-[#2d5016] to-[#1f3810]">
+      <section className="py-16 bg-gradient-to-br from-[#2f6f46] to-[#245739]">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <EstimateForm title="Request Your Free Grass Removal Estimate" />

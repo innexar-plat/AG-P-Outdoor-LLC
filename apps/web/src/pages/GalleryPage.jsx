@@ -54,7 +54,7 @@ const GalleryPage = () => {
             className="max-w-7xl mx-auto"
           >
             <div className="text-center mb-8">
-              <h1 className="text-5xl md:text-6xl font-bold text-[#2c3e50] mb-6">Project Gallery</h1>
+              <h1 className="text-5xl md:text-6xl font-bold text-[#1f3a2e] mb-6">Project Gallery</h1>
               <p className="text-xl text-gray-600">Explore our portfolio of professional installations</p>
             </div>
 
@@ -66,7 +66,7 @@ const GalleryPage = () => {
                   onClick={() => setFilter(cat)}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                     filter === cat
-                      ? 'bg-[#2d5016] text-white shadow-md'
+                      ? 'bg-[#2f6f46] text-white shadow-md'
                       : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
                   }`}
                 >
@@ -91,7 +91,7 @@ const GalleryPage = () => {
                     className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                    <span className="text-[#2d5016] text-sm font-semibold mb-2">{image.category}</span>
+                    <span className="text-[#2f6f46] text-sm font-semibold mb-2">{image.category}</span>
                     <p className="text-white font-bold text-xl">{image.title}</p>
                     {image.description && (
                       <p className="text-white/80 text-sm mt-1 line-clamp-2">{image.description}</p>

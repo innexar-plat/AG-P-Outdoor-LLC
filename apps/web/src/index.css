@@ -35,11 +35,11 @@
     --font-header: 'DM Sans', 'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif;
 
     /* Footer theme */
-    --footer-bg: #1e293b;
-    --footer-text: #94a3b8;
-    --footer-text-muted: #64748b;
-    --footer-accent: #2d5016;
-    --footer-border: rgba(148, 163, 184, 0.12);
+    --footer-bg: #1f2a24;
+    --footer-text: #c8d2cc;
+    --footer-text-muted: #8ea096;
+    --footer-accent: #c7a766;
+    --footer-border: rgba(200, 210, 204, 0.14);
   }
 }
 
@@ -75,12 +75,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2d5016;
+  background: #2f6f46;
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #1f3810;
+  background: #245739;
 }
 
 /* Smooth scroll behavior */
@@ -90,7 +90,7 @@ html {
 
 /* Focus visible styles for accessibility */
 *:focus-visible {
-  outline: 2px solid #2d5016;
+  outline: 2px solid #2f6f46;
   outline-offset: 2px;
 }
 
@@ -112,7 +112,7 @@ html {
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #2d5016 0%, #1f3810 100%);
+  background: linear-gradient(135deg, #2f6f46 0%, #245739 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

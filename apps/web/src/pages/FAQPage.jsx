@@ -46,8 +46,8 @@ const FAQPage = () => {
             animate={{ opacity: 1, y: 0 }}
             className="max-w-4xl mx-auto text-center mb-12"
           >
-            <HelpCircle className="h-16 w-16 text-[#2d5016] mx-auto mb-4" />
-            <h1 className="text-5xl md:text-6xl font-bold text-[#2c3e50] mb-6">Frequently Asked Questions</h1>
+            <HelpCircle className="h-16 w-16 text-[#2f6f46] mx-auto mb-4" />
+            <h1 className="text-5xl md:text-6xl font-bold text-[#1f3a2e] mb-6">Frequently Asked Questions</h1>
             <p className="text-xl text-gray-600">Everything you need to know about artificial turf installation</p>
           </motion.div>
 
@@ -61,8 +61,8 @@ const FAQPage = () => {
                 transition={{ delay: index * 0.05 }}
                 className="bg-white rounded-xl p-6 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300"
               >
-                <h3 className="text-xl font-bold text-[#2c3e50] mb-3 flex items-start">
-                  <span className="bg-[#2d5016] text-white w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0 mt-1">
+                <h3 className="text-xl font-bold text-[#1f3a2e] mb-3 flex items-start">
+                  <span className="bg-[#2f6f46] text-white w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0 mt-1">
                     Q
                   </span>
                   {faq.question}

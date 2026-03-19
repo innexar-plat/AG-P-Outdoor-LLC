@@ -43,7 +43,7 @@ const DrainageGradingPage = () => {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto prose prose-lg text-gray-700 space-y-4">
-            <h2 className="text-3xl font-bold text-[#2c3e50]">Protect Your Property Investment</h2>
+            <h2 className="text-3xl font-bold text-[#1f3a2e]">Protect Your Property Investment</h2>
             <p>Poor drainage can cause serious damage to your property — from foundation issues to landscape erosion. In Florida's rainy climate, proper drainage and grading are essential for protecting your home and maintaining a healthy landscape.</p>
             <p>AG&P Outdoor LLC provides comprehensive drainage solutions including French drains, catch basins, channel drains, and precision grading. We assess your property's unique challenges and design custom drainage systems that effectively manage water flow and prevent pooling.</p>
             <p>Our grading services ensure water flows away from your foundation and structures, protecting your investment and creating a stable base for landscaping, turf, or hardscaping projects.</p>
@@ -51,7 +51,7 @@ const DrainageGradingPage = () => {
         </div>
       </section>
 
-      <section className="py-16 bg-gradient-to-br from-[#2d5016] to-[#1f3810]">
+      <section className="py-16 bg-gradient-to-br from-[#2f6f46] to-[#245739]">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <EstimateForm title="Request Your Free Drainage Consultation" />

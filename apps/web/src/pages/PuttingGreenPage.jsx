@@ -96,7 +96,7 @@ const PuttingGreenPage = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl md:text-4xl font-bold text-[#2c3e50] mb-6">
+              <h2 className="text-3xl md:text-4xl font-bold text-[#1f3a2e] mb-6">
                 Precision Installation for Serious Golfers
               </h2>
               <div className="prose prose-lg text-gray-700 space-y-4">
@@ -126,7 +126,7 @@ const PuttingGreenPage = () => {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-4xl font-bold text-[#2c3e50] mb-4">
+            <h2 className="text-4xl font-bold text-[#1f3a2e] mb-4">
               Why Install a Putting Green?
             </h2>
           </motion.div>
@@ -141,10 +141,10 @@ const PuttingGreenPage = () => {
                 transition={{ delay: index * 0.1 }}
                 className="bg-white rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100"
               >
-                <div className="bg-gradient-to-br from-[#2d5016] to-[#1f3810] text-white w-16 h-16 rounded-lg flex items-center justify-center mb-4">
+                <div className="bg-gradient-to-br from-[#2f6f46] to-[#245739] text-white w-16 h-16 rounded-lg flex items-center justify-center mb-4">
                   {benefit.icon}
                 </div>
-                <h3 className="text-xl font-bold text-[#2c3e50] mb-2">{benefit.title}</h3>
+                <h3 className="text-xl font-bold text-[#1f3a2e] mb-2">{benefit.title}</h3>
                 <p className="text-gray-600">{benefit.description}</p>
               </motion.div>
             ))}
@@ -160,7 +160,7 @@ const PuttingGreenPage = () => {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-4xl font-bold text-[#2c3e50] mb-4">
+            <h2 className="text-4xl font-bold text-[#1f3a2e] mb-4">
               Our Installation Process
             </h2>
           </motion.div>
@@ -176,11 +176,11 @@ const PuttingGreenPage = () => {
                 className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200"
               >
                 <div className="flex items-start">
-                  <div className="bg-[#2d5016] text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">
+                  <div className="bg-[#2f6f46] text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">
                     {index + 1}
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-[#2c3e50] mb-2">{item.step}</h3>
+                    <h3 className="text-lg font-bold text-[#1f3a2e] mb-2">{item.step}</h3>
                     <p className="text-gray-600">{item.description}</p>
                   </div>
                 </div>
@@ -226,8 +226,8 @@ const PuttingGreenPage = () => {
                 viewport={{ once: true }}
                 className="bg-gray-50 rounded-xl p-6 border border-gray-200"
               >
-                <h3 className="text-lg font-bold text-[#2c3e50] mb-2 flex items-start">
-                  <CheckCircle className="h-5 w-5 text-[#2d5016] mr-2 mt-1 flex-shrink-0" />
+                <h3 className="text-lg font-bold text-[#1f3a2e] mb-2 flex items-start">
+                  <CheckCircle className="h-5 w-5 text-[#2f6f46] mr-2 mt-1 flex-shrink-0" />
                   {faq.question}
                 </h3>
                 <p className="text-gray-700 ml-7">{faq.answer}</p>
@@ -237,7 +237,7 @@ const PuttingGreenPage = () => {
         </div>
       </section>
 
-      <section className="py-16 bg-gradient-to-br from-[#2d5016] to-[#1f3810]">
+      <section className="py-16 bg-gradient-to-br from-[#2f6f46] to-[#245739]">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <EstimateForm title="Request Your Free Putting Green Estimate" />

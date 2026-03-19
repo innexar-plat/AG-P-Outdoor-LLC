@@ -84,10 +84,10 @@ const EstimateForm = ({ title = "Get Your Free Estimate" }) => {
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-8 text-center border-2 border-[#2d5016]"
+        className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-8 text-center border-2 border-[#2f6f46]"
       >
-        <CheckCircle className="w-16 h-16 text-[#2d5016] mx-auto mb-4" />
-        <h3 className="text-2xl font-bold text-[#2c3e50] mb-2">Thank You!</h3>
+        <CheckCircle className="w-16 h-16 text-[#2f6f46] mx-auto mb-4" />
+        <h3 className="text-2xl font-bold text-[#1f3a2e] mb-2">Thank You!</h3>
         <p className="text-gray-700">We've received your request and will contact you soon.</p>
       </motion.div>
     );
@@ -101,7 +101,7 @@ const EstimateForm = ({ title = "Get Your Free Estimate" }) => {
       transition={{ duration: 0.6 }}
       className="bg-white rounded-xl shadow-2xl p-8 border border-gray-200"
     >
-      <h3 className="text-3xl font-bold text-[#2c3e50] mb-6 text-center">{title}</h3>
+      <h3 className="text-3xl font-bold text-[#1f3a2e] mb-6 text-center">{title}</h3>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid md:grid-cols-2 gap-4">
           <div>
@@ -162,7 +162,7 @@ const EstimateForm = ({ title = "Get Your Free Estimate" }) => {
               name="projectType"
               value={formData.projectType}
               onChange={handleChange}
-              className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2d5016] focus-visible:ring-offset-2"
+              className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2f6f46] focus-visible:ring-offset-2"
             >
               <option value="">Select a service...</option>
               <option value="residential">Residential Turf</option>
@@ -200,7 +200,7 @@ const EstimateForm = ({ title = "Get Your Free Estimate" }) => {
 
         <Button
           type="submit"
-          className="w-full bg-[#2d5016] hover:bg-[#1f3810] text-white font-semibold py-6 text-lg"
+          className="w-full bg-[#2f6f46] hover:bg-[#245739] text-white font-semibold py-6 text-lg"
         >
           <Send className="mr-2 h-5 w-5" />
           Request Free Estimate

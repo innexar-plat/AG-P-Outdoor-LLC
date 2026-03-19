@@ -56,7 +56,7 @@ const ReviewsPage = () => {
             animate={{ opacity: 1, y: 0 }}
             className="max-w-4xl mx-auto text-center mb-12"
           >
-            <h1 className="text-5xl md:text-6xl font-bold text-[#2c3e50] mb-6">Customer Reviews</h1>
+            <h1 className="text-5xl md:text-6xl font-bold text-[#1f3a2e] mb-6">Customer Reviews</h1>
             <p className="text-xl text-gray-600">Real feedback from real customers</p>
             <div className="flex items-center justify-center mt-6">
               <div className="flex">
@@ -64,7 +64,7 @@ const ReviewsPage = () => {
                   <Star key={i} className={`h-8 w-8 ${i < Math.round(Number(avgRating)) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
                 ))}
               </div>
-              <span className="ml-3 text-2xl font-bold text-[#2c3e50]">{avgRating} Average Rating</span>
+              <span className="ml-3 text-2xl font-bold text-[#1f3a2e]">{avgRating} Average Rating</span>
             </div>
           </motion.div>
 
@@ -94,7 +94,7 @@ const ReviewsPage = () => {
                     <img src={review.photoUrl} alt={review.name} className="w-10 h-10 rounded-full object-cover" />
                   )}
                   <div>
-                    <p className="font-bold text-[#2c3e50]">{review.name}</p>
+                    <p className="font-bold text-[#1f3a2e]">{review.name}</p>
                     {review.location && <p className="text-sm text-gray-600">{review.location}</p>}
                   </div>
                 </div>

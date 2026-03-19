@@ -171,7 +171,7 @@ const HomePage = () => {
         }} viewport={{
           once: true
         }} className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold text-[#2c3e50] mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-[#1f3a2e] mb-4">
               Why Choose {site.companyName}
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">We don't just install turf — we build the base systems that make it last.</p>
@@ -189,10 +189,10 @@ const HomePage = () => {
           }} transition={{
             delay: index * 0.1
           }} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 border border-gray-100">
-                <div className="bg-gradient-to-br from-[#2d5016] to-[#1f3810] text-white w-16 h-16 rounded-lg flex items-center justify-center mb-4">
+                <div className="bg-gradient-to-br from-[#2f6f46] to-[#245739] text-white w-16 h-16 rounded-lg flex items-center justify-center mb-4">
                   {benefit.icon}
                 </div>
-                <h3 className="text-xl font-bold text-[#2c3e50] mb-2">{benefit.title}</h3>
+                <h3 className="text-xl font-bold text-[#1f3a2e] mb-2">{benefit.title}</h3>
                 <p className="text-gray-600">{benefit.description}</p>
               </motion.div>)}
           </div>
@@ -200,7 +200,7 @@ const HomePage = () => {
       </section>
 
       {/* 3-Step Process */}
-      <section className="py-16 bg-gradient-to-br from-[#2c3e50] to-[#1a252f] text-white">
+      <section className="py-16 bg-gradient-to-br from-[#1f3a2e] to-[#1b3228] text-white">
         <div className="container mx-auto px-4">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">Our 3-Step Process</h2>
@@ -211,14 +211,14 @@ const HomePage = () => {
           <div className="grid md:grid-cols-3 gap-8">
             {process.map((item, index) => <motion.div key={index} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.2 }} className="relative">
                 <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300">
-                  <div className="bg-[#2d5016] text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl font-bold mb-4">
+                  <div className="bg-[#2f6f46] text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl font-bold mb-4">
                     {item.step}
                   </div>
                   <h3 className="text-2xl font-bold mb-3">{item.title}</h3>
                   <p className="text-gray-300">{item.description}</p>
                 </div>
                 {(index < process.length - 1) && <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2">
-                    <ArrowRight className="h-8 w-8 text-[#2d5016]" />
+                    <ArrowRight className="h-8 w-8 text-[#2f6f46]" />
                   </div>}
               </motion.div>)}
           </div>
@@ -237,7 +237,7 @@ const HomePage = () => {
         }} viewport={{
           once: true
         }} className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold text-[#2c3e50] mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-[#1f3a2e] mb-4">
               Our Work Speaks for Itself
             </h2>
             <p className="text-xl text-gray-600">
@@ -278,7 +278,7 @@ const HomePage = () => {
 
           <div className="text-center mt-8">
             <Link to="/gallery">
-              <Button className="bg-[#2d5016] hover:bg-[#1f3810] text-white font-semibold px-8 py-6">
+              <Button className="bg-[#2f6f46] hover:bg-[#245739] text-white font-semibold px-8 py-6">
                 View Full Gallery
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -299,7 +299,7 @@ const HomePage = () => {
         }} viewport={{
           once: true
         }} className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold text-[#2c3e50] mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-[#1f3a2e] mb-4">
               What Our Customers Say
             </h2>
             <p className="text-xl text-gray-600">
@@ -355,9 +355,9 @@ const HomePage = () => {
                     whileInView={{ opacity: 1 }}
                     transition={{ delay: index * 0.1 + 0.25 }}
                   >
-                    <p className="font-bold text-[#2c3e50]">{review.name}</p>
+                    <p className="font-bold text-[#1f3a2e]">{review.name}</p>
                     <p className="text-sm text-gray-600">{review.location}</p>
-                    {review.project && <p className="text-xs text-[#2d5016] font-semibold mt-1">{review.project}</p>}
+                    {review.project && <p className="text-xs text-[#2f6f46] font-semibold mt-1">{review.project}</p>}
                   </motion.div>
                 </motion.div>)}
             </div>
@@ -365,7 +365,7 @@ const HomePage = () => {
 
           <div className="text-center mt-8">
             <Link to="/reviews">
-              <Button variant="outline" className="border-[#2d5016] text-[#2d5016] hover:bg-[#2d5016] hover:text-white font-semibold px-8 py-6">
+              <Button variant="outline" className="border-[#2f6f46] text-[#2f6f46] hover:bg-[#2f6f46] hover:text-white font-semibold px-8 py-6">
                 Read More Reviews
               </Button>
             </Link>
@@ -385,7 +385,7 @@ const HomePage = () => {
         }} viewport={{
           once: true
         }} className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold text-[#2c3e50] mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-[#1f3a2e] mb-4">
               Frequently Asked Questions
             </h2>
             <p className="text-xl text-gray-600">
@@ -405,14 +405,14 @@ const HomePage = () => {
           }} transition={{
             delay: index * 0.1
           }} className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                <h3 className="text-lg font-bold text-[#2c3e50] mb-2">{faq.question}</h3>
+                <h3 className="text-lg font-bold text-[#1f3a2e] mb-2">{faq.question}</h3>
                 <p className="text-gray-700">{faq.answer}</p>
               </motion.div>)}
           </div>
 
           <div className="text-center mt-8">
             <Link to="/faq">
-              <Button variant="outline" className="border-[#2d5016] text-[#2d5016] hover:bg-[#2d5016] hover:text-white font-semibold px-8 py-6">
+              <Button variant="outline" className="border-[#2f6f46] text-[#2f6f46] hover:bg-[#2f6f46] hover:text-white font-semibold px-8 py-6">
                 View All FAQs
               </Button>
             </Link>
@@ -421,7 +421,7 @@ const HomePage = () => {
       </section>
 
       {/* Final CTA */}
-      <section className="py-16 bg-gradient-to-br from-[#2d5016] to-[#1f3810]">
+      <section className="py-16 bg-gradient-to-br from-[#2f6f46] to-[#245739]">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <motion.div initial={{

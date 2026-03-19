@@ -113,7 +113,7 @@ export function HeroHome({ site }) {
             variants={itemVariants}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-6"
           >
-            <ShieldCheck className="h-4 w-4 text-[#7cb342]" />
+            <ShieldCheck className="h-4 w-4 text-[#c7a766]" />
             <span className="text-sm font-medium text-white/95">Licensed & Insured</span>
           </motion.div>
 
@@ -123,7 +123,7 @@ export function HeroHome({ site }) {
           >
             Premium Turf{' '}
             <motion.span
-              className="text-[#7cb342]"
+              className="text-[#c7a766]"
               animate={{ opacity: [1, 0.8, 1] }}
               transition={{ duration: 3, repeat: Infinity }}
             >
@@ -145,7 +145,7 @@ export function HeroHome({ site }) {
             <Link to={site.ctaUrl} className="w-full sm:w-auto">
               <Button
                 size="lg"
-                className="w-full bg-[#2d5016] hover:bg-[#1f3810] text-white font-semibold px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.03] active:scale-95 group"
+                className="w-full bg-[#2f6f46] hover:bg-[#245739] text-white font-semibold px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.03] active:scale-95 group"
               >
                 Get Free Estimate
                 <motion.div
@@ -160,7 +160,7 @@ export function HeroHome({ site }) {
               <Button
                 variant="outline"
                 size="lg"
-                className="w-full bg-white/10 backdrop-blur-md border-2 border-white/40 text-white hover:bg-white hover:text-[#2c3e50] font-semibold px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base rounded-lg transition-all duration-300 hover:shadow-xl"
+                className="w-full bg-white/10 backdrop-blur-md border-2 border-white/40 text-white hover:bg-white hover:text-[#1f3a2e] font-semibold px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base rounded-lg transition-all duration-300 hover:shadow-xl"
               >
                 Call {site.phone}
               </Button>
