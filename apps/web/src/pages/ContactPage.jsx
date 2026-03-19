@@ -13,7 +13,10 @@ import { useToast } from '@/components/ui/use-toast';
 import { submitForm, fetchSeo } from '@/lib/api';
 import { useSite } from '@/lib/SiteProvider.jsx';
 
+const DEFAULT_GOOGLE_EMBED_URL = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d112222.07519514716!2d-81.42519470599224!3d28.481358055165476!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x690a88e8faa7a011%3A0x6b1cdd6e6b496fca!2sAG%26P%20Outdoor%20LLC!5e0!3m2!1spt-BR!2sbr!4v1773952298127!5m2!1spt-BR!2sbr';
+
 function buildGoogleEmbedUrl(address) {
+  if (!address) return DEFAULT_GOOGLE_EMBED_URL;
   return `https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`;
 }
 
@@ -96,7 +99,7 @@ const ContactPage = () => {
   const mapAddress = site.address || '878 Keaton Pkwy, Ocoee, FL 34761';
   const mapEmbedUrl = useMemo(() => {
     const rawMapUrl = site.company_map_embed_url || site.map_embed_url || site.google_maps_embed_url;
-    return extractEmbedSrc(rawMapUrl) || buildGoogleEmbedUrl(mapAddress);
+    return extractEmbedSrc(rawMapUrl) || DEFAULT_GOOGLE_EMBED_URL || buildGoogleEmbedUrl(mapAddress);
   }, [site.company_map_embed_url, site.map_embed_url, site.google_maps_embed_url, mapAddress]);
 
   const title = seo?.titleTag || "Contact AG&P Outdoor LLC | Free Estimates - Central Florida";
