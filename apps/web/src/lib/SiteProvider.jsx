@@ -12,7 +12,7 @@ const DEFAULTS = {
   company_tagline: 'Professional Turf Installation',
   company_website: 'https://agpoutdoor.com',
   company_whatsapp: '7722269087',
-  logo_url: 'https://horizons-cdn.hostinger.com/4846f768-3945-473c-8475-e6b3a010bfca/5f401154bcf4d55c08c87a16b309811a.png',
+  logo_url: '/qr/agp-logo-source.png',
   cta_primary_text: 'Free Estimate',
   cta_primary_url: '/contact',
   social_facebook: '',
