@@ -87,4 +87,14 @@ describe("middleware", () => {
     expect(res.headers.get("Access-Control-Allow-Origin")).toBeTruthy();
     expect(res.headers.get("Access-Control-Allow-Methods")).toContain("POST");
   });
+
+  it("allows production www origin for /api/site", () => {
+    const req = createRequest("/api/site/settings", {
+      origin: "https://www.agpoutdoor.com",
+    });
+    const res = middleware(req);
+    expect(res.headers.get("Access-Control-Allow-Origin")).toBe(
+      "https://www.agpoutdoor.com"
+    );
+  });
 });

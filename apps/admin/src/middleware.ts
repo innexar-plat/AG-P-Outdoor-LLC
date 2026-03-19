@@ -6,6 +6,8 @@ const PUBLIC_PATHS = ["/admin/login", "/admin/api/auth", "/api/auth", "/api/site
 const SESSION_COOKIE = "better-auth.session_token";
 
 const CORS_ORIGINS = [
+  "https://agpoutdoor.com",
+  "https://www.agpoutdoor.com",
   "http://localhost:3000",
   "http://localhost:3001",
   "http://127.0.0.1:3000",
