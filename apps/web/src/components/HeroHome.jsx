@@ -18,6 +18,12 @@ function isVideoUrl(url) {
   return /\.(mp4|webm|mov|avi)(\?|$)/i.test(url);
 }
 
+function isImageUrl(url) {
+  if (!url || typeof url !== 'string') return false;
+  if (url.startsWith('data:image/')) return true;
+  return /\.(jpg|jpeg|png|webp|avif|gif|svg)(\?|$)/i.test(url);
+}
+
 function isLikelyVideo(url, slot) {
   if (!url || typeof url !== 'string') return false;
   if (isVideoUrl(url)) return true;
@@ -120,10 +126,11 @@ export function HeroHome({ site }) {
     ? `${heroSlot.focalX ?? 50}% ${heroSlot.focalY ?? 50}%`
     : '50% 50%';
   const slotHasVideo = Boolean(heroMedia && isLikelyVideo(heroMedia, heroSlot));
+  const slotHasImage = Boolean(heroMedia && isImageUrl(heroMedia));
   const canRenderVideo = allowAutoVideo && !videoError && slotHasVideo;
   const fallbackImageSrc = slotHasVideo
     ? HERO_VIDEO_LOADING_POSTER
-    : (heroMedia || heroPoster || staticFallbackImage);
+    : (slotHasImage ? heroMedia : (heroPoster || staticFallbackImage));
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-[#eff8f6] via-[#f7fcfb] to-[#edf7f5]">
