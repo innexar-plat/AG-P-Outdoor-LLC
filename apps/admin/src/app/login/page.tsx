@@ -57,9 +57,9 @@ function LoginForm() {
         </div>
         <div className="relative z-10 text-center space-y-6">
           <Logo size="lg" />
-          <p className="text-xl font-light text-white/80">{t("adminPanel")}</p>
+          <p className="text-xl font-light text-sidebar-text">{t("adminPanel")}</p>
         </div>
-        <p className="absolute bottom-8 text-xs text-white/20">
+        <p className="absolute bottom-8 text-xs text-sidebar-text/60">
           Innexar &copy; {new Date().getFullYear()}
         </p>
       </div>
@@ -87,6 +87,7 @@ function LoginForm() {
               required
               placeholder="admin@innexar.com"
               autoComplete="email"
+              className="text-slate-900 placeholder:text-slate-400"
             />
             <Input
               label={t("password")}
@@ -96,6 +97,7 @@ function LoginForm() {
               required
               placeholder="••••••••"
               autoComplete="current-password"
+              className="text-slate-900 placeholder:text-slate-400"
             />
 
             {error && (
