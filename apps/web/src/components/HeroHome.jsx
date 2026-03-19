@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, ChevronDown, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useState, useEffect } from 'react';
 
 /**
  * Video usado no hero.
@@ -10,6 +11,7 @@ import { Button } from '@/components/ui/button';
  * - Para contêiner ou produção: recomendo usar um URL externo (S3/MinIO) e definir VITE_HERO_VIDEO_URL.
  */
 const HERO_VIDEO_URL = import.meta.env.VITE_HERO_VIDEO_URL || '/Roteiro%205.mp4';
+const HERO_FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1559824481-e384a5d50c1f?w=1200&h=600&fit=crop';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -33,26 +35,62 @@ const itemVariants = {
 
 /**
  * Hero profissional com vídeo de fundo, animações e CTAs.
- * Usa sempre o vídeo local (Roteiro 5.mp4).
+ * Usa vídeo com fallback para imagem em caso de dispositivos sem suporte.
  */
 export function HeroHome({ site }) {
+  const [videoError, setVideoError] = useState(false);
+
+  useEffect(() => {
+    // Check if device supports video
+    const canPlayVideo = () => {
+      const video = document.createElement('video');
+      return !!(video.canPlayType && video.canPlayType('video/mp4').replace(/^no$/, ''));
+    };
+    
+    // On mobile, prefer image fallback for performance
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) {
+      setVideoError(true);
+    }
+  }, []);
   return (
-    <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
-      {/* Background: vídeo */}
+    <section className="relative min-h-[60vh] md:min-h-[70vh] flex items-center justify-center overflow-hidden">
+      {/* Background: vídeo ou imagem fallback */}
       <div className="absolute inset-0">
-        <video
-          className="absolute inset-0 w-full h-full object-cover"
-          src={HERO_VIDEO_URL}
-          autoPlay
-          loop
-          muted
-          playsInline
+        {!videoError ? (
+          <video
+            className="absolute inset-0 w-full h-full object-cover"
+            src={HERO_VIDEO_URL}
+            autoPlay
+            loop
+            muted
+            playsInline
+            aria-hidden
+            onError={() => setVideoError(true)}
+            poster={HERO_FALLBACK_IMAGE}
+          />
+        ) : (
+          <motion.img
+            src={HERO_FALLBACK_IMAGE}
+            alt="Premium turf installation"
+            className="absolute inset-0 w-full h-full object-cover"
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+          />
+        )}
+        {/* Overlay em gradiente mais sofisticado */}
+        <div
+          className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/40 mix-blend-multiply"
           aria-hidden
         />
-        {/* Overlay em gradiente */}
-        <div
-          className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/30"
+        {/* Subtle animated overlay */}
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20"
           aria-hidden
+          initial={{ opacity: 0.5 }}
+          animate={{ opacity: [0.5, 0.7, 0.5] }}
+          transition={{ duration: 8, repeat: Infinity }}
         />
       </div>
 
@@ -74,36 +112,48 @@ export function HeroHome({ site }) {
 
           <motion.h1
             variants={itemVariants}
-            className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-5 leading-[1.1] tracking-tight"
+            className="text-3xl sm:text-5xl md:text-6xl font-bold text-white mb-5 leading-[1.1] tracking-tight drop-shadow-lg"
           >
-            Premium Turf Installation
+            Premium Turf{' '}
+            <motion.span
+              className="text-[#7cb342]"
+              animate={{ opacity: [1, 0.8, 1] }}
+              transition={{ duration: 3, repeat: Infinity }}
+            >
+              Installation
+            </motion.span>
           </motion.h1>
 
           <motion.p
             variants={itemVariants}
-            className="text-lg sm:text-xl text-gray-200 mb-8 max-w-2xl leading-relaxed"
+            className="text-base sm:text-lg md:text-xl text-gray-100 mb-8 max-w-2xl leading-relaxed drop-shadow-md"
           >
             Professional Base Preparation, Drainage & Clean Finishes
           </motion.p>
 
           <motion.div
             variants={itemVariants}
-            className="flex flex-col sm:flex-row gap-4"
+            className="flex flex-col sm:flex-row gap-3 sm:gap-4"
           >
-            <Link to={site.ctaUrl}>
+            <Link to={site.ctaUrl} className="w-full sm:w-auto">
               <Button
                 size="lg"
-                className="bg-[#2d5016] hover:bg-[#1f3810] text-white font-semibold px-8 py-6 text-base rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+                className="w-full bg-[#2d5016] hover:bg-[#1f3810] text-white font-semibold px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.03] active:scale-95 group"
               >
                 Get Free Estimate
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <motion.div
+                  animate={{ x: [0, 4, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </motion.div>
               </Button>
             </Link>
-            <a href={`tel:${site.phone}`}>
+            <a href={`tel:${site.phone}`} className="w-full sm:w-auto">
               <Button
                 variant="outline"
                 size="lg"
-                className="bg-white/10 backdrop-blur-sm border-2 border-white/40 text-white hover:bg-white hover:text-[#2c3e50] font-semibold px-8 py-6 text-base rounded-lg transition-all duration-300"
+                className="w-full bg-white/10 backdrop-blur-md border-2 border-white/40 text-white hover:bg-white hover:text-[#2c3e50] font-semibold px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base rounded-lg transition-all duration-300 hover:shadow-xl"
               >
                 Call {site.phone}
               </Button>

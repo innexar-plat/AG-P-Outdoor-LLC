@@ -268,18 +268,28 @@ const HomePage = () => {
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
               {dynamicGallery.map((image, index) => <motion.div key={index} initial={{
               opacity: 0,
-              scale: 0.9
+              scale: 0.85,
+              y: 20
             }} whileInView={{
               opacity: 1,
-              scale: 1
+              scale: 1,
+              y: 0
             }} viewport={{
               once: true
             }} transition={{
-              delay: index * 0.05
-            }} className="relative group overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300">
-                  <img src={image.url} alt={image.title} className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-                    <p className="text-white font-semibold p-4">{image.title}</p>
+              delay: index * 0.08,
+              duration: 0.5,
+              ease: "easeOut"
+            }} className="relative group overflow-hidden rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer h-64">
+                  <img src={image.url} alt={image.title} className="w-full h-full object-cover group-hover:scale-125 transition-transform duration-700 ease-out" loading="lazy" />
+                  
+                  {/* Dark overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  
+                  {/* Title + icon on hover */}
+                  <div className="absolute inset-0 flex items-end justify-between p-4 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                    <p className="text-white font-semibold text-sm md:text-base">{image.title}</p>
+                    <ArrowRight className="h-5 w-5 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-x-2 group-hover:translate-x-0" />
                   </div>
                 </motion.div>)}
             </div>
@@ -320,24 +330,54 @@ const HomePage = () => {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {dynamicReviews.map((review, index) => <motion.div key={index} initial={{
               opacity: 0,
-              y: 20
+              y: 20,
+              scale: 0.95
             }} whileInView={{
               opacity: 1,
-              y: 0
+              y: 0,
+              scale: 1
             }} viewport={{
               once: true
             }} transition={{
-              delay: index * 0.1
-            }} className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
-                  <div className="flex items-center mb-4">
-                    {[...Array(review.rating)].map((_, i) => <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />)}
-                  </div>
-                  <p className="text-gray-700 mb-4 italic">"{review.text}"</p>
-                  <div className="border-t border-gray-200 pt-4">
+              delay: index * 0.1,
+              duration: 0.5
+            }} whileHover={{ 
+              y: -8,
+              boxShadow: "0 20px 40px rgba(0,0,0,0.1)"
+            }} className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 cursor-default">
+                  <motion.div 
+                    className="flex items-center mb-4"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    transition={{ delay: index * 0.1 + 0.2 }}
+                  >
+                    {[...Array(review.rating)].map((_, i) => <motion.div
+                      key={i}
+                      initial={{ scale: 0, rotate: -180 }}
+                      whileInView={{ scale: 1, rotate: 0 }}
+                      transition={{ delay: i * 0.05 + index * 0.1 }}
+                    >
+                      <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                    </motion.div>)}
+                  </motion.div>
+                  <motion.p 
+                    className="text-gray-700 mb-4 italic leading-relaxed"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    transition={{ delay: index * 0.1 + 0.15 }}
+                  >
+                    "{review.text}"
+                  </motion.p>
+                  <motion.div 
+                    className="border-t border-gray-200 pt-4"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    transition={{ delay: index * 0.1 + 0.25 }}
+                  >
                     <p className="font-bold text-[#2c3e50]">{review.name}</p>
                     <p className="text-sm text-gray-600">{review.location}</p>
                     {review.project && <p className="text-xs text-[#2d5016] font-semibold mt-1">{review.project}</p>}
-                  </div>
+                  </motion.div>
                 </motion.div>)}
             </div>
           )}

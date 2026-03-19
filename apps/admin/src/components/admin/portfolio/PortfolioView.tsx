@@ -109,14 +109,15 @@ export function PortfolioView({ items: initial }: PortfolioViewProps) {
       />
 
       {items.length === 0 && (
-        <Card><CardBody className="text-center py-12 text-slate-400">{t("noProjects")}</CardBody></Card>
+        <>
+          <Card><CardBody className="text-center py-12 text-slate-400">{t("noProjects")}</CardBody></Card>
+          <SiteFallbackCard
+            items={items}
+            onAddFromFallback={(partial) => setEditing({ ...EMPTY, ...partial, sortOrder: items.length })}
+            onPreview={setPreviewImg}
+          />
+        </>
       )}
-
-      <SiteFallbackCard
-        items={items}
-        onAddFromFallback={(partial) => setEditing({ ...EMPTY, ...partial, sortOrder: items.length })}
-        onPreview={setPreviewImg}
-      />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((item, idx) => (
