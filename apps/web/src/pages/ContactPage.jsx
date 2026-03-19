@@ -25,6 +25,10 @@ function extractEmbedSrc(rawUrl) {
   try {
     const parsed = new URL(normalizedRaw);
     if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return '';
+    const host = parsed.hostname.toLowerCase();
+    const isGoogleHost = host.includes('google.');
+    // Avoid third-party embeds that often block framing in production.
+    if (!isGoogleHost) return '';
     return parsed.toString();
   } catch {
     return '';
