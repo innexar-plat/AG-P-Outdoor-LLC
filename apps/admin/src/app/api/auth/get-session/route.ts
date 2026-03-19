@@ -1,11 +1,9 @@
 import { auth } from "@/lib/auth";
-import { normalizeAuthRequest } from "../normalize-auth-request";
 
 /**
- * Explicit route for get-session (avoids catch-all + basePath 404 in production).
- * @see https://github.com/vercel/next.js/issues/62657
+ * Explicit get-session endpoint using Better Auth server API directly.
  */
 export const GET = (request: Request): Promise<Response> =>
-	auth.handler(normalizeAuthRequest(request));
+	auth.api.getSession({ headers: request.headers, asResponse: true });
 export const POST = (request: Request): Promise<Response> =>
-	auth.handler(normalizeAuthRequest(request));
+	auth.api.getSession({ headers: request.headers, asResponse: true });

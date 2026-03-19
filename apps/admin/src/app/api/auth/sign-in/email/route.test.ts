@@ -4,14 +4,19 @@ import { auth } from "@/lib/auth";
 
 vi.mock("@/lib/auth", () => ({
   auth: {
-    handler: vi.fn((req: Request) =>
+    api: {
+      signInEmail: vi.fn(() =>
+        Promise.resolve(new Response(JSON.stringify({ ok: true }), { status: 200 }))
+      ),
+      getSession: vi.fn(() =>
       Promise.resolve(new Response(JSON.stringify({ ok: true }), { status: 200 }))
-    ),
+      ),
+    },
   },
 }));
 
 describe("POST /api/auth/sign-in/email (explicit route for basePath fix)", () => {
-  it("forwards request to auth.handler", async () => {
+  it("forwards request to auth.api.signInEmail", async () => {
     const req = new Request("http://localhost/api/auth/sign-in/email", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -19,15 +24,15 @@ describe("POST /api/auth/sign-in/email (explicit route for basePath fix)", () =>
     });
     const res = await POST(req);
     expect(res.status).toBe(200);
-    expect(auth.handler).toHaveBeenCalledWith(req);
+    expect(auth.api.signInEmail).toHaveBeenCalledTimes(1);
   });
 });
 
 describe("GET /api/auth/sign-in/email", () => {
-  it("forwards request to auth.handler", async () => {
+  it("forwards request to auth.api.getSession", async () => {
     const req = new Request("http://localhost/api/auth/sign-in/email");
     const res = await GET(req);
     expect(res.status).toBe(200);
-    expect(auth.handler).toHaveBeenCalledWith(req);
+    expect(auth.api.getSession).toHaveBeenCalledTimes(1);
   });
 });

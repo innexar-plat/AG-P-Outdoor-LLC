@@ -1,11 +1,17 @@
 import { auth } from "@/lib/auth";
-import { normalizeAuthRequest } from "../../normalize-auth-request";
 
 /**
- * Explicit route for sign-in/email (avoids catch-all + basePath 404 in production).
- * @see https://github.com/vercel/next.js/issues/62657
+ * Explicit sign-in endpoint using Better Auth server API directly.
+ * This avoids path matching issues seen with auth.handler under Next basePath.
  */
+export async function POST(request: Request): Promise<Response> {
+	const body = await request.json().catch(() => ({}));
+	return auth.api.signInEmail({
+		headers: request.headers,
+		body,
+		asResponse: true,
+	});
+}
+
 export const GET = (request: Request): Promise<Response> =>
-	auth.handler(normalizeAuthRequest(request));
-export const POST = (request: Request): Promise<Response> =>
-	auth.handler(normalizeAuthRequest(request));
+	auth.api.getSession({ headers: request.headers, asResponse: true });
