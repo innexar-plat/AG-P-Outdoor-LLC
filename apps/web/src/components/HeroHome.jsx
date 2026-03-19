@@ -8,7 +8,6 @@ import { fetchSiteImages } from '@/lib/api';
 /** Fallbacks estáticos quando não há mídia no painel */
 const HERO_IMAGE_FALLBACKS = [
   '/thumbnail.jpeg',
-  '/qr/agp-logo-source.png',
   'https://images.unsplash.com/photo-1559824481-e384a5d50c1f?w=960&h=540&fit=crop&q=70&auto=format',
 ];
 const HERO_VIDEO_LOADING_POSTER = '/thumbnail.jpeg';
@@ -233,9 +232,11 @@ export function HeroHome({ site }) {
                     loading="eager"
                     fetchPriority="high"
                     decoding="async"
-                    onError={() => {
-                      if (heroMedia) {
-                        setHeroMedia(null);
+                    onError={(e) => {
+                      const img = e.currentTarget;
+                      // Avoid showing broken-image icon; immediately fallback to thumbnail.
+                      if (!img.src.endsWith('/thumbnail.jpeg')) {
+                        img.src = HERO_VIDEO_LOADING_POSTER;
                         return;
                       }
                       setFallbackImageIndex((idx) =>
