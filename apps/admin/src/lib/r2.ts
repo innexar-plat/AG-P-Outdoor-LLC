@@ -3,6 +3,7 @@ import {
   PutObjectCommand,
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
+import { normalizeMediaUrl } from "@/lib/media-url";
 
 /**
  * S3-compatible storage client.
@@ -99,7 +100,8 @@ export async function uploadToR2(
   );
 
   const base = storage.publicUrl.replace(/\/$/, "");
-  return base ? `${base}/${key}` : key;
+  const rawUrl = base ? `${base}/${key}` : key;
+  return normalizeMediaUrl(rawUrl);
 }
 
 /**

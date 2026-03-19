@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { listSiteImages, upsertSiteImage } from "@/lib/queries/images";
 import { z } from "zod";
+import { normalizeCarouselItems, normalizeMediaUrl } from "@/lib/media-url";
 
 function parseCarouselItems(raw: unknown): Array<{ url?: string }> {
   if (typeof raw === "string") {
@@ -95,7 +96,12 @@ export async function GET(request: Request) {
   }
   try {
     const rows = await listSiteImages();
-    return NextResponse.json({ data: rows, error: null });
+    const normalized = rows.map((row) => ({
+      ...row,
+      url: normalizeMediaUrl(row.url),
+      carouselItems: normalizeCarouselItems(row.carouselItems),
+    }));
+    return NextResponse.json({ data: normalized, error: null });
   } catch (err) {
     console.error("[admin/images GET]", err);
     return NextResponse.json({ data: null, error: "Something went wrong" }, { status: 500 });
@@ -124,7 +130,12 @@ export async function POST(request: Request) {
   }
   try {
     const row = await upsertSiteImage(parsed.data);
-    return NextResponse.json({ data: row, error: null });
+    const normalized = {
+      ...row,
+      url: normalizeMediaUrl(row.url),
+      carouselItems: normalizeCarouselItems(row.carouselItems),
+    };
+    return NextResponse.json({ data: normalized, error: null });
   } catch (err) {
     console.error("[admin/images POST]", err);
     return NextResponse.json({ data: null, error: "Something went wrong" }, { status: 500 });
