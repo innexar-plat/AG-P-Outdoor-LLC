@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback, type DragEvent } from "react";
+import { useState, useRef, useCallback, useEffect, type DragEvent } from "react";
 import { useI18n } from "@/lib/i18n";
 import { X } from "lucide-react";
 
@@ -169,6 +169,13 @@ export function MultiFileUpload({
   const uploadedCount = files.filter((f) => f.url).length;
   const errorCount = files.filter((f) => f.error).length;
   const allUploaded = files.length > 0 && uploadedCount + errorCount === files.length;
+
+  useEffect(() => {
+    if (!uploading || !allUploaded) return;
+    setUploading(false);
+    const urls = files.filter((f) => f.url).map((f) => f.url!);
+    onUpload(urls);
+  }, [uploading, allUploaded, files, onUpload]);
 
   return (
     <div className={className}>
