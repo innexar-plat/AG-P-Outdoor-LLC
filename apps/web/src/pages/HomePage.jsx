@@ -114,6 +114,7 @@ const HomePage = () => {
             project: '',
             rating: t.rating,
             text: t.text,
+            photoUrl: t.photoUrl || null,
           }))
         );
       } else {
@@ -355,9 +356,37 @@ const HomePage = () => {
                     whileInView={{ opacity: 1 }}
                     transition={{ delay: index * 0.1 + 0.25 }}
                   >
-                    <p className="font-bold text-[#1f3a2e]">{review.name}</p>
-                    <p className="text-sm text-gray-600">{review.location}</p>
-                    {review.project && <p className="text-xs text-[#2f6f46] font-semibold mt-1">{review.project}</p>}
+                      <div className="flex items-center gap-3">
+                        {review.photoUrl ? (
+                          <img
+                            src={review.photoUrl}
+                            alt={review.name}
+                            className="w-12 h-12 rounded-full object-cover border border-gray-200"
+                            loading="lazy"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              const fallback = e.currentTarget.nextElementSibling;
+                              if (fallback instanceof HTMLElement) fallback.style.display = 'inline-flex';
+                            }}
+                          />
+                        ) : null}
+                        <span
+                          className="w-12 h-12 rounded-full bg-[#2f6f46] text-white text-sm font-semibold items-center justify-center border border-gray-200"
+                          style={{ display: review.photoUrl ? 'none' : 'inline-flex' }}
+                        >
+                          {String(review.name || '?')
+                            .split(' ')
+                            .filter(Boolean)
+                            .slice(0, 2)
+                            .map((n) => n[0]?.toUpperCase())
+                            .join('') || '?'}
+                        </span>
+                        <div>
+                          <p className="font-bold text-[#1f3a2e]">{review.name}</p>
+                          <p className="text-sm text-gray-600">{review.location}</p>
+                          {review.project && <p className="text-xs text-[#2f6f46] font-semibold mt-1">{review.project}</p>}
+                        </div>
+                      </div>
                   </motion.div>
                 </motion.div>)}
             </div>

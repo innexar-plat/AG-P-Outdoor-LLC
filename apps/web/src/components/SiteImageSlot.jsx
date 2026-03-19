@@ -1,8 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-const DEFAULT_HERO_URL = 'https://horizons-cdn.hostinger.com/4846f768-3945-473c-8475-e6b3a010bfca/img_3624-lRhO4.jpeg';
-
 /**
  * Parses carouselItems from API (string or array).
  * @returns {Array<{url: string, altText?: string, sortOrder: number}>}
@@ -28,7 +26,7 @@ export function SiteImageSlot({ slot, options = {} }) {
   const {
     className = '',
     imgClassName = 'w-full h-full object-cover',
-    fallbackUrl = DEFAULT_HERO_URL,
+    fallbackUrl = null,
     autoPlay = true,
     priority = false,
   } = options;
@@ -76,6 +74,9 @@ export function SiteImageSlot({ slot, options = {} }) {
             src={img.url}
             alt={img.altText || `Image ${i + 1}`}
             className={imgClassName}
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
           />
         ))}
       </div>
@@ -97,6 +98,9 @@ export function SiteImageSlot({ slot, options = {} }) {
                 className={imgClassName}
                 loading={i === 0 && priority ? 'eager' : 'lazy'}
                 fetchPriority={i === 0 && priority ? 'high' : undefined}
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
               />
             </div>
           ))}
@@ -134,6 +138,9 @@ export function SiteImageSlot({ slot, options = {} }) {
       src={mainUrl}
       alt={mainAlt}
       className={`${imgClassName} ${className}`}
+      onError={(e) => {
+        e.currentTarget.style.display = 'none';
+      }}
       {...imgProps}
     />
   );

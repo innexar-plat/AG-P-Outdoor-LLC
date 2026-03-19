@@ -6,14 +6,34 @@ import Header from '@/components/Header.jsx';
 import Footer from '@/components/Footer.jsx';
 import StickyMobileButtons from '@/components/StickyMobileButtons.jsx';
 import EstimateForm from '@/components/EstimateForm.jsx';
-import { fetchSeo } from '@/lib/api';
+import { fetchPortfolio, fetchSeo } from '@/lib/api';
 import { PageHero } from '@/components/PageHero.jsx';
 
 const ResidentialTurfPage = () => {
   const [seo, setSeo] = useState(null);
+  const [galleryImages, setGalleryImages] = useState([]);
 
   useEffect(() => {
     fetchSeo('residential-turf').then((data) => data && setSeo(data));
+
+    fetchPortfolio().then((items) => {
+      if (!Array.isArray(items)) {
+        setGalleryImages([]);
+        return;
+      }
+
+      const next = items
+        .filter((item) => item?.imageUrl)
+        .slice(0, 6)
+        .map((item, index) => ({
+          url: item.imageUrl,
+          alt: item.title || `Residential turf installation example ${index + 1}`,
+        }));
+
+      setGalleryImages(next);
+    }).catch(() => {
+      setGalleryImages([]);
+    });
   }, []);
   const benefits = [
     {
@@ -111,7 +131,6 @@ const ResidentialTurfPage = () => {
       {/* Hero Section */}
       <PageHero
         section="residential-turf"
-        fallbackUrl="https://images.unsplash.com/photo-1622212177067-f8927759c33a1"
         sectionClassName="relative h-[70vh] flex items-center justify-center overflow-hidden"
       >
         <div className="relative z-10 container mx-auto px-4 text-center">
@@ -252,12 +271,9 @@ const ResidentialTurfPage = () => {
             </h2>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {[
-              'https://images.unsplash.com/photo-1622212177067-f8927759c33a1',
-              'https://images.unsplash.com/photo-1587936491365-48f95355007f',
-              'https://images.unsplash.com/photo-1682173044097-d14202e43fe3'
-            ].map((url, index) => (
+          {galleryImages.length > 0 && (
+            <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+              {galleryImages.map((img, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -267,13 +283,18 @@ const ResidentialTurfPage = () => {
                 className="rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300"
               >
                 <img
-                  src={url}
-                  alt={`Residential turf installation example ${index + 1}`}
+                  src={img.url}
+                  alt={img.alt}
                   className="w-full h-64 object-cover hover:scale-110 transition-transform duration-500"
+                  loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
                 />
               </motion.div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
