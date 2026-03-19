@@ -6,11 +6,17 @@ import {
   deleteTestimonial,
 } from "@/lib/queries/testimonials";
 import { z } from "zod";
+import { normalizeMediaUrl } from "@/lib/media-url";
+
+const mediaUrlSchema = z
+  .string()
+  .min(1)
+  .refine((value) => value.startsWith("/") || /^https?:\/\//i.test(value), "Invalid media URL");
 
 const updateSchema = z.object({
   name: z.string().min(1).max(200).optional(),
   location: z.string().max(200).optional().nullable(),
-  photoUrl: z.string().url().optional().nullable(),
+  photoUrl: mediaUrlSchema.optional().nullable(),
   text: z.string().min(1).max(2000).optional(),
   rating: z.number().int().min(1).max(5).optional(),
   approved: z.boolean().optional(),
@@ -47,8 +53,19 @@ export async function PUT(
     if (!existing) {
       return NextResponse.json({ data: null, error: "Not found" }, { status: 404 });
     }
-    const row = await updateTestimonial(id, parsed.data);
-    return NextResponse.json({ data: row ?? existing, error: null });
+    const payload = {
+      ...parsed.data,
+      ...(parsed.data.photoUrl !== undefined
+        ? { photoUrl: parsed.data.photoUrl ? normalizeMediaUrl(parsed.data.photoUrl) : null }
+        : {}),
+    };
+    const row = await updateTestimonial(id, payload);
+    const data = row ?? existing;
+    const normalized = {
+      ...data,
+      photoUrl: data.photoUrl ? normalizeMediaUrl(data.photoUrl) : null,
+    };
+    return NextResponse.json({ data: normalized, error: null });
   } catch (err) {
     console.error("[admin/testimonials/[id] PUT]", err);
     return NextResponse.json({ data: null, error: "Something went wrong" }, { status: 500 });
