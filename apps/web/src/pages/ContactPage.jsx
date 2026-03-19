@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Seo from '@/components/Seo.jsx';
 import { motion } from '@/lib/motion-lite.jsx';
 import { Phone, Mail, MapPin, Clock, MessageCircle } from 'lucide-react';
@@ -13,97 +13,86 @@ import { useToast } from '@/components/ui/use-toast';
 import { submitForm, fetchSeo } from '@/lib/api';
 import { useSite } from '@/lib/SiteProvider.jsx';
 
-function buildMapboxEmbed(lat, lon, accessToken = 'pk.eyJ1IjoiYWdwb3V0ZG9vciIsImEiOiJjbHZneHZhdnkwYWxvMmptODNoZzRxZzAxIn0.X_placeholder') {
-  const latitude = Number(lat);
-  const longitude = Number(lon);
-  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
-  
-  const zoom = 16;
-  return `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/${longitude},${latitude},${zoom},0/800x600@2x?access_token=${accessToken}&attribution=bottom&logo=bottom-left&marker=pin-l-a+2f6f46(${longitude},${latitude})`;
-}
+// MapComponent that renders Leaflet map via CDN
+const MapComponent = ({ address = '878 Keaton Pkwy, Ocoee, FL 34761', lat = 28.6122, lon = -81.3768 }) => {
+  const mapContainer = useRef(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
 
-function buildMapboxEmbedFrame(lat, lon, accessToken = 'pk.eyJ1IjoiYWdwb3V0ZG9vciIsImEiOiJjbHZneHZhdnkwYWxvMmptODNoZzRxZzAxIn0.X_placeholder') {
-  const latitude = Number(lat);
-  const longitude = Number(lon);
-  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
-  
-  const zoom = 16;
-  return `https://api.mapbox.com/styles/v1/maps/iframe?bbox=${(longitude-0.02).toFixed(4)},${(latitude-0.02).toFixed(4)},${(longitude+0.02).toFixed(4)},${(latitude+0.02).toFixed(4)}&zoom=${zoom}&access_token=${accessToken}`;
-}
+  useEffect(() => {
+    if (!mapContainer.current) return;
 
-function buildGoogleEmbedShare(lat, lon, address) {
-  const latitude = Number(lat);
-  const longitude = Number(lon);
-  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
-  
-  return `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3503.${Math.random().toString().slice(2)}!2d${longitude}!3d${latitude}!2m3!1f0!2f0!3f0!3m2!1i${1920}!2i${1080}!4f13.1!3m3!1m2!1s${encodeURIComponent(address || 'AG&P Outdoor LLC')}!2s${address}!5e0!3m2!1sen!2sus!4v${Date.now()}`;
-}
+    // Load Leaflet CSS
+    if (!document.getElementById('leaflet-css')) {
+      const link = document.createElement('link');
+      link.id = 'leaflet-css';
+      link.rel = 'stylesheet';
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.min.css';
+      document.head.appendChild(link);
+    }
+
+    // Load Leaflet JS
+    if (!window.L) {
+      const script = document.createElement('script');
+      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.min.js';
+      script.onload = () => {
+        initMap();
+      };
+      document.body.appendChild(script);
+    } else {
+      initMap();
+    }
+
+    function initMap() {
+      if (!mapContainer.current || !window.L) return;
+
+      try {
+        const map = window.L.map(mapContainer.current).setView([lat, lon], 16);
+        window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap contributors',
+          maxZoom: 19,
+        }).addTo(map);
+
+        // Add marker
+        window.L.marker([lat, lon], {
+          icon: window.L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+          })
+        })
+          .bindPopup(`<strong>AG&P Outdoor LLC</strong><br/>${address}`)
+          .openPopup()
+          .addTo(map);
+
+        setMapLoaded(true);
+      } catch (e) {
+        console.error('Map initialization error:', e);
+      }
+    }
+  }, [lat, lon, address]);
+
+  return (
+    <div
+      ref={mapContainer}
+      className="w-full h-full rounded-lg"
+      style={{ minHeight: '400px', backgroundColor: '#f0f0f0' }}
+    />
+  );
+};
 
 function buildGoogleSearchUrl(query) {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
-}
-
-function parseGooglePlaceFromPath(pathname) {
-  if (!pathname || typeof pathname !== 'string') return '';
-  const match = pathname.match(/\/maps\/place\/([^/]+)/i);
-  if (!match?.[1]) return '';
-  return decodeURIComponent(match[1]).replace(/\+/g, ' ');
-}
-
-function normalizeMapsEmbedUrl(rawUrl, address) {
-  const fallbackQuery = buildGoogleSearchUrl(address || 'AG&P Outdoor LLC, Ocoee, FL');
-  if (!rawUrl || typeof rawUrl !== 'string') return fallbackQuery;
-
-  const iframeSrcMatch = rawUrl.match(/src=["']([^"']+)["']/i);
-  const candidateRaw = (iframeSrcMatch?.[1] ?? rawUrl).trim().replace(/&amp;/g, '&');
-  const normalizedRaw = candidateRaw.startsWith('//') ? `https:${candidateRaw}` : candidateRaw;
-
-  try {
-    const parsed = new URL(normalizedRaw);
-    const host = parsed.hostname.toLowerCase();
-    const path = parsed.pathname.toLowerCase();
-    const isGoogleHost =
-      host.includes('google.') ||
-      host.includes('maps.app.goo.gl') ||
-      host.includes('g.co') ||
-      host.includes('googleusercontent.com');
-
-    const hasEmbedFlag = parsed.searchParams.get('output') === 'embed' || path.includes('/maps/embed');
-    if (hasEmbedFlag && isGoogleHost) {
-      // Canonicalize to a stable host to avoid "maps.google.com refused to connect".
-      parsed.hostname = 'www.google.com';
-      parsed.protocol = 'https:';
-      return parsed.toString();
-    }
-    if (hasEmbedFlag) return parsed.toString();
-
-    if (!isGoogleHost) {
-      // Allow non-Google absolute embed URLs from admin settings (e.g. OpenStreetMap providers).
-      return parsed.protocol === 'https:' || parsed.protocol === 'http:' ? parsed.toString() : fallbackQuery;
-    }
-
-    // Rebuild Google URLs into a known format; this may still be blocked by Google.
-    // We only use this when we don't have an explicit /maps/embed URL from admin.
-    const q =
-      parsed.searchParams.get('q') ||
-      parsed.searchParams.get('query') ||
-      parsed.searchParams.get('destination') ||
-      parseGooglePlaceFromPath(parsed.pathname) ||
-      address;
-    return buildGoogleSearchUrl(q || 'AG&P Outdoor LLC, Ocoee, FL');
-  } catch {
-    return fallbackQuery;
-  }
-
-  return fallbackQuery;
 }
 
 const ContactPage = () => {
   const { toast } = useToast();
   const site = useSite();
   const [seo, setSeo] = useState(null);
-  const [mapFailed, setMapFailed] = useState(false);
-  const [resolvedMapEmbedUrl, setResolvedMapEmbedUrl] = useState('');
+  const [mapCoords, setMapCoords] = useState({ lat: 28.6122, lon: -81.3768 });
+  const [mapLoading, setMapLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -142,54 +131,27 @@ const ContactPage = () => {
     fetchSeo('contact').then((data) => data && setSeo(data));
   }, []);
 
-  const rawMapUrl = site.company_map_embed_url || site.map_embed_url || site.google_maps_embed_url || site.google_maps_url;
-  const normalizedMapUrl = normalizeMapsEmbedUrl(rawMapUrl, site.address);
-  const hasExplicitGoogleEmbed = /google\.[^/]+\/maps\/embed/i.test(String(rawMapUrl || ''));
-
+  // Geocode the address using OpenStreetMap's Nominatim API (free, no token needed)
   useEffect(() => {
-    let cancelled = false;
-    setMapFailed(false);
-
-    if (hasExplicitGoogleEmbed) {
-      setResolvedMapEmbedUrl(normalizedMapUrl);
-      return () => {
-        cancelled = true;
-      };
-    }
-
     const addressQuery = site.address || '878 Keaton Pkwy, Ocoee, FL 34761';
     
-    // Try Mapbox geocoding first (more reliable)
-    fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(addressQuery)}.json?access_token=pk.eyJ1IjoiYWdwb3V0ZG9vciIsImEiOiJjbHZneHZhdnkwYWxvMmptODNoZzRxZzAxIn0.X_placeholder&limit=1`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (cancelled) return;
-        
-        if (data?.features?.[0]) {
-          const { geometry } = data.features[0];
-          if (geometry?.coordinates?.length >= 2) {
-            const [lon, lat] = geometry.coordinates;
-            // Use Mapbox static image as iframe alternative
-            const mapboxUrl = buildMapboxEmbed(lat, lon);
-            setResolvedMapEmbedUrl(mapboxUrl);
-            return;
-          }
+    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressQuery)}&limit=1`)
+      .then((res) => res.ok ? res.json() : [])
+      .then((results) => {
+        if (results && results[0]) {
+          setMapCoords({
+            lat: parseFloat(results[0].lat),
+            lon: parseFloat(results[0].lon),
+          });
         }
-        
-        // Fallback to Google Maps
-        setResolvedMapEmbedUrl('');
       })
-      .catch(() => {
-        if (cancelled) return;
-        // Fallback to Google Maps search
-        const googleFallback = buildGoogleSearchUrl(addressQuery);
-        setResolvedMapEmbedUrl('');
+      .catch((err) => {
+        console.warn('Geocoding failed, using default coordinates:', err);
+      })
+      .finally(() => {
+        setMapLoading(false);
       });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [hasExplicitGoogleEmbed, normalizedMapUrl, site.address]);
+  }, [site.address]);
 
   const title = seo?.titleTag || "Contact AG&P Outdoor LLC | Free Estimates - Central Florida";
   const description = seo?.metaDescription || "Contact AG&P Outdoor LLC for a free estimate on artificial turf installation. Call 772-226-9087 or visit us in Ocoee, FL. Serving Central Florida.";
@@ -280,20 +242,17 @@ const ContactPage = () => {
                 <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
                   <h3 className="text-xl font-bold text-[#1f3a2e] mb-4">Our Location</h3>
                   <div className="aspect-video rounded-lg overflow-hidden bg-gray-100">
-                    {!mapFailed && resolvedMapEmbedUrl ? (
-                      <img
-                        src={resolvedMapEmbedUrl}
-                        alt="AG&P Outdoor LLC Location Map"
-                        width="800"
-                        height="600"
-                        className="w-full h-full object-cover"
-                        onError={() => setMapFailed(true)}
+                    {!mapLoading ? (
+                      <MapComponent 
+                        address={site.address || '878 Keaton Pkwy, Ocoee, FL 34761'}
+                        lat={mapCoords.lat}
+                        lon={mapCoords.lon}
                       />
                     ) : (
                       <div className="h-full w-full bg-gradient-to-br from-gray-100 to-gray-50 flex flex-col items-center justify-center text-center p-6">
-                        <MapPin className="h-12 w-12 text-[#2f6f46] mb-3 opacity-60" />
-                        <p className="text-[#1f3a2e] font-semibold mb-2">Visualizar no mapa</p>
-                        <p className="text-gray-600 text-sm mb-4 max-w-xs">{site.address || '878 Keaton Pkwy, Ocoee, FL 34761'}</p>
+                        <MapPin className="h-12 w-12 text-[#2f6f46] mb-3 opacity-60 animate-pulse" />
+                        <p className="text-[#1f3a2e] font-semibold mb-2">Carregando mapa...</p>
+                        <p className="text-gray-600 text-sm">{site.address || '878 Keaton Pkwy, Ocoee, FL 34761'}</p>
                         <a
                           href={buildGoogleSearchUrl(site.address || 'AG&P Outdoor LLC, Ocoee, FL')}
                           target="_blank"
