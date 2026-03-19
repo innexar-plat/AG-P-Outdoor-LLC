@@ -13,17 +13,35 @@ import { useToast } from '@/components/ui/use-toast';
 import { submitForm, fetchSeo } from '@/lib/api';
 import { useSite } from '@/lib/SiteProvider.jsx';
 
+function buildGoogleEmbed(query) {
+  return `https://maps.google.com/maps?hl=en&q=${encodeURIComponent(query)}&z=14&output=embed`;
+}
+
 function normalizeMapsEmbedUrl(rawUrl, address) {
-  const fallbackQuery = `https://www.google.com/maps?q=${encodeURIComponent(address || 'AG&P Outdoor LLC, Ocoee, FL')}&output=embed`;
+  const fallbackQuery = buildGoogleEmbed(address || 'AG&P Outdoor LLC, Ocoee, FL');
   if (!rawUrl || typeof rawUrl !== 'string') return fallbackQuery;
+
+  const iframeSrcMatch = rawUrl.match(/src=["']([^"']+)["']/i);
+  const candidateRaw = iframeSrcMatch?.[1] ?? rawUrl;
+  const normalizedRaw = candidateRaw.startsWith('//') ? `https:${candidateRaw}` : candidateRaw;
+
   try {
-    const parsed = new URL(rawUrl);
+    const parsed = new URL(normalizedRaw);
     const host = parsed.hostname.toLowerCase();
     const path = parsed.pathname.toLowerCase();
+    const isGoogleHost =
+      host.includes('google.') ||
+      host.includes('maps.app.goo.gl') ||
+      host.includes('g.co') ||
+      host.includes('googleusercontent.com');
+
+    if (!isGoogleHost) return fallbackQuery;
+
     const hasEmbedFlag = parsed.searchParams.get('output') === 'embed' || path.includes('/maps/embed');
-    if ((host.includes('google.') || host.includes('maps.app.goo.gl') || host.includes('g.co')) && hasEmbedFlag) {
-      return parsed.toString();
-    }
+    if (hasEmbedFlag) return parsed.toString();
+
+    const q = parsed.searchParams.get('q') || parsed.searchParams.get('query');
+    if (q) return buildGoogleEmbed(q);
   } catch {
     return fallbackQuery;
   }

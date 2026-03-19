@@ -44,11 +44,6 @@ export function HeroHome({ site }) {
   const [heroSlot, setHeroSlot] = useState(null);
 
   useEffect(() => {
-    // On mobile, skip video for performance
-    if (window.innerWidth < 768) {
-      setVideoError(true);
-    }
-
     // Load hero media from admin panel site_images (home / home_hero slot)
     fetchSiteImages('home').then((data) => {
       if (!Array.isArray(data)) return;

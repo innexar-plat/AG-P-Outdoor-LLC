@@ -15,7 +15,7 @@ const Logo = ({ size = 'md', onClick, className = '', disableLink = false }) => 
     <motion.div
       whileHover={{ scale: 1.05 }}
       transition={{ type: 'spring', stiffness: 300, damping: 10 }}
-      className={`bg-white p-2 rounded-xl shadow-md inline-block ${className}`}
+      className={`bg-[#2f6f46] p-2 rounded-xl shadow-md inline-block ${className}`}
       onClick={onClick}
     >
       <img

@@ -9,6 +9,11 @@ interface ImagePreviewModalProps {
   displayLabel: (type: string) => string;
 }
 
+function isVideoUrl(url?: string | null) {
+  if (!url) return false;
+  return /\.(mp4|webm|mov|avi)(\?|$)/i.test(url);
+}
+
 export function ImagePreviewModal({ img, onClose, displayLabel: displayLabelFn }: ImagePreviewModalProps) {
   const { t } = useI18n();
   return (
@@ -26,12 +31,22 @@ export function ImagePreviewModal({ img, onClose, displayLabel: displayLabelFn }
           </svg>
           {t("close")}
         </button>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={img.url}
-          alt={img.altText ?? img.label}
-          className="max-w-full max-h-[75vh] rounded-xl shadow-2xl object-contain"
-        />
+        {isVideoUrl(img.url) ? (
+          <video
+            src={img.url ?? undefined}
+            className="max-w-full max-h-[75vh] rounded-xl shadow-2xl object-contain"
+            controls
+            muted
+            playsInline
+          />
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={img.url}
+            alt={img.altText ?? img.label}
+            className="max-w-full max-h-[75vh] rounded-xl shadow-2xl object-contain"
+          />
+        )}
         <div className="mt-3 bg-white/10 backdrop-blur rounded-lg px-4 py-3 text-white text-sm space-y-1">
           <p className="font-semibold">{img.label}</p>
           <div className="flex items-center gap-3 text-xs text-white/70">
