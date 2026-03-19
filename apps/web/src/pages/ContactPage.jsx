@@ -13,6 +13,21 @@ import { useToast } from '@/components/ui/use-toast';
 import { submitForm, fetchSeo } from '@/lib/api';
 import { useSite } from '@/lib/SiteProvider.jsx';
 
+function normalizeMapsEmbedUrl(rawUrl, address) {
+  const fallbackQuery = `https://www.google.com/maps?q=${encodeURIComponent(address || 'AG&P Outdoor LLC, Ocoee, FL')}&output=embed`;
+  if (!rawUrl || typeof rawUrl !== 'string') return fallbackQuery;
+
+  if (rawUrl.includes('/maps/embed?') || rawUrl.includes('output=embed')) {
+    return rawUrl;
+  }
+
+  if (rawUrl.includes('google.com/maps') || rawUrl.includes('maps.app.goo.gl') || rawUrl.includes('share.google')) {
+    return `https://www.google.com/maps?q=${encodeURIComponent(address || 'AG&P Outdoor LLC, Ocoee, FL')}&output=embed`;
+  }
+
+  return fallbackQuery;
+}
+
 const ContactPage = () => {
   const { toast } = useToast();
   const site = useSite();
@@ -54,6 +69,11 @@ const ContactPage = () => {
   useEffect(() => {
     fetchSeo('contact').then((data) => data && setSeo(data));
   }, []);
+
+  const mapsEmbedUrl = normalizeMapsEmbedUrl(
+    site.company_map_embed_url || site.map_embed_url || site.google_maps_embed_url || site.google_maps_url,
+    site.address,
+  );
 
   const title = seo?.titleTag || "Contact AG&P Outdoor LLC | Free Estimates - Central Florida";
   const description = seo?.metaDescription || "Contact AG&P Outdoor LLC for a free estimate on artificial turf installation. Call 772-226-9087 or visit us in Ocoee, FL. Serving Central Florida.";
@@ -145,7 +165,7 @@ const ContactPage = () => {
                   <h3 className="text-xl font-bold text-[#1f3a2e] mb-4">Our Location</h3>
                   <div className="aspect-video rounded-lg overflow-hidden">
                     <iframe
-                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3502.5!2d-81.5!3d28.5!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjjCsDMwJzAwLjAiTiA4McKwMzAnMDAuMCJX!5e0!3m2!1sen!2sus!4v1234567890"
+                      src={mapsEmbedUrl}
                       width="100%"
                       height="100%"
                       style={{ border: 0 }}

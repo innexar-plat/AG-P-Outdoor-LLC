@@ -6,14 +6,32 @@ import Header from '@/components/Header.jsx';
 import Footer from '@/components/Footer.jsx';
 import StickyMobileButtons from '@/components/StickyMobileButtons.jsx';
 import EstimateForm from '@/components/EstimateForm.jsx';
-import { fetchSeo } from '@/lib/api';
+import { fetchPortfolio, fetchSeo } from '@/lib/api';
 import { PageHero } from '@/components/PageHero.jsx';
 
 const PuttingGreenPage = () => {
   const [seo, setSeo] = useState(null);
+  const [galleryImages, setGalleryImages] = useState([]);
 
   useEffect(() => {
     fetchSeo('putting-green').then((data) => data && setSeo(data));
+
+    fetchPortfolio().then((items) => {
+      if (!Array.isArray(items)) {
+        setGalleryImages([]);
+        return;
+      }
+
+      const sports = items.filter((item) => item?.imageUrl && item?.category === 'sports');
+      const source = sports.length > 0 ? sports : items.filter((item) => item?.imageUrl);
+      const next = source.slice(0, 4).map((item, index) => ({
+        url: item.imageUrl,
+        alt: item.title || `Putting green installation ${index + 1}`,
+      }));
+      setGalleryImages(next);
+    }).catch(() => {
+      setGalleryImages([]);
+    });
   }, []);
   const benefits = [
     {
@@ -69,7 +87,6 @@ const PuttingGreenPage = () => {
 
       <PageHero
         section="putting-green"
-        fallbackUrl="https://images.unsplash.com/photo-1587936491365-48f95355007f"
         sectionClassName="relative h-[70vh] flex items-center justify-center overflow-hidden"
       >
         <div className="relative z-10 container mx-auto px-4 text-center">
@@ -192,11 +209,9 @@ const PuttingGreenPage = () => {
 
       <section className="py-16 bg-gradient-to-br from-gray-50 to-white">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-            {[
-              'https://images.unsplash.com/photo-1587936491365-48f95355007f',
-              'https://images.unsplash.com/photo-1581062778574-8ce5c4db882'
-            ].map((url, index) => (
+          {galleryImages.length > 0 && (
+            <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+              {galleryImages.map((img, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -205,13 +220,18 @@ const PuttingGreenPage = () => {
                 className="rounded-xl overflow-hidden shadow-lg"
               >
                 <img
-                  src={url}
-                  alt={`Putting green installation ${index + 1}`}
+                  src={img.url}
+                  alt={img.alt}
                   className="w-full h-64 object-cover"
+                  loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
                 />
               </motion.div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
