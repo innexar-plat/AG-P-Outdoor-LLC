@@ -13,7 +13,7 @@ export function NotificationsBell() {
 
   const fetchCount = useCallback(async () => {
     try {
-      const res = await fetch("/api/admin/notifications/count");
+      const res = await fetch("/admin/api/admin/notifications/count");
       if (res.ok) {
         const json = await res.json();
         const count = json.data?.unreadCount ?? 0;
