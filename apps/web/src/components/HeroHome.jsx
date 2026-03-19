@@ -11,6 +11,7 @@ const HERO_IMAGE_FALLBACKS = [
   '/qr/agp-logo-source.png',
   'https://images.unsplash.com/photo-1559824481-e384a5d50c1f?w=960&h=540&fit=crop&q=70&auto=format',
 ];
+const HERO_VIDEO_LOADING_POSTER = '/thumbnail.jpeg';
 
 /** Detecta se uma URL é um vídeo pelo sufixo */
 function isVideoUrl(url) {
@@ -121,7 +122,7 @@ export function HeroHome({ site }) {
   const slotHasVideo = Boolean(heroMedia && isLikelyVideo(heroMedia, heroSlot));
   const canRenderVideo = allowAutoVideo && !videoError && slotHasVideo;
   const fallbackImageSrc = slotHasVideo
-    ? (heroPoster || staticFallbackImage)
+    ? HERO_VIDEO_LOADING_POSTER
     : (heroMedia || heroPoster || staticFallbackImage);
 
   return (
