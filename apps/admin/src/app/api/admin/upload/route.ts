@@ -88,7 +88,3 @@ export async function POST(request: Request) {
   }
 }
 
-// App Router: increase body size limit for video uploads
-export const config = {
-  api: { bodyParser: { sizeLimit: "200mb" } },
-};

@@ -3,12 +3,6 @@ const nextConfig = {
   reactStrictMode: true,
   basePath: "/admin",
   assetPrefix: "/admin/",
-  // Allow large video uploads (200MB)
-  api: {
-    bodyParser: {
-      sizeLimit: "200mb",
-    },
-  },
   experimental: {
     instrumentationHook: true,
     serverComponentsExternalPackages: ["@libsql/client", "better-auth"],
