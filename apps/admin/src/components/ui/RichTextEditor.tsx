@@ -59,7 +59,7 @@ function Toolbar({ editor }: { editor: Editor }) {
       formData.append("file", file);
       formData.append("folder", "blog/content");
       try {
-        const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
+        const res = await fetch("/admin/api/admin/upload", { method: "POST", body: formData });
         const json = await res.json();
         if (res.ok && json.data?.url) {
           editor.chain().focus().setImage({ src: json.data.url }).run();

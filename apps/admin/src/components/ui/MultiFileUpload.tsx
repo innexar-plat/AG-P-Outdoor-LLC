@@ -89,7 +89,7 @@ export function MultiFileUpload({
         const fd = new FormData();
         fd.append("file", item.file);
         fd.append("folder", folder);
-        const res = await fetch("/api/admin/upload", {
+        const res = await fetch("/admin/api/admin/upload", {
           method: "POST",
           body: fd,
         });

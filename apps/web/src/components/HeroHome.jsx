@@ -3,15 +3,16 @@ import { motion } from 'framer-motion';
 import { ArrowRight, ChevronDown, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
+import { fetchSiteImages } from '@/lib/api';
 
-/**
- * Video usado no hero.
- *
- * - Para dev/local: coloque o arquivo em `apps/web/public/` e defina VITE_HERO_VIDEO_URL opcionalmente.
- * - Para contêiner ou produção: recomendo usar um URL externo (S3/MinIO) e definir VITE_HERO_VIDEO_URL.
- */
-const HERO_VIDEO_URL = import.meta.env.VITE_HERO_VIDEO_URL || '/Roteiro%205.mp4';
-const HERO_FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1559824481-e384a5d50c1f?w=1200&h=600&fit=crop';
+/** Fallback estático quando não há mídia no painel */
+const HERO_VIDEO_FALLBACK = import.meta.env.VITE_HERO_VIDEO_URL || '/Roteiro%205.mp4';
+const HERO_IMAGE_FALLBACK = 'https://images.unsplash.com/photo-1559824481-e384a5d50c1f?w=1200&h=600&fit=crop';
+
+/** Detecta se uma URL é um vídeo pelo sufixo */
+function isVideoUrl(url) {
+  return /\.(mp4|webm|mov|avi)(\?|$)/i.test(url);
+}
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -39,39 +40,45 @@ const itemVariants = {
  */
 export function HeroHome({ site }) {
   const [videoError, setVideoError] = useState(false);
+  // heroMedia: URL from admin panel (video or image), null while loading
+  const [heroMedia, setHeroMedia] = useState(null);
 
   useEffect(() => {
-    // Check if device supports video
-    const canPlayVideo = () => {
-      const video = document.createElement('video');
-      return !!(video.canPlayType && video.canPlayType('video/mp4').replace(/^no$/, ''));
-    };
-    
-    // On mobile, prefer image fallback for performance
-    const isMobile = window.innerWidth < 768;
-    if (isMobile) {
+    // On mobile, skip video for performance
+    if (window.innerWidth < 768) {
       setVideoError(true);
     }
+
+    // Load hero media from admin panel site_images (home / home_hero slot)
+    fetchSiteImages('home').then((data) => {
+      if (!Array.isArray(data)) return;
+      const heroSlot = data.find(
+        (s) => s.slotKey === 'home_hero' || s.slotKey === 'hero'
+      );
+      if (heroSlot?.url) {
+        setHeroMedia(heroSlot.url);
+      }
+    }).catch(() => {});
   }, []);
   return (
     <section className="relative min-h-[60vh] md:min-h-[70vh] flex items-center justify-center overflow-hidden">
       {/* Background: vídeo ou imagem fallback */}
       <div className="absolute inset-0">
-        {!videoError ? (
+        {!videoError && heroMedia && isVideoUrl(heroMedia) ? (
           <video
             className="absolute inset-0 w-full h-full object-cover"
-            src={HERO_VIDEO_URL}
+            src={heroMedia}
             autoPlay
             loop
             muted
             playsInline
             aria-hidden
             onError={() => setVideoError(true)}
-            poster={HERO_FALLBACK_IMAGE}
+            poster={HERO_IMAGE_FALLBACK}
           />
         ) : (
           <motion.img
-            src={HERO_FALLBACK_IMAGE}
+            src={heroMedia && !isVideoUrl(heroMedia) ? heroMedia : HERO_IMAGE_FALLBACK}
             alt="Premium turf installation"
             className="absolute inset-0 w-full h-full object-cover"
             initial={{ opacity: 0, scale: 1.05 }}

@@ -236,33 +236,53 @@ export function ImageEditorForm({ editing, onClose, onSave }: ImageEditorFormPro
           </>
         )}
 
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">
-            {t("fileUpload")}
-          </label>
-          <FileUpload
-            folder={`site-images/${form?.section ?? editing.section}`}
-            onUpload={(url) => form && setForm({ ...form, url })}
-            maxSizeMb={10}
-          />
-        </div>
+        {(() => {
+          const isHero = (form?.slotKey ?? editing.slotKey ?? "").includes("hero");
+          const currentUrl = form?.url ?? editing.url ?? "";
+          const isVideoUrl = /\.(mp4|webm|mov|avi)(\?|$)/i.test(currentUrl);
+          return (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                  {isHero ? t("fileUpload") + " (image or video)" : t("fileUpload")}
+                </label>
+                <FileUpload
+                  folder={`site-images/${form?.section ?? editing.section}`}
+                  onUpload={(url) => form && setForm({ ...form, url })}
+                  maxSizeMb={isHero ? 200 : 10}
+                  accept={isHero ? "image/*,video/mp4,video/webm,video/quicktime" : "image/*"}
+                />
+              </div>
 
-        <Input
-          label={t("imageUrl")}
-          value={form?.url ?? editing.url}
-          onChange={(e) => form && setForm({ ...form, url: e.target.value })}
-          placeholder="https://example.com/image.jpg"
-        />
+              <Input
+                label={t("imageUrl")}
+                value={currentUrl}
+                onChange={(e) => form && setForm({ ...form, url: e.target.value })}
+                placeholder={isHero ? "https://cdn.example.com/hero.mp4  or  /image.jpg" : "https://example.com/image.jpg"}
+              />
 
-        {(form?.url ?? editing.url) && (
-          <div className="space-y-2">
-            <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">{t("ctaPreview")}</p>
-            <div className="rounded-lg overflow-hidden border border-surface-border">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={form?.url ?? editing.url} alt="Preview" className="w-full h-40 object-cover" />
-            </div>
-          </div>
-        )}
+              {currentUrl && (
+                <div className="space-y-2">
+                  <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">{t("ctaPreview")}</p>
+                  <div className="rounded-lg overflow-hidden border border-surface-border">
+                    {isVideoUrl ? (
+                      <video
+                        src={currentUrl}
+                        className="w-full h-40 object-cover"
+                        muted
+                        playsInline
+                        controls
+                      />
+                    ) : (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={currentUrl} alt="Preview" className="w-full h-40 object-cover" />
+                    )}
+                  </div>
+                </div>
+              )}
+            </>
+          );
+        })()}
 
         <Input
           label={t("altText")}

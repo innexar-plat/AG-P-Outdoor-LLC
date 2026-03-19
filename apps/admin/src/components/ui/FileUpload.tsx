@@ -36,7 +36,7 @@ export function FileUpload({ onUpload, folder = "uploads", accept = "image/*", m
       const fd = new FormData();
       fd.append("file", file);
       fd.append("folder", folder);
-      const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+      const res = await fetch("/admin/api/admin/upload", { method: "POST", body: fd });
       const json = await res.json();
       if (!res.ok || !json.data?.url) {
         setError(json.error ?? t("uploadError"));
@@ -84,8 +84,12 @@ export function FileUpload({ onUpload, folder = "uploads", accept = "image/*", m
         />
         {preview ? (
           <div className="flex flex-col items-center gap-2">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={preview} alt="Preview" className="h-20 w-20 object-cover rounded-lg" />
+            {preview.startsWith("data:video") || /\.(mp4|webm|mov)(\?|$)/i.test(preview) ? (
+              <video src={preview} className="h-20 w-20 object-cover rounded-lg" muted playsInline />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={preview} alt="Preview" className="h-20 w-20 object-cover rounded-lg" />
+            )}
             {uploading && <p className="text-xs text-brand-600 animate-pulse">{t("uploading")}</p>}
           </div>
         ) : (
