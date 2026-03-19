@@ -24,11 +24,20 @@ COPY . .
 RUN npm run build --prefix apps/web \
  && npm run build --prefix apps/admin
 
-# Runtime stage (same as base for simplicity, but could switch to smaller runtime)
+# Runtime stage (copy only what is required to run web/admin in production)
 FROM node:20-alpine AS runtime
 WORKDIR /app
 
-COPY --from=base /app /app
+# Root metadata + installed dependencies
+COPY --from=base /app/package.json /app/package-lock.json /app/
+COPY --from=base /app/node_modules /app/node_modules
+
+# Admin runtime files (Next app + migrations/scripts executed at container startup)
+COPY --from=base /app/apps/admin /app/apps/admin
+
+# Web runtime files (serve built static output via `vite preview` script)
+COPY --from=base /app/apps/web/package.json /app/apps/web/package.json
+COPY --from=base /app/dist/apps/web /app/dist/apps/web
 
 ENV NODE_ENV=production
 
