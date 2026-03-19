@@ -16,6 +16,7 @@ function isVideoUrl(url) {
  */
 export function PageHero({ section, fallbackUrl, children, sectionClassName = 'relative h-[45vh] min-h-[320px] flex items-center justify-center overflow-hidden' }) {
   const [slot, setSlot] = useState(null);
+  const objectPos = slot ? `${slot.focalX ?? 50}% ${slot.focalY ?? 50}%` : '50% 50%';
 
   useEffect(() => {
     fetchSiteImages(section).then((data) => {
@@ -46,6 +47,7 @@ export function PageHero({ section, fallbackUrl, children, sectionClassName = 'r
             slot={slot}
             options={{
               imgClassName: 'w-full h-full object-cover',
+              imgStyle: { objectPosition: objectPos },
               fallbackUrl,
               className: 'w-full h-full block',
             }}

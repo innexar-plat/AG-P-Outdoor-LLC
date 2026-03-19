@@ -126,6 +126,8 @@ export const siteImages = sqliteTable("site_images", {
   carouselInterval: integer("carousel_interval"),
   carouselEffect: text("carousel_effect"),
   updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+  focalX: integer("focal_x").default(50),
+  focalY: integer("focal_y").default(50),
 });
 
 /**

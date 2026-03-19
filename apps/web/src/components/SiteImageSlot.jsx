@@ -20,12 +20,13 @@ function parseCarouselItems(items) {
  * Renders a site image slot: single image, gallery grid, or carousel.
  * Uses a simple CSS-based carousel (no embla-carousel dependency).
  * @param {Object} slot - { slotKey, url, altText, displayType, carouselItems, carouselInterval, carouselEffect }
- * @param {Object} options - { className, imgClassName, fallbackUrl, autoPlay, priority }
+ * @param {Object} options - { className, imgClassName, imgStyle, fallbackUrl, autoPlay, priority }
  */
 export function SiteImageSlot({ slot, options = {} }) {
   const {
     className = '',
     imgClassName = 'w-full h-full object-cover',
+    imgStyle = undefined,
     fallbackUrl = null,
     autoPlay = true,
     priority = false,
@@ -74,6 +75,7 @@ export function SiteImageSlot({ slot, options = {} }) {
             src={img.url}
             alt={img.altText || `Image ${i + 1}`}
             className={imgClassName}
+            style={imgStyle}
             onError={(e) => {
               e.currentTarget.style.display = 'none';
             }}
@@ -96,6 +98,7 @@ export function SiteImageSlot({ slot, options = {} }) {
                 src={img.url}
                 alt={img.altText || `Slide ${i + 1}`}
                 className={imgClassName}
+                style={imgStyle}
                 loading={i === 0 && priority ? 'eager' : 'lazy'}
                 fetchPriority={i === 0 && priority ? 'high' : undefined}
                 onError={(e) => {
@@ -138,6 +141,7 @@ export function SiteImageSlot({ slot, options = {} }) {
       src={mainUrl}
       alt={mainAlt}
       className={`${imgClassName} ${className}`}
+      style={imgStyle}
       onError={(e) => {
         e.currentTarget.style.display = 'none';
       }}

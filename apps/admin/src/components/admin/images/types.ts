@@ -10,6 +10,8 @@ export type SiteImage = {
   carouselItems?: CarouselItem[] | string | null;
   carouselInterval?: number | null;
   carouselEffect?: string | null;
+  focalX?: number | null;
+  focalY?: number | null;
 };
 
 export type CarouselItem = {

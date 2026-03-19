@@ -33,11 +33,15 @@ export async function upsertSiteImage(data: {
   carouselItems?: string;
   carouselInterval?: number;
   carouselEffect?: string;
+  focalX?: number;
+  focalY?: number;
 }) {
   const existing = await getSiteImageBySlot(data.slotKey);
   const carouselItems = data.carouselItems ?? existing?.carouselItems ?? null;
   const carouselInterval = data.carouselInterval ?? existing?.carouselInterval ?? 5;
   const carouselEffect = data.carouselEffect ?? existing?.carouselEffect ?? "slide";
+  const focalX = data.focalX ?? existing?.focalX ?? 50;
+  const focalY = data.focalY ?? existing?.focalY ?? 50;
 
   if (existing) {
     const [row] = await db
@@ -52,7 +56,9 @@ export async function upsertSiteImage(data: {
         carouselInterval,
         carouselEffect,
         updatedAt: new Date(),
-      })
+      focalX,
+      focalY,
+    })
       .where(eq(siteImages.slotKey, data.slotKey))
       .returning();
     return row;
@@ -71,7 +77,9 @@ export async function upsertSiteImage(data: {
       carouselInterval,
       carouselEffect,
       updatedAt: new Date(),
-    })
+    focalX,
+    focalY,
+  })
     .returning();
   return row;
 }

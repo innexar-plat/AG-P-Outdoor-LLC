@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, type PointerEvent } from "react";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -87,6 +87,110 @@ function CarouselItemsEditor({
   );
 }
 
+function FocalPointPicker({
+  url,
+  focalX,
+  focalY,
+  onChange,
+}: {
+  url: string;
+  focalX: number;
+  focalY: number;
+  onChange: (x: number, y: number) => void;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [dragging, setDragging] = useState(false);
+
+  function getPos(e: PointerEvent<HTMLDivElement>) {
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return null;
+    return {
+      x: Math.round(Math.min(100, Math.max(0, ((e.clientX - rect.left) / rect.width) * 100))),
+      y: Math.round(Math.min(100, Math.max(0, ((e.clientY - rect.top) / rect.height) * 100))),
+    };
+  }
+
+  function handlePointerDown(e: PointerEvent<HTMLDivElement>) {
+    e.preventDefault();
+    (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
+    const pos = getPos(e);
+    if (pos) onChange(pos.x, pos.y);
+    setDragging(true);
+  }
+
+  function handlePointerMove(e: PointerEvent<HTMLDivElement>) {
+    if (!dragging) return;
+    const pos = getPos(e);
+    if (pos) onChange(pos.x, pos.y);
+  }
+
+  function handlePointerUp() {
+    setDragging(false);
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <label className="block text-sm font-medium text-slate-700">Ponto Focal</label>
+        <span className="text-xs text-slate-400 tabular-nums">{focalX}% / {focalY}%</span>
+      </div>
+      <p className="text-xs text-slate-500 -mt-2">Clique ou arraste para definir onde a imagem e centralizada</p>
+
+      <div
+        ref={containerRef}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        className="relative rounded-lg overflow-hidden cursor-crosshair border border-slate-200 select-none"
+        style={{ aspectRatio: "16/9" }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={url}
+          alt="Selecionar ponto focal"
+          className="w-full h-full object-cover pointer-events-none"
+          draggable={false}
+          style={{ objectPosition: `${focalX}% ${focalY}%` }}
+        />
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: `
+              linear-gradient(to right, transparent calc(${focalX}% - 0.5px), rgba(255,255,255,0.55) calc(${focalX}% - 0.5px), rgba(255,255,255,0.55) calc(${focalX}% + 0.5px), transparent calc(${focalX}% + 0.5px)),
+              linear-gradient(to bottom, transparent calc(${focalY}% - 0.5px), rgba(255,255,255,0.55) calc(${focalY}% - 0.5px), rgba(255,255,255,0.55) calc(${focalY}% + 0.5px), transparent calc(${focalY}% + 0.5px))
+            `,
+          }}
+        />
+        <div
+          className="absolute pointer-events-none"
+          style={{ left: `${focalX}%`, top: `${focalY}%`, transform: "translate(-50%, -50%)" }}
+        >
+          <div className="w-5 h-5 rounded-full border-2 border-white shadow-lg bg-white/20 ring-1 ring-black/30" />
+        </div>
+      </div>
+
+      <div className="space-y-1">
+        <p className="text-xs font-medium text-slate-500">Previa da area de exibicao</p>
+        <div className="relative rounded-lg overflow-hidden border border-slate-200" style={{ aspectRatio: "16/6" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={url}
+            alt="Previa"
+            className="w-full h-full object-cover"
+            style={{ objectPosition: `${focalX}% ${focalY}%` }}
+            draggable={false}
+          />
+          <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+            <span className="text-[10px] text-white/80 bg-black/35 px-2 py-0.5 rounded-full">
+              area visivel no site
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface ImageEditorFormProps {
   editing: SiteImage | null;
   onClose: () => void;
@@ -108,6 +212,9 @@ export function ImageEditorForm({ editing, onClose, onSave }: ImageEditorFormPro
     const isVideo = /\.(mp4|webm|mov|avi)(\?|$)/i.test(currentUrl);
     setHeroMediaType(isVideo ? "video" : "image");
   }, [editing]);
+
+  const focalX = form?.focalX ?? 50;
+  const focalY = form?.focalY ?? 50;
 
   if (!editing) return null;
 
@@ -301,8 +408,8 @@ export function ImageEditorForm({ editing, onClose, onSave }: ImageEditorFormPro
               {currentUrl && (
                 <div className="space-y-2">
                   <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">{t("ctaPreview")}</p>
-                  <div className="rounded-lg overflow-hidden border border-surface-border">
-                    {isVideoUrl ? (
+                  {isVideoUrl ? (
+                    <div className="rounded-lg overflow-hidden border border-surface-border">
                       <video
                         src={currentUrl}
                         className="w-full h-40 object-cover"
@@ -310,11 +417,15 @@ export function ImageEditorForm({ editing, onClose, onSave }: ImageEditorFormPro
                         playsInline
                         controls
                       />
-                    ) : (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={currentUrl} alt="Preview" className="w-full h-40 object-cover" />
-                    )}
-                  </div>
+                    </div>
+                  ) : (
+                    <FocalPointPicker
+                      url={currentUrl}
+                      focalX={focalX}
+                      focalY={focalY}
+                      onChange={(x, y) => form && setForm({ ...form, focalX: x, focalY: y })}
+                    />
+                  )}
                 </div>
               )}
             </>

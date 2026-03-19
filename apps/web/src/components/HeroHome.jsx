@@ -41,6 +41,7 @@ export function HeroHome({ site }) {
   const [videoError, setVideoError] = useState(false);
   // heroMedia: URL from admin panel (video or image), null while loading
   const [heroMedia, setHeroMedia] = useState(null);
+  const [heroSlot, setHeroSlot] = useState(null);
 
   useEffect(() => {
     // On mobile, skip video for performance
@@ -55,10 +56,16 @@ export function HeroHome({ site }) {
         (s) => s.slotKey === 'home_hero' || s.slotKey === 'hero'
       );
       if (heroSlot?.url) {
+        setHeroSlot(heroSlot);
         setHeroMedia(heroSlot.url);
       }
     }).catch(() => {});
   }, []);
+
+  const objectPos = heroSlot
+    ? `${heroSlot.focalX ?? 50}% ${heroSlot.focalY ?? 50}%`
+    : '50% 50%';
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-[#eff8f6] via-[#f7fcfb] to-[#edf7f5]">
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
@@ -158,6 +165,7 @@ export function HeroHome({ site }) {
                     src={heroMedia && !isVideoUrl(heroMedia) ? heroMedia : HERO_IMAGE_FALLBACK}
                     alt="Premium turf installation"
                     className="w-full h-full object-cover"
+                    style={{ objectPosition: objectPos }}
                     initial={{ opacity: 0, scale: 1.02 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.6 }}

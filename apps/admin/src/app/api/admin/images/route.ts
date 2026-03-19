@@ -45,6 +45,8 @@ const upsertSchema = z.preprocess(
       carouselItems: Array.isArray(o.carouselItems) ? o.carouselItems : o.carouselItems,
       carouselInterval: o.carouselInterval != null ? Number(o.carouselInterval) : undefined,
       carouselEffect: o.carouselEffect === "fade" ? "fade" : "slide",
+      focalX: o.focalX != null ? Math.round(Math.min(100, Math.max(0, Number(o.focalX)))) : undefined,
+      focalY: o.focalY != null ? Math.round(Math.min(100, Math.max(0, Number(o.focalY)))) : undefined,
     };
   },
   z
@@ -66,6 +68,8 @@ const upsertSchema = z.preprocess(
         }),
       carouselInterval: z.number().int().min(1).max(60).optional(),
       carouselEffect: z.enum(["slide", "fade"]),
+      focalX: z.number().int().min(0).max(100).optional(),
+      focalY: z.number().int().min(0).max(100).optional(),
     })
     .refine(
       (data) => {

@@ -53,6 +53,8 @@ export function ImagesView({ images: initial }: ImagesViewProps) {
     }
     if (typeof data.carouselInterval === "number") payload.carouselInterval = data.carouselInterval;
     if (data.carouselEffect) payload.carouselEffect = data.carouselEffect;
+    if (typeof data.focalX === "number") payload.focalX = data.focalX;
+    if (typeof data.focalY === "number") payload.focalY = data.focalY;
 
     const res = await fetch("/admin/api/admin/images", {
       method: "POST",
