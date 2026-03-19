@@ -115,6 +115,7 @@ const HomePage = () => {
             rating: t.rating,
             text: t.text,
             photoUrl: t.photoUrl || null,
+            photoUrls: Array.isArray(t.photoUrls) ? t.photoUrls : [],
           }))
         );
       } else {
@@ -357,9 +358,9 @@ const HomePage = () => {
                     transition={{ delay: index * 0.1 + 0.25 }}
                   >
                       <div className="flex items-center gap-3">
-                        {review.photoUrl ? (
+                        {(review.photoUrl || review.photoUrls?.[0]) ? (
                           <img
-                            src={review.photoUrl}
+                            src={review.photoUrl || review.photoUrls?.[0]}
                             alt={review.name}
                             className="w-12 h-12 rounded-full object-cover border border-gray-200"
                             loading="lazy"
@@ -372,7 +373,7 @@ const HomePage = () => {
                         ) : null}
                         <span
                           className="w-12 h-12 rounded-full bg-[#2f6f46] text-white text-sm font-semibold items-center justify-center border border-gray-200"
-                          style={{ display: review.photoUrl ? 'none' : 'inline-flex' }}
+                          style={{ display: (review.photoUrl || review.photoUrls?.[0]) ? 'none' : 'inline-flex' }}
                         >
                           {String(review.name || '?')
                             .split(' ')

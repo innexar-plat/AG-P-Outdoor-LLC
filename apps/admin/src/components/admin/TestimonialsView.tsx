@@ -12,12 +12,14 @@ import { Textarea } from "@/components/ui/Textarea";
 import { Table, Thead, Th, Td, TableEmpty } from "@/components/ui/Table";
 import { SlideOver } from "@/components/ui/SlideOver";
 import { FileUpload } from "@/components/ui/FileUpload";
+import { MultiFileUpload } from "@/components/ui/MultiFileUpload";
 
 type Testimonial = {
   id: number;
   name: string;
   location: string | null;
   photoUrl: string | null;
+  photoUrls: string[];
   text: string;
   rating: number;
   approved: boolean;
@@ -34,6 +36,7 @@ const EMPTY: Testimonial = {
   name: "",
   location: "",
   photoUrl: null,
+  photoUrls: [],
   text: "",
   rating: 5,
   approved: false,
@@ -63,6 +66,7 @@ export function TestimonialsView({ testimonials: initial }: TestimonialsViewProp
           name: editing.name,
           location: editing.location || null,
           photoUrl: editing.photoUrl || null,
+          photoUrls: editing.photoUrls,
           text: editing.text,
           rating: editing.rating,
           approved: editing.approved,
@@ -133,9 +137,9 @@ export function TestimonialsView({ testimonials: initial }: TestimonialsViewProp
               <tr key={item.id} className="border-b border-surface-border last:border-0">
                 <Td>
                   <div className="flex items-center gap-2">
-                    {item.photoUrl && (
+                    {(item.photoUrl || item.photoUrls?.[0]) && (
                       /* eslint-disable-next-line @next/next/no-img-element */
-                      <img src={item.photoUrl} alt="" className="w-8 h-8 rounded-full object-cover" />
+                      <img src={item.photoUrl || item.photoUrls?.[0]} alt="" className="w-8 h-8 rounded-full object-cover" />
                     )}
                     <span className="font-medium">{item.name}</span>
                   </div>
@@ -200,11 +204,24 @@ export function TestimonialsView({ testimonials: initial }: TestimonialsViewProp
             />
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                {t("uploadImage")}
+                {t("uploadImage")} (avatar)
               </label>
               <FileUpload
                 folder="testimonials"
                 onUpload={(url) => setEditing({ ...editing, photoUrl: url })}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                Service photos (multiple)
+              </label>
+              <MultiFileUpload
+                folder="testimonials"
+                maxFiles={20}
+                onUpload={(urls) => {
+                  const merged = Array.from(new Set([...(editing.photoUrls || []), ...urls]));
+                  setEditing({ ...editing, photoUrls: merged });
+                }}
               />
             </div>
             <Input
@@ -212,6 +229,19 @@ export function TestimonialsView({ testimonials: initial }: TestimonialsViewProp
               value={editing.photoUrl ?? ""}
               onChange={(e) => setEditing({ ...editing, photoUrl: e.target.value || null })}
               placeholder="https://example.com/photo.jpg"
+            />
+            <Textarea
+              label="Service photo URLs (one per line)"
+              value={(editing.photoUrls || []).join("\n")}
+              onChange={(e) => {
+                const urls = e.target.value
+                  .split("\n")
+                  .map((value) => value.trim())
+                  .filter(Boolean);
+                setEditing({ ...editing, photoUrls: Array.from(new Set(urls)) });
+              }}
+              rows={4}
+              placeholder="/api/site/storage/testimonials/photo1.jpg"
             />
             {editing.photoUrl && (
               <div className="flex items-center gap-3">
@@ -224,6 +254,31 @@ export function TestimonialsView({ testimonials: initial }: TestimonialsViewProp
                 >
                   {t("remove")}
                 </button>
+              </div>
+            )}
+            {editing.photoUrls.length > 0 && (
+              <div>
+                <p className="text-sm font-medium text-slate-700 mb-2">Service photos preview</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {editing.photoUrls.map((url, idx) => (
+                    <div key={`${url}-${idx}`} className="relative group">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={url} alt="Service" className="w-full h-20 rounded-md object-cover border border-surface-border" />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setEditing({
+                            ...editing,
+                            photoUrls: editing.photoUrls.filter((_, i) => i !== idx),
+                          })
+                        }
+                        className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        x
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
             <div className="flex items-center gap-2">

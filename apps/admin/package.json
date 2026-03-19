@@ -15,6 +15,7 @@
     "db:migrate-carousel": "tsx scripts/migrate-0008.ts",
     "db:migrate-content": "tsx scripts/migrate-0009.ts",
     "db:migrate-google-reviews": "tsx scripts/migrate-0010-google-reviews.ts",
+    "db:migrate-testimonial-images": "tsx scripts/migrate-0011-testimonial-images.ts",
     "db:studio": "drizzle-kit studio",
     "test": "vitest run",
     "test:watch": "vitest",

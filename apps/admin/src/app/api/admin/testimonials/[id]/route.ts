@@ -17,6 +17,7 @@ const updateSchema = z.object({
   name: z.string().min(1).max(200).optional(),
   location: z.string().max(200).optional().nullable(),
   photoUrl: mediaUrlSchema.optional().nullable(),
+  photoUrls: z.array(mediaUrlSchema).max(20).optional(),
   text: z.string().min(1).max(2000).optional(),
   rating: z.number().int().min(1).max(5).optional(),
   approved: z.boolean().optional(),
@@ -53,17 +54,24 @@ export async function PUT(
     if (!existing) {
       return NextResponse.json({ data: null, error: "Not found" }, { status: 404 });
     }
+
+    const normalizedPhotoUrls = parsed.data.photoUrls
+      ? Array.from(new Set(parsed.data.photoUrls.map((url) => normalizeMediaUrl(url))))
+      : undefined;
+
     const payload = {
       ...parsed.data,
       ...(parsed.data.photoUrl !== undefined
         ? { photoUrl: parsed.data.photoUrl ? normalizeMediaUrl(parsed.data.photoUrl) : null }
         : {}),
+      ...(normalizedPhotoUrls !== undefined ? { photoUrls: normalizedPhotoUrls } : {}),
     };
     const row = await updateTestimonial(id, payload);
     const data = row ?? existing;
     const normalized = {
       ...data,
       photoUrl: data.photoUrl ? normalizeMediaUrl(data.photoUrl) : null,
+      photoUrls: (data.photoUrls ?? []).map((url) => normalizeMediaUrl(url)),
     };
     return NextResponse.json({ data: normalized, error: null });
   } catch (err) {

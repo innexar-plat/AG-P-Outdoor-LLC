@@ -29,6 +29,7 @@ const ReviewsPage = () => {
           text: t.text,
           rating: t.rating,
           photoUrl: t.photoUrl,
+          photoUrls: Array.isArray(t.photoUrls) ? t.photoUrls : [],
         })));
       }
     });
@@ -89,9 +90,22 @@ const ReviewsPage = () => {
                   ))}
                 </div>
                 <p className="text-gray-700 mb-4 italic">"{review.text}"</p>
+                {Array.isArray(review.photoUrls) && review.photoUrls.length > 0 && (
+                  <div className="grid grid-cols-2 gap-2 mb-4">
+                    {review.photoUrls.slice(0, 4).map((url, idx) => (
+                      <img
+                        key={`${url}-${idx}`}
+                        src={url}
+                        alt={`${review.name} service photo ${idx + 1}`}
+                        className="w-full h-24 rounded-md object-cover border border-gray-200"
+                        loading="lazy"
+                      />
+                    ))}
+                  </div>
+                )}
                 <div className="border-t border-gray-200 pt-4 flex items-center gap-3">
-                  {review.photoUrl && (
-                    <img src={review.photoUrl} alt={review.name} className="w-10 h-10 rounded-full object-cover" />
+                  {(review.photoUrl || review.photoUrls?.[0]) && (
+                    <img src={review.photoUrl || review.photoUrls?.[0]} alt={review.name} className="w-10 h-10 rounded-full object-cover" />
                   )}
                   <div>
                     <p className="font-bold text-[#1f3a2e]">{review.name}</p>

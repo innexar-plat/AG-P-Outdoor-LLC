@@ -14,6 +14,7 @@ export async function GET() {
     const normalized = rows.map((row) => ({
       ...row,
       photoUrl: row.photoUrl ? normalizeMediaUrl(row.photoUrl, "/api/site/storage") : null,
+      photoUrls: (row.photoUrls ?? []).map((url) => normalizeMediaUrl(url, "/api/site/storage")),
     }));
     return NextResponse.json({ data: normalized, error: null });
   } catch (err) {

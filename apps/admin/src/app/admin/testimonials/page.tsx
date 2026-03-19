@@ -10,6 +10,7 @@ export default async function TestimonialsPage() {
   const items = rows.map((row) => ({
     ...row,
     photoUrl: row.photoUrl ? normalizeMediaUrl(row.photoUrl) : null,
+    photoUrls: (row.photoUrls ?? []).map((url) => normalizeMediaUrl(url)),
   }));
   return <TestimonialsView testimonials={items} />;
 }

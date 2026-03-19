@@ -13,6 +13,7 @@ const createSchema = z.object({
   name: z.string().min(1).max(200),
   location: z.string().max(200).optional().nullable(),
   photoUrl: mediaUrlSchema.optional().nullable(),
+  photoUrls: z.array(mediaUrlSchema).max(20).optional(),
   text: z.string().min(1).max(2000),
   rating: z.number().int().min(1).max(5).optional(),
   approved: z.boolean().optional(),
@@ -32,6 +33,7 @@ export async function GET(request: Request) {
     const normalized = rows.map((row) => ({
       ...row,
       photoUrl: row.photoUrl ? normalizeMediaUrl(row.photoUrl) : null,
+      photoUrls: (row.photoUrls ?? []).map((url) => normalizeMediaUrl(url)),
     }));
     return NextResponse.json({ data: normalized, error: null });
   } catch (err) {
@@ -59,13 +61,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ data: null, error: parsed.error.errors.map((e) => e.message).join("; ") }, { status: 400 });
   }
   try {
+    const normalizedPhotoUrls = Array.from(
+      new Set((parsed.data.photoUrls ?? []).map((url) => normalizeMediaUrl(url)))
+    );
+    const normalizedPhotoUrl = parsed.data.photoUrl ? normalizeMediaUrl(parsed.data.photoUrl) : null;
     const payload = {
       ...parsed.data,
-      photoUrl: parsed.data.photoUrl ? normalizeMediaUrl(parsed.data.photoUrl) : null,
+      photoUrl: normalizedPhotoUrl,
+      photoUrls: normalizedPhotoUrls,
     };
     const row = await createTestimonial(payload);
     const normalized = row
-      ? { ...row, photoUrl: row.photoUrl ? normalizeMediaUrl(row.photoUrl) : null }
+      ? {
+          ...row,
+          photoUrl: row.photoUrl ? normalizeMediaUrl(row.photoUrl) : null,
+          photoUrls: (row.photoUrls ?? []).map((url) => normalizeMediaUrl(url)),
+        }
       : row;
     return NextResponse.json({ data: normalized, error: null }, { status: 201 });
   } catch (err) {

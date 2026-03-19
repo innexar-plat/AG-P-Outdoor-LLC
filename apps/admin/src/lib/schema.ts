@@ -214,6 +214,16 @@ export const testimonials = sqliteTable("testimonials", {
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
 });
 
+export const testimonialImages = sqliteTable("testimonial_images", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  testimonialId: integer("testimonial_id")
+    .notNull()
+    .references(() => testimonials.id, { onDelete: "cascade" }),
+  imageUrl: text("image_url").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+});
+
 export const SOCIAL_PLATFORMS = ["youtube", "instagram", "facebook", "twitter", "tiktok", "linkedin"] as const;
 export type SocialPlatform = (typeof SOCIAL_PLATFORMS)[number];
 
