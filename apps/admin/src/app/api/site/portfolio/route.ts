@@ -13,8 +13,8 @@ export async function GET() {
     const rows = await listVisiblePortfolioItems();
     const normalized = rows.map((row) => ({
       ...row,
-      imageUrl: normalizeMediaUrl(row.imageUrl, "/api/site/storage"),
-      beforeImageUrl: row.beforeImageUrl ? normalizeMediaUrl(row.beforeImageUrl, "/api/site/storage") : null,
+      imageUrl: normalizeMediaUrl(row.imageUrl, "/admin/api/site/storage"),
+      beforeImageUrl: row.beforeImageUrl ? normalizeMediaUrl(row.beforeImageUrl, "/admin/api/site/storage") : null,
     }));
     return NextResponse.json(
       { data: normalized, error: null },

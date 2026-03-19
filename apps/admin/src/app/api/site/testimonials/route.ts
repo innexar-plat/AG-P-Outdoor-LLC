@@ -13,8 +13,8 @@ export async function GET() {
     const rows = await listApprovedTestimonials();
     const normalized = rows.map((row) => ({
       ...row,
-      photoUrl: row.photoUrl ? normalizeMediaUrl(row.photoUrl, "/api/site/storage") : null,
-      photoUrls: (row.photoUrls ?? []).map((url) => normalizeMediaUrl(url, "/api/site/storage")),
+      photoUrl: row.photoUrl ? normalizeMediaUrl(row.photoUrl, "/admin/api/site/storage") : null,
+      photoUrls: (row.photoUrls ?? []).map((url) => normalizeMediaUrl(url, "/admin/api/site/storage")),
     }));
     return NextResponse.json({ data: normalized, error: null });
   } catch (err) {
