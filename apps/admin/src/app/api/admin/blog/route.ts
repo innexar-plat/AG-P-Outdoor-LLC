@@ -2,12 +2,18 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { listBlogPosts, createBlogPost } from "@/lib/queries/blog";
 import { z } from "zod";
+import { normalizeMediaUrl } from "@/lib/media-url";
+
+const mediaUrlSchema = z
+  .string()
+  .min(1)
+  .refine((value) => value.startsWith("/") || /^https?:\/\//i.test(value), "Invalid media URL");
 
 const createSchema = z.object({
   title: z.string().min(1).max(500),
   slug: z.string().min(1).max(200),
   content: z.string(),
-  coverImage: z.string().url().optional().nullable(),
+  coverImage: mediaUrlSchema.optional().nullable(),
   metaTitle: z.string().max(200).optional().nullable(),
   metaDescription: z.string().max(500).optional().nullable(),
   status: z.enum(["draft", "published"]),
@@ -32,7 +38,11 @@ export async function GET(request: Request) {
       limit,
       offset,
     });
-    return NextResponse.json({ data: rows, error: null });
+    const normalized = rows.map((row) => ({
+      ...row,
+      coverImage: row.coverImage ? normalizeMediaUrl(row.coverImage) : null,
+    }));
+    return NextResponse.json({ data: normalized, error: null });
   } catch (err) {
     console.error("[admin/blog GET]", err);
     return NextResponse.json({ data: null, error: "Something went wrong" }, { status: 500 });
@@ -65,12 +75,15 @@ export async function POST(request: Request) {
       title,
       slug,
       content,
-      coverImage: coverImage ?? null,
+      coverImage: coverImage ? normalizeMediaUrl(coverImage) : null,
       metaTitle: metaTitle ?? null,
       metaDescription: metaDescription ?? null,
       status,
     });
-    return NextResponse.json({ data: row, error: null }, { status: 201 });
+    const normalized = row
+      ? { ...row, coverImage: row.coverImage ? normalizeMediaUrl(row.coverImage) : null }
+      : row;
+    return NextResponse.json({ data: normalized, error: null }, { status: 201 });
   } catch (err) {
     console.error("[admin/blog POST]", err);
     return NextResponse.json({ data: null, error: "Something went wrong" }, { status: 500 });

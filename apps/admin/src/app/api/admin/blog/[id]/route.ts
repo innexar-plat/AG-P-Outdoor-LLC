@@ -6,12 +6,18 @@ import {
   deleteBlogPost,
 } from "@/lib/queries/blog";
 import { z } from "zod";
+import { normalizeMediaUrl } from "@/lib/media-url";
+
+const mediaUrlSchema = z
+  .string()
+  .min(1)
+  .refine((value) => value.startsWith("/") || /^https?:\/\//i.test(value), "Invalid media URL");
 
 const updateSchema = z.object({
   title: z.string().min(1).max(500).optional(),
   slug: z.string().min(1).max(200).optional(),
   content: z.string().optional(),
-  coverImage: z.string().url().optional().nullable(),
+  coverImage: mediaUrlSchema.optional().nullable(),
   metaTitle: z.string().max(200).optional().nullable(),
   metaDescription: z.string().max(500).optional().nullable(),
   status: z.enum(["draft", "published"]).optional(),
@@ -38,7 +44,11 @@ export async function GET(
     if (!row) {
       return NextResponse.json({ data: null, error: "Not found" }, { status: 404 });
     }
-    return NextResponse.json({ data: row, error: null });
+    const normalized = {
+      ...row,
+      coverImage: row.coverImage ? normalizeMediaUrl(row.coverImage) : null,
+    };
+    return NextResponse.json({ data: normalized, error: null });
   } catch (err) {
     console.error("[admin/blog/[id] GET]", err);
     return NextResponse.json({ data: null, error: "Something went wrong" }, { status: 500 });
@@ -77,8 +87,19 @@ export async function PUT(
     if (!existing) {
       return NextResponse.json({ data: null, error: "Not found" }, { status: 404 });
     }
-    const row = await updateBlogPost(id, parsed.data);
-    return NextResponse.json({ data: row ?? existing, error: null });
+    const payload = {
+      ...parsed.data,
+      ...(parsed.data.coverImage !== undefined
+        ? { coverImage: parsed.data.coverImage ? normalizeMediaUrl(parsed.data.coverImage) : null }
+        : {}),
+    };
+    const row = await updateBlogPost(id, payload);
+    const data = row ?? existing;
+    const normalized = {
+      ...data,
+      coverImage: data.coverImage ? normalizeMediaUrl(data.coverImage) : null,
+    };
+    return NextResponse.json({ data: normalized, error: null });
   } catch (err) {
     console.error("[admin/blog/[id] PUT]", err);
     return NextResponse.json({ data: null, error: "Something went wrong" }, { status: 500 });

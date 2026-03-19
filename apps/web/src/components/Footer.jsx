@@ -9,10 +9,9 @@ const Footer = () => {
   const site = useSite();
   const currentYear = new Date().getFullYear();
 
-  const serviceAreas = [
-    'Ocoee', 'Orlando', 'Winter Garden', 'Windermere',
-    'Clermont', 'Kissimmee', 'Apopka', 'Central Florida'
-  ];
+  const serviceAreas = typeof site.about_service_areas === 'string' && site.about_service_areas.trim().length > 0
+    ? site.about_service_areas.split(',').map((s) => s.trim()).filter(Boolean)
+    : ['Ocoee', 'Orlando', 'Winter Garden', 'Windermere', 'Clermont', 'Kissimmee', 'Apopka', 'Central Florida'];
 
   const services = [
     { name: 'Residential Turf', path: '/services/residential-turf' },

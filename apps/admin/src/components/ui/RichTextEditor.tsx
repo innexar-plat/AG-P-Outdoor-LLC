@@ -2,7 +2,6 @@
 
 import { useEditor, EditorContent, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useCallback, useEffect } from "react";
@@ -172,10 +171,10 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
     extensions: [
       StarterKit.configure({
         heading: { levels: [2, 3, 4] },
-      }),
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: { class: "text-brand-600 underline" },
+        link: {
+          openOnClick: false,
+          HTMLAttributes: { class: "text-brand-600 underline" },
+        },
       }),
       Image.configure({
         HTMLAttributes: { class: "rounded-lg max-w-full my-4" },
