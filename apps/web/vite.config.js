@@ -294,6 +294,9 @@ export default defineConfig({
 		},
 		allowedHosts: true,
 	},
+	preview: {
+		allowedHosts: ['agpoutdoor.com', 'www.agpoutdoor.com'],
+	},
 	resolve: {
 		extensions: ['.jsx', '.js', '.tsx', '.ts', '.json', ],
 		alias: {
