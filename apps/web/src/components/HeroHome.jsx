@@ -129,7 +129,7 @@ export function HeroHome({ site }) {
   const canRenderVideo = allowAutoVideo && !videoError && slotHasVideo;
   const fallbackImageSrc = slotHasVideo
     ? HERO_VIDEO_LOADING_POSTER
-    : (slotHasImage ? heroMedia : (heroPoster || staticFallbackImage));
+    : (slotHasImage ? heroMedia : staticFallbackImage);
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-[#eff8f6] via-[#f7fcfb] to-[#edf7f5]">
