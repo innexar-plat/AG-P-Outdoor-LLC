@@ -51,7 +51,7 @@ function parseGooglePlaceFromPath(pathname) {
 }
 
 function normalizeMapsEmbedUrl(rawUrl, address) {
-  const fallbackQuery = buildGoogleEmbed(address || 'AG&P Outdoor LLC, Ocoee, FL');
+  const fallbackQuery = buildGoogleSearchUrl(address || 'AG&P Outdoor LLC, Ocoee, FL');
   if (!rawUrl || typeof rawUrl !== 'string') return fallbackQuery;
 
   const iframeSrcMatch = rawUrl.match(/src=["']([^"']+)["']/i);
