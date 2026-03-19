@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Seo from '@/components/Seo.jsx';
 import { motion } from '@/lib/motion-lite.jsx';
 import { Phone, Mail, MapPin, Clock, MessageCircle } from 'lucide-react';
@@ -13,75 +13,23 @@ import { useToast } from '@/components/ui/use-toast';
 import { submitForm, fetchSeo } from '@/lib/api';
 import { useSite } from '@/lib/SiteProvider.jsx';
 
-// MapComponent that renders Leaflet map via CDN
-const MapComponent = ({ address = '878 Keaton Pkwy, Ocoee, FL 34761', lat = 28.6122, lon = -81.3768 }) => {
-  const mapContainer = useRef(null);
-  const [mapLoaded, setMapLoaded] = useState(false);
+function buildGoogleEmbedUrl(address) {
+  return `https://maps.google.com/maps?q=${encodeURIComponent(address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+}
 
-  useEffect(() => {
-    if (!mapContainer.current) return;
-
-    // Load Leaflet CSS
-    if (!document.getElementById('leaflet-css')) {
-      const link = document.createElement('link');
-      link.id = 'leaflet-css';
-      link.rel = 'stylesheet';
-      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.min.css';
-      document.head.appendChild(link);
-    }
-
-    // Load Leaflet JS
-    if (!window.L) {
-      const script = document.createElement('script');
-      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.min.js';
-      script.onload = () => {
-        initMap();
-      };
-      document.body.appendChild(script);
-    } else {
-      initMap();
-    }
-
-    function initMap() {
-      if (!mapContainer.current || !window.L) return;
-
-      try {
-        const map = window.L.map(mapContainer.current).setView([lat, lon], 16);
-        window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '© OpenStreetMap contributors',
-          maxZoom: 19,
-        }).addTo(map);
-
-        // Add marker
-        window.L.marker([lat, lon], {
-          icon: window.L.icon({
-            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-            iconSize: [25, 41],
-            iconAnchor: [12, 41],
-            popupAnchor: [1, -34],
-            shadowSize: [41, 41]
-          })
-        })
-          .bindPopup(`<strong>AG&P Outdoor LLC</strong><br/>${address}`)
-          .openPopup()
-          .addTo(map);
-
-        setMapLoaded(true);
-      } catch (e) {
-        console.error('Map initialization error:', e);
-      }
-    }
-  }, [lat, lon, address]);
-
-  return (
-    <div
-      ref={mapContainer}
-      className="w-full h-full rounded-lg"
-      style={{ minHeight: '400px', backgroundColor: '#f0f0f0' }}
-    />
-  );
-};
+function extractEmbedSrc(rawUrl) {
+  if (!rawUrl || typeof rawUrl !== 'string') return '';
+  const iframeSrcMatch = rawUrl.match(/src=["']([^"']+)["']/i);
+  const candidateRaw = (iframeSrcMatch?.[1] ?? rawUrl).trim().replace(/&amp;/g, '&');
+  const normalizedRaw = candidateRaw.startsWith('//') ? `https:${candidateRaw}` : candidateRaw;
+  try {
+    const parsed = new URL(normalizedRaw);
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return '';
+    return parsed.toString();
+  } catch {
+    return '';
+  }
+}
 
 function buildGoogleSearchUrl(query) {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
@@ -91,8 +39,7 @@ const ContactPage = () => {
   const { toast } = useToast();
   const site = useSite();
   const [seo, setSeo] = useState(null);
-  const [mapCoords, setMapCoords] = useState({ lat: 28.6122, lon: -81.3768 });
-  const [mapLoading, setMapLoading] = useState(true);
+  const [mapFailed, setMapFailed] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -131,27 +78,11 @@ const ContactPage = () => {
     fetchSeo('contact').then((data) => data && setSeo(data));
   }, []);
 
-  // Geocode the address using OpenStreetMap's Nominatim API (free, no token needed)
-  useEffect(() => {
-    const addressQuery = site.address || '878 Keaton Pkwy, Ocoee, FL 34761';
-    
-    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressQuery)}&limit=1`)
-      .then((res) => res.ok ? res.json() : [])
-      .then((results) => {
-        if (results && results[0]) {
-          setMapCoords({
-            lat: parseFloat(results[0].lat),
-            lon: parseFloat(results[0].lon),
-          });
-        }
-      })
-      .catch((err) => {
-        console.warn('Geocoding failed, using default coordinates:', err);
-      })
-      .finally(() => {
-        setMapLoading(false);
-      });
-  }, [site.address]);
+  const mapAddress = site.address || '878 Keaton Pkwy, Ocoee, FL 34761';
+  const mapEmbedUrl = useMemo(() => {
+    const rawMapUrl = site.company_map_embed_url || site.map_embed_url || site.google_maps_embed_url;
+    return extractEmbedSrc(rawMapUrl) || buildGoogleEmbedUrl(mapAddress);
+  }, [site.company_map_embed_url, site.map_embed_url, site.google_maps_embed_url, mapAddress]);
 
   const title = seo?.titleTag || "Contact AG&P Outdoor LLC | Free Estimates - Central Florida";
   const description = seo?.metaDescription || "Contact AG&P Outdoor LLC for a free estimate on artificial turf installation. Call 772-226-9087 or visit us in Ocoee, FL. Serving Central Florida.";
@@ -242,19 +173,25 @@ const ContactPage = () => {
                 <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
                   <h3 className="text-xl font-bold text-[#1f3a2e] mb-4">Our Location</h3>
                   <div className="aspect-video rounded-lg overflow-hidden bg-gray-100">
-                    {!mapLoading ? (
-                      <MapComponent 
-                        address={site.address || '878 Keaton Pkwy, Ocoee, FL 34761'}
-                        lat={mapCoords.lat}
-                        lon={mapCoords.lon}
+                    {!mapFailed ? (
+                      <iframe
+                        src={mapEmbedUrl}
+                        width="100%"
+                        height="100%"
+                        style={{ border: 0 }}
+                        loading="lazy"
+                        allowFullScreen
+                        referrerPolicy="no-referrer-when-downgrade"
+                        title="AG&P Outdoor LLC Location"
+                        onError={() => setMapFailed(true)}
                       />
                     ) : (
                       <div className="h-full w-full bg-gradient-to-br from-gray-100 to-gray-50 flex flex-col items-center justify-center text-center p-6">
-                        <MapPin className="h-12 w-12 text-[#2f6f46] mb-3 opacity-60 animate-pulse" />
-                        <p className="text-[#1f3a2e] font-semibold mb-2">Carregando mapa...</p>
-                        <p className="text-gray-600 text-sm">{site.address || '878 Keaton Pkwy, Ocoee, FL 34761'}</p>
+                        <MapPin className="h-12 w-12 text-[#2f6f46] mb-3 opacity-60" />
+                        <p className="text-[#1f3a2e] font-semibold mb-2">Nao foi possivel carregar o mapa aqui.</p>
+                        <p className="text-gray-600 text-sm mb-4">{mapAddress}</p>
                         <a
-                          href={buildGoogleSearchUrl(site.address || 'AG&P Outdoor LLC, Ocoee, FL')}
+                          href={buildGoogleSearchUrl(mapAddress)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-block bg-[#2f6f46] hover:bg-[#245739] text-white px-4 py-2 rounded-lg font-semibold transition-colors"

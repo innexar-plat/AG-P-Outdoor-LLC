@@ -31,7 +31,6 @@ export function PageHero({ section, fallbackUrl, children, sectionClassName = 'r
   const [videoError, setVideoError] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const [allowAutoVideo, setAllowAutoVideo] = useState(false);
-  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
   const objectPos = slot ? `${slot.focalX ?? 50}% ${slot.focalY ?? 50}%` : '50% 50%';
 
   useEffect(() => {
@@ -47,7 +46,6 @@ export function PageHero({ section, fallbackUrl, children, sectionClassName = 'r
     if (isMobile || saveData || isSlowNetwork || isLowMemoryDevice) return;
 
     setAllowAutoVideo(true);
-    setShouldLoadVideo(true);
   }, []);
 
   useEffect(() => {
@@ -66,7 +64,7 @@ export function PageHero({ section, fallbackUrl, children, sectionClassName = 'r
   }, [slot?.url]);
 
   const slotHasVideo = Boolean(slot?.url && isLikelyVideo(slot.url, slot));
-  const canRenderVideo = slotHasVideo && allowAutoVideo && shouldLoadVideo && !videoError;
+  const canRenderVideo = slotHasVideo && allowAutoVideo && !videoError;
 
   return (
     <section className={sectionClassName}>
@@ -93,7 +91,7 @@ export function PageHero({ section, fallbackUrl, children, sectionClassName = 'r
                 muted
                 playsInline
                 aria-hidden
-                preload="auto"
+                preload="metadata"
                 poster={fallbackUrl}
                 onLoadedData={() => setVideoReady(true)}
                 onCanPlay={() => setVideoReady(true)}

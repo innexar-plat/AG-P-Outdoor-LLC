@@ -53,7 +53,6 @@ const itemVariants = {
 export function HeroHome({ site }) {
   const [videoError, setVideoError] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
-  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
   const [allowAutoVideo, setAllowAutoVideo] = useState(false);
   // heroMedia: URL from admin panel (video or image), null while loading
   const [heroMedia, setHeroMedia] = useState(null);
@@ -72,7 +71,6 @@ export function HeroHome({ site }) {
     if (isMobile || saveData || isSlowNetwork || isLowMemoryDevice) return;
 
     setAllowAutoVideo(true);
-    setShouldLoadVideo(true);
   }, []);
 
   useEffect(() => {
@@ -98,7 +96,7 @@ export function HeroHome({ site }) {
     ? `${heroSlot.focalX ?? 50}% ${heroSlot.focalY ?? 50}%`
     : '50% 50%';
   const slotHasVideo = Boolean(heroMedia && isLikelyVideo(heroMedia, heroSlot));
-  const canRenderVideo = allowAutoVideo && shouldLoadVideo && !videoError && slotHasVideo;
+  const canRenderVideo = allowAutoVideo && !videoError && slotHasVideo;
   const fallbackImageSrc = slotHasVideo
     ? HERO_IMAGE_FALLBACK
     : (heroMedia || HERO_IMAGE_FALLBACK);
@@ -130,21 +128,14 @@ export function HeroHome({ site }) {
               variants={itemVariants}
               className="text-3xl sm:text-5xl md:text-6xl font-bold text-[#163d39] mb-5 leading-[1.05] tracking-tight"
             >
-              Premium Turf{' '}
-              <motion.span
-                className="text-[#b48d4d]"
-                animate={{ opacity: [1, 0.85, 1] }}
-                transition={{ duration: 3, repeat: Infinity }}
-              >
-                Installation
-              </motion.span>
+              Professional Artificial Turf Installation in Orlando & Central Florida
             </motion.h1>
 
             <motion.p
               variants={itemVariants}
               className="text-base sm:text-lg md:text-xl text-[#2f5c57] mb-8 max-w-xl leading-relaxed"
             >
-              Professional Base Preparation, Drainage & Clean Finishes
+              High-quality, low-maintenance outdoor solutions for residential and commercial properties.
             </motion.p>
 
             <motion.div
@@ -157,7 +148,7 @@ export function HeroHome({ site }) {
                 className="w-full sm:w-auto min-h-12 bg-[#2f6f46] hover:bg-[#1f5b38] text-white font-semibold px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-95 group"
               >
                 <Link to={site.ctaUrl}>
-                  Get Free Estimate
+                  Get a Free Estimate Today
                   <motion.div
                     animate={{ x: [0, 4, 0] }}
                     transition={{ duration: 1.5, repeat: Infinity }}
@@ -229,7 +220,7 @@ export function HeroHome({ site }) {
                     muted
                     playsInline
                     aria-hidden
-                    preload="auto"
+                    preload="metadata"
                     onLoadedData={() => setVideoReady(true)}
                     onCanPlay={() => setVideoReady(true)}
                     onError={() => setVideoError(true)}

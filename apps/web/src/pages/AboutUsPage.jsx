@@ -57,7 +57,7 @@ const AboutUsPage = () => {
             className="max-w-4xl mx-auto text-center mb-12"
           >
             <h1 className="text-5xl md:text-6xl font-bold text-[#1f3a2e] mb-6">About {companyName}</h1>
-            <p className="text-xl text-gray-600">Family-owned, locally operated, and committed to excellence</p>
+            <p className="text-xl text-gray-600">Over 12 years delivering high-quality outdoor construction and turf installations across Central Florida.</p>
           </motion.div>
 
           <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto items-center">
@@ -71,6 +71,8 @@ const AboutUsPage = () => {
                 src={teamImage}
                 alt={`${companyName} team`}
                 className="rounded-xl shadow-2xl"
+                loading="lazy"
+                decoding="async"
               />
             </motion.div>
             )}
@@ -83,13 +85,16 @@ const AboutUsPage = () => {
             >
               <h2 className="text-3xl font-bold text-[#1f3a2e]">Our Story</h2>
               <p className="text-gray-700">
-                {companyName} is a family-owned and operated artificial turf installation company. We're not a national franchise or a large corporation — we're your neighbors, committed to delivering exceptional quality and personalized service.
+                With over 12 years of hands-on experience in outdoor construction, our team has built a strong reputation for delivering high-quality results across Central Florida.
               </p>
               <p className="text-gray-700">
-                What sets us apart is our unwavering commitment to doing things the right way. We don't cut corners on base preparation, we don't rush installations, and we don't compromise on materials. Every project receives the same meticulous attention to detail, whether it's a small residential lawn or a large commercial installation.
+                Our journey began with brick paver installation, where we developed a deep understanding of proper ground preparation, the foundation of every long-lasting outdoor project.
               </p>
               <p className="text-gray-700">
-                Our team brings years of experience in landscaping, construction, and turf installation. We understand Florida's unique climate, soil conditions, and drainage challenges. This local expertise ensures your installation is built to last.
+                Over the years, we expanded our expertise into artificial turf installation, specializing in residential and commercial applications, sports fields, and custom putting greens.
+              </p>
+              <p className="text-gray-700">
+                Today, AG&P Outdoor LLC is dedicated to providing durable, low-maintenance, and visually stunning outdoor solutions tailored to each client's needs.
               </p>
             </motion.div>
           </div>

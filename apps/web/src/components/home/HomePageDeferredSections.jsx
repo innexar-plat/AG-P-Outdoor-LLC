@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from '@/lib/motion-lite.jsx';
-import { CheckCircle, Star, ArrowRight, Droplets, Shield, Award, Users } from 'lucide-react';
+import { CheckCircle, Star, ArrowRight, Droplets, Shield, Award, Users, Clock3, Layers, BadgeCheck, Search, Building2 } from 'lucide-react';
 import Footer from '@/components/Footer.jsx';
 import EstimateForm from '@/components/EstimateForm.jsx';
 import { Button } from '@/components/ui/button';
@@ -9,29 +9,57 @@ import { fetchPortfolio, fetchTestimonials, fetchSiteImages } from '@/lib/api';
 
 const benefits = [
   {
-    icon: <Award className="h-8 w-8" />,
+    icon: <Clock3 className="h-8 w-8" />,
+    title: '12+ Years of Experience',
+    description: 'More than a decade of hands-on outdoor construction and turf installation expertise.',
+  },
+  {
+    icon: <Layers className="h-8 w-8" />,
+    title: 'High-Quality Materials',
+    description: 'We use premium turf systems selected for durability, drainage, and natural appearance.',
+  },
+  {
+    icon: <BadgeCheck className="h-8 w-8" />,
     title: 'Professional Installation',
-    description: 'Expert craftsmanship with attention to every detail, ensuring a flawless finish that lasts.',
+    description: 'Every project follows a proven process from base prep to final finishing details.',
   },
   {
-    icon: <Shield className="h-8 w-8" />,
-    title: 'Base Prep Expertise',
-    description: 'Proper foundation is everything. We excavate, grade, and compact to industry standards.',
+    icon: <Search className="h-8 w-8" />,
+    title: 'Attention to Detail',
+    description: 'We focus on grading, seams, edges, and clean transitions for a premium final result.',
   },
   {
-    icon: <Droplets className="h-8 w-8" />,
-    title: 'Drainage Solutions',
-    description: "Advanced drainage systems prevent pooling and extend your turf's lifespan.",
+    icon: <Award className="h-8 w-8" />,
+    title: 'Free Estimates',
+    description: 'Clear, no-pressure estimates with scope and recommendations tailored to your property.',
   },
+  {
+    icon: <Building2 className="h-8 w-8" />,
+    title: 'Residential & Commercial',
+    description: 'Scalable solutions for homes, businesses, and recreational spaces across Central Florida.',
+  },
+];
+
+const services = [
   {
     icon: <CheckCircle className="h-8 w-8" />,
-    title: 'Durability Guaranteed',
-    description: 'Premium materials and professional installation mean your turf will look great for years.',
+    title: 'Artificial Turf Installation (Residential & Commercial)',
+    description: 'We provide professional artificial turf installation for homes and businesses, creating clean, green, and maintenance-free outdoor spaces.',
   },
   {
     icon: <Users className="h-8 w-8" />,
-    title: 'Local Expertise',
-    description: 'Family-owned and operated in Central Florida. We understand our climate and soil conditions.',
+    title: 'Sports Fields & Recreational Areas',
+    description: 'Durable and high-performance artificial turf solutions designed for sports fields, playgrounds, and recreational areas.',
+  },
+  {
+    icon: <Star className="h-8 w-8" />,
+    title: 'Custom Putting Greens',
+    description: 'Practice your short game at home with a professionally designed and installed putting green tailored to your space.',
+  },
+  {
+    icon: <Droplets className="h-8 w-8" />,
+    title: 'Artificial Turf Landscaping',
+    description: 'Transform your outdoor areas with creative landscaping solutions using high-quality artificial grass.',
   },
 ];
 
@@ -189,6 +217,34 @@ export default function HomePageDeferredSections({ site }) {
                 </div>
                 <h3 className="text-xl font-bold text-[#1f3a2e] mb-2">{benefit.title}</h3>
                 <p className="text-gray-600">{benefit.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold text-[#1f3a2e] mb-4">Services</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">Professional outdoor solutions for residential and commercial properties.</p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {services.map((service, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.08 }}
+                className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200 shadow-sm"
+              >
+                <div className="bg-gradient-to-br from-[#2f6f46] to-[#245739] text-white w-14 h-14 rounded-lg flex items-center justify-center mb-4">
+                  {service.icon}
+                </div>
+                <h3 className="text-xl font-bold text-[#1f3a2e] mb-2">{service.title}</h3>
+                <p className="text-gray-600">{service.description}</p>
               </motion.div>
             ))}
           </div>
