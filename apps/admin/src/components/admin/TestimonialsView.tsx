@@ -54,7 +54,7 @@ export function TestimonialsView({ testimonials: initial }: TestimonialsViewProp
     setLoading(true);
     try {
       const isNew = editing.id === 0;
-      const url = isNew ? "/api/admin/testimonials" : `/api/admin/testimonials/${editing.id}`;
+      const url = isNew ? "/admin/api/admin/testimonials" : `/admin/api/admin/testimonials/${editing.id}`;
       const method = isNew ? "POST" : "PUT";
       const res = await fetch(url, {
         method,
@@ -86,13 +86,13 @@ export function TestimonialsView({ testimonials: initial }: TestimonialsViewProp
 
   async function handleDelete(id: number) {
     if (!confirm(t("confirmRemoveTestimonial"))) return;
-    await fetch(`/api/admin/testimonials/${id}`, { method: "DELETE" });
+    await fetch(`/admin/api/admin/testimonials/${id}`, { method: "DELETE" });
     setItems((prev) => prev.filter((i) => i.id !== id));
     router.refresh();
   }
 
   async function toggleApproval(item: Testimonial) {
-    await fetch(`/api/admin/testimonials/${item.id}`, {
+    await fetch(`/admin/api/admin/testimonials/${item.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ approved: !item.approved }),

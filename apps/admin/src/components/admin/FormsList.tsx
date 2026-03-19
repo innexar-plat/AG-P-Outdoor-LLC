@@ -43,7 +43,7 @@ export function FormsList({ initial }: FormsListProps) {
     if (filters.read !== "") params.set("read", filters.read);
     if (filters.from) params.set("from", filters.from);
     if (filters.to) params.set("to", filters.to);
-    const res = await fetch(`/api/admin/forms?${params}`);
+    const res = await fetch(`/admin/api/admin/forms?${params}`);
     const json = await res.json();
     if (res.ok && json.data) setItems(json.data);
     setLoading(false);
@@ -55,7 +55,7 @@ export function FormsList({ initial }: FormsListProps) {
   }, [fetchList]);
 
   async function markRead(id: number) {
-    const res = await fetch(`/api/admin/forms/${id}`, {
+    const res = await fetch(`/admin/api/admin/forms/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ read: true }),
@@ -68,7 +68,7 @@ export function FormsList({ initial }: FormsListProps) {
 
   async function remove(id: number) {
     if (!confirm(t("confirmRemove"))) return;
-    const res = await fetch(`/api/admin/forms/${id}`, { method: "DELETE" });
+    const res = await fetch(`/admin/api/admin/forms/${id}`, { method: "DELETE" });
     if (res.ok) {
       setItems((prev) => prev.filter((s) => s.id !== id));
       if (selectedId === id) setSelectedId(null);
@@ -112,7 +112,7 @@ export function FormsList({ initial }: FormsListProps) {
               <Button onClick={fetchList} loading={loading} size="sm">
                 {loading ? t("filtering") : t("filter")}
               </Button>
-              <Button variant="outline" size="sm" onClick={() => window.open("/api/admin/forms/export", "_blank")}>
+              <Button variant="outline" size="sm" onClick={() => window.open("/admin/api/admin/forms/export", "_blank")}>
                 {t("exportCsv")}
               </Button>
             </div>

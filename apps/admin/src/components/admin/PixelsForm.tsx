@@ -42,7 +42,7 @@ export function PixelsForm({ initial }: PixelsFormProps) {
       PIXEL_FIELDS.forEach((f) => { body[f.key] = values[f.key]?.trim() || null; });
       body.custom_scripts_head = values.custom_scripts_head?.trim() || null;
       body.custom_scripts_body = values.custom_scripts_body?.trim() || null;
-      const res = await fetch("/api/admin/settings", {
+      const res = await fetch("/admin/api/admin/settings", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

@@ -11,19 +11,28 @@ import { FileUpload } from "@/components/ui/FileUpload";
 import { MultiFileUpload } from "@/components/ui/MultiFileUpload";
 import type { PortfolioItem } from "./types";
 
+type PortfolioSavePayload = PortfolioItem & {
+  _batchImageUrls?: string[];
+  _batchMode?: boolean;
+};
+
 interface PortfolioEditorFormProps {
   editing: PortfolioItem | null;
   onClose: () => void;
-  onSave: (data: PortfolioItem) => Promise<void>;
+  onSave: (data: PortfolioSavePayload) => Promise<void>;
 }
 
 export function PortfolioEditorForm({ editing, onClose, onSave }: PortfolioEditorFormProps) {
   const { t } = useI18n();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState<PortfolioItem | null>(editing);
+  const [batchImageUrls, setBatchImageUrls] = useState<string[]>([]);
+  const [batchMode, setBatchMode] = useState(true);
 
   useEffect(() => {
     setForm(editing);
+    setBatchImageUrls([]);
+    setBatchMode(true);
   }, [editing]);
 
   if (!editing) return null;
@@ -32,7 +41,11 @@ export function PortfolioEditorForm({ editing, onClose, onSave }: PortfolioEdito
     if (!form) return;
     setLoading(true);
     try {
-      await onSave(form);
+      await onSave({
+        ...form,
+        _batchImageUrls: batchImageUrls,
+        _batchMode: batchMode,
+      });
       onClose();
     } finally {
       setLoading(false);
@@ -77,11 +90,26 @@ export function PortfolioEditorForm({ editing, onClose, onSave }: PortfolioEdito
             folder="portfolio"
             maxFiles={15}
             onUpload={(urls) => {
+              setBatchImageUrls(urls);
               if (form && urls.length > 0) {
                 setForm({ ...form, imageUrl: urls[0] });
               }
+              if (urls.length > 1) {
+                setBatchMode(true);
+              }
             }}
           />
+          {batchImageUrls.length > 1 && (
+            <label className="mt-3 flex items-center gap-2 text-sm text-slate-700">
+              <input
+                type="checkbox"
+                checked={batchMode}
+                onChange={(e) => setBatchMode(e.target.checked)}
+                className="rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+              />
+              Create one project per uploaded image ({batchImageUrls.length} items)
+            </label>
+          )}
         </div>
         <Input
           label={t("imageUrl")}

@@ -6,8 +6,12 @@ import { usePathname } from "next/navigation";
 
 const POLL_INTERVAL_MS = 20_000;
 
+type NotificationsBellProps = {
+  variant?: "sidebar" | "light";
+};
+
 /** Bell icon with unread count badge. Polls for new leads and links to Forms. */
-export function NotificationsBell() {
+export function NotificationsBell({ variant = "sidebar" }: NotificationsBellProps) {
   const [unreadCount, setUnreadCount] = useState(0);
   const pathname = usePathname();
 
@@ -35,10 +39,15 @@ export function NotificationsBell() {
     if (pathname === "/admin/forms") fetchCount();
   }, [pathname, fetchCount]);
 
+  const className =
+    variant === "light"
+      ? "relative flex items-center justify-center rounded-lg p-2 text-slate-600 hover:bg-slate-100 hover:text-slate-800 transition-colors"
+      : "relative flex items-center justify-center rounded-lg p-2 text-sidebar-text hover:bg-sidebar-hover hover:text-sidebar-text-active transition-colors";
+
   return (
     <Link
       href="/admin/forms"
-      className="relative flex items-center justify-center rounded-lg p-2 text-sidebar-text hover:bg-white/5 hover:text-sidebar-text-active transition-colors"
+      className={className}
       aria-label={unreadCount > 0 ? `${unreadCount} unread leads` : "Notifications"}
     >
       <BellIcon />

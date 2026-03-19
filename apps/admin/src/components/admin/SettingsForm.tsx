@@ -64,7 +64,7 @@ export function SettingsForm({ initial }: SettingsFormProps) {
       Object.values(FIELD_GROUPS).flat().forEach((f) => {
         body[f.key] = values[f.key]?.trim() || null;
       });
-      const res = await fetch("/api/admin/settings", {
+      const res = await fetch("/admin/api/admin/settings", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

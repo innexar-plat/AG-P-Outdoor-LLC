@@ -70,7 +70,7 @@ export function BlogPostForm({ initial }: BlogPostFormProps) {
     setError(null);
     setLoading(true);
     try {
-      const url = isEdit ? `/api/admin/blog/${initial!.id}` : "/api/admin/blog";
+      const url = isEdit ? `/admin/api/admin/blog/${initial!.id}` : "/admin/api/admin/blog";
       const method = isEdit ? "PUT" : "POST";
       const res = await fetch(url, {
         method,

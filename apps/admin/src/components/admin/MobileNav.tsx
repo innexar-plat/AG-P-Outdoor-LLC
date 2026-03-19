@@ -33,7 +33,7 @@ export function MobileNav({ children }: MobileNavProps) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="lg:hidden fixed top-4 left-4 z-40 rounded-lg bg-sidebar p-2.5 text-white shadow-lg hover:bg-sidebar/90 transition-colors"
+        className="lg:hidden fixed top-4 left-4 z-40 rounded-lg bg-white/95 border border-teal-100 p-2.5 text-brand-700 shadow-lg hover:bg-teal-50 transition-colors"
         aria-label="Open menu"
       >
         <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -52,14 +52,14 @@ export function MobileNav({ children }: MobileNavProps) {
       {/* Sidebar drawer */}
       <div
         className={`
-          lg:hidden fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out
+          lg:hidden fixed inset-y-0 left-0 z-50 w-72 transform transition-transform duration-300 ease-in-out
           ${open ? "translate-x-0" : "-translate-x-full"}
         `.trim()}
       >
         <button
           type="button"
           onClick={() => setOpen(false)}
-          className="absolute top-4 right-3 rounded-md p-1 text-white/60 hover:text-white transition-colors"
+          className="absolute top-4 right-3 rounded-md p-1 text-sidebar-text/70 hover:text-sidebar-text-active transition-colors"
           aria-label="Close menu"
         >
           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">

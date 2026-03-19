@@ -27,7 +27,7 @@ export function UsersView({ users: initial, currentUserId }: UsersViewProps) {
   async function handleRoleChange(userId: string, role: string) {
     setLoading(userId);
     try {
-      const res = await fetch("/api/admin/users", {
+      const res = await fetch("/admin/api/admin/users", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: userId, role }),
@@ -48,7 +48,7 @@ export function UsersView({ users: initial, currentUserId }: UsersViewProps) {
     if (!confirm(t("confirmRemoveUser"))) return;
     setLoading(userId);
     try {
-      const res = await fetch(`/api/admin/users?id=${userId}`, { method: "DELETE" });
+      const res = await fetch(`/admin/api/admin/users?id=${userId}`, { method: "DELETE" });
       if (res.ok) {
         setUsers((prev) => prev.filter((u) => u.id !== userId));
         router.refresh();
@@ -59,7 +59,7 @@ export function UsersView({ users: initial, currentUserId }: UsersViewProps) {
   }
 
   async function handleCreate(data: { name: string; email: string; password: string; role: string }) {
-    const res = await fetch("/api/admin/users", {
+    const res = await fetch("/admin/api/admin/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
@@ -80,7 +80,7 @@ export function UsersView({ users: initial, currentUserId }: UsersViewProps) {
   async function saveModules(userId: string, modules: string[]): Promise<void> {
     const user = users.find((u) => u.id === userId);
     if (!user) return;
-    const res = await fetch("/api/admin/users", {
+    const res = await fetch("/admin/api/admin/users", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

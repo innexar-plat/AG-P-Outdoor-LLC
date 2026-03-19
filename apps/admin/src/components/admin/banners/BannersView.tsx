@@ -30,7 +30,7 @@ export function BannersView({ banners: initial }: BannersViewProps) {
     setLoading(true);
     try {
       const isNew = editing.id === 0;
-      const url = isNew ? "/api/admin/banners" : `/api/admin/banners/${editing.id}`;
+      const url = isNew ? "/admin/api/admin/banners" : `/admin/api/admin/banners/${editing.id}`;
       const res = await fetch(url, {
         method: isNew ? "POST" : "PUT",
         headers: { "Content-Type": "application/json" },
@@ -72,13 +72,13 @@ export function BannersView({ banners: initial }: BannersViewProps) {
 
   async function handleDelete(id: number) {
     if (!confirm(t("confirmRemoveBanner"))) return;
-    await fetch(`/api/admin/banners/${id}`, { method: "DELETE" });
+    await fetch(`/admin/api/admin/banners/${id}`, { method: "DELETE" });
     setItems((prev) => prev.filter((i) => i.id !== id));
     router.refresh();
   }
 
   async function toggleActive(item: Banner) {
-    await fetch(`/api/admin/banners/${item.id}`, {
+    await fetch(`/admin/api/admin/banners/${item.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ active: !item.active }),

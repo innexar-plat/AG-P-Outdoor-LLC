@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "@/components/ui/Logo";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
-import { NotificationsBell } from "@/components/admin/NotificationsBell";
 import { useI18n } from "@/lib/i18n";
 import type { ModuleKey } from "@/lib/schema";
 
@@ -71,18 +70,18 @@ export function Sidebar({ role, allowedModules }: SidebarProps) {
   }
 
   return (
-    <aside className="w-64 shrink-0 flex flex-col bg-sidebar border-r border-sidebar-border h-screen sticky top-0">
-      <div className="flex items-center gap-3 px-5 py-5 border-b border-white/5">
+    <aside className="w-72 shrink-0 flex flex-col bg-sidebar border-r border-sidebar-border h-screen sticky top-0">
+      <div className="flex items-center gap-3 px-5 py-5 border-b border-sidebar-border/60">
         <Logo size="sm" />
       </div>
-      <p className="px-5 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-sidebar-text/50">
+      <p className="px-5 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-sidebar-text/70">
         {t("panel")}
       </p>
 
       <nav className="flex-1 overflow-y-auto scrollbar-thin px-3 py-2 space-y-5">
         {NAV_SECTIONS.map((section) => (
           <div key={section.title}>
-            <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-sidebar-text/40">
+            <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-sidebar-text/60">
               {section.title}
             </p>
             <div className="space-y-0.5">
@@ -95,8 +94,8 @@ export function Sidebar({ role, allowedModules }: SidebarProps) {
                     className={`
                       flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150
                       ${active
-                        ? "bg-white/10 text-sidebar-text-active shadow-sm"
-                        : "text-sidebar-text hover:bg-white/5 hover:text-sidebar-text-active"
+                        ? "bg-sidebar-active text-sidebar-text-active shadow-sm border border-sidebar-border/50"
+                        : "text-sidebar-text hover:bg-sidebar-hover hover:text-sidebar-text-active"
                       }
                     `.trim()}
                   >
@@ -110,13 +109,12 @@ export function Sidebar({ role, allowedModules }: SidebarProps) {
         ))}
       </nav>
 
-      <div className="border-t border-white/5 p-3 space-y-1">
-        <NotificationsBell />
+      <div className="border-t border-sidebar-border/60 p-3 space-y-1">
         <LanguageSelector variant="sidebar" />
         <button
           type="button"
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-text hover:bg-white/5 hover:text-red-400 transition-colors"
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-text hover:bg-sidebar-hover hover:text-red-500 transition-colors"
         >
           <LogoutIcon />
           {t("signOut")}

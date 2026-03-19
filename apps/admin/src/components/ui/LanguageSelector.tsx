@@ -17,7 +17,7 @@ export function LanguageSelector({ variant = "sidebar" }: { variant?: Variant })
 
   const baseStyles = "flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors";
   const variantStyles: Record<Variant, string> = {
-    sidebar: "text-sidebar-text hover:bg-white/5 hover:text-sidebar-text-active w-full",
+    sidebar: "text-sidebar-text hover:bg-sidebar-hover hover:text-sidebar-text-active w-full",
     light: "text-slate-500 hover:bg-slate-100 hover:text-slate-700",
   };
 

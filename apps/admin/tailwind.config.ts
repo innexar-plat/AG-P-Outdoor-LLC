@@ -28,12 +28,12 @@ const config: Config = {
           border: "#e2e8f0",
         },
         sidebar: {
-          DEFAULT: "#0f172a",
-          hover: "#1e293b",
-          active: "#1e293b",
-          border: "#1e293b",
-          text: "#94a3b8",
-          "text-active": "#f8fafc",
+          DEFAULT: "#eaf7f5",
+          hover: "#d9f1ed",
+          active: "#cbe9e3",
+          border: "#b7ddd5",
+          text: "#33544f",
+          "text-active": "#153a36",
         },
       },
       fontFamily: {

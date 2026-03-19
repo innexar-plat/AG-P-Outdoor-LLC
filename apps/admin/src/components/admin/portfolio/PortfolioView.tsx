@@ -13,6 +13,11 @@ import { PortfolioCard } from "./PortfolioCard";
 import { ImagePreviewModal } from "./ImagePreviewModal";
 import { PortfolioEditorForm } from "./PortfolioEditorForm";
 
+type PortfolioSavePayload = PortfolioItem & {
+  _batchImageUrls?: string[];
+  _batchMode?: boolean;
+};
+
 interface PortfolioViewProps {
   items: PortfolioItem[];
 }
@@ -26,8 +31,40 @@ export function PortfolioView({ items: initial }: PortfolioViewProps) {
   const [editing, setEditing] = useState<PortfolioItem | null>(null);
   const [previewImg, setPreviewImg] = useState<string | null>(null);
 
-  async function handleSave(data: PortfolioItem) {
+  async function handleSave(data: PortfolioSavePayload) {
     const isNew = data.id === 0;
+    const uploaded = Array.isArray(data._batchImageUrls) ? data._batchImageUrls.filter(Boolean) : [];
+    const shouldBatchCreate = isNew && !!data._batchMode && uploaded.length > 1;
+
+    if (shouldBatchCreate) {
+      const created: PortfolioItem[] = [];
+      for (let idx = 0; idx < uploaded.length; idx += 1) {
+        const imageUrl = uploaded[idx];
+        const res = await fetch(apiBase, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title: data.title,
+            description: data.description,
+            category: data.category,
+            imageUrl,
+            beforeImageUrl: null,
+            sortOrder: data.sortOrder + idx,
+            visible: data.visible,
+          }),
+        });
+        if (res.ok) {
+          const { data: saved } = await res.json();
+          created.push(saved);
+        }
+      }
+      if (created.length > 0) {
+        setItems((prev) => [...prev, ...created]);
+        router.refresh();
+      }
+      return;
+    }
+
     const url = isNew ? apiBase : `${apiBase}/${data.id}`;
     const method = isNew ? "POST" : "PUT";
     const res = await fetch(url, {

@@ -54,7 +54,7 @@ export function ImagesView({ images: initial }: ImagesViewProps) {
     if (typeof data.carouselInterval === "number") payload.carouselInterval = data.carouselInterval;
     if (data.carouselEffect) payload.carouselEffect = data.carouselEffect;
 
-    const res = await fetch("/api/admin/images", {
+    const res = await fetch("/admin/api/admin/images", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

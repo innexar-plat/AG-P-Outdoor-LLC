@@ -90,7 +90,7 @@ export function SeoView({ pages: initial }: SeoViewProps) {
         metaDescription: form.metaDescription?.trim() || null,
         ogImage: form.ogImage?.trim() || null,
       };
-      const res = await fetch("/api/admin/seo", {
+      const res = await fetch("/admin/api/admin/seo", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

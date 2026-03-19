@@ -32,7 +32,7 @@ export function SocialView({ posts: initial, youtubeChannelUrl }: SocialViewProp
     if (!newUrl.trim()) return;
     setAdding(true);
     try {
-      const res = await fetch("/api/admin/social", {
+      const res = await fetch("/admin/api/admin/social", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ postUrl: newUrl.trim() }),
@@ -53,13 +53,13 @@ export function SocialView({ posts: initial, youtubeChannelUrl }: SocialViewProp
 
   const deletePost = useCallback(async (id: number) => {
     if (!confirm(t("confirmRemove"))) return;
-    await fetch(`/api/admin/social/${id}`, { method: "DELETE" });
+    await fetch(`/admin/api/admin/social/${id}`, { method: "DELETE" });
     setPosts((prev) => prev.filter((p) => p.id !== id));
     router.refresh();
   }, [router, t]);
 
   const togglePin = useCallback(async (post: SocialPost) => {
-    await fetch(`/api/admin/social/${post.id}`, {
+    await fetch(`/admin/api/admin/social/${post.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ pinned: !post.pinned }),
@@ -73,7 +73,7 @@ export function SocialView({ posts: initial, youtubeChannelUrl }: SocialViewProp
     if (!ytChannelInput.trim()) return;
     setYtLoading(true);
     try {
-      const res = await fetch(`/api/admin/social/youtube-feed?channelUrl=${encodeURIComponent(ytChannelInput.trim())}`);
+      const res = await fetch(`/admin/api/admin/social/youtube-feed?channelUrl=${encodeURIComponent(ytChannelInput.trim())}`);
       if (res.ok) {
         const { data } = await res.json();
         setYtVideos(data ?? []);
@@ -84,7 +84,7 @@ export function SocialView({ posts: initial, youtubeChannelUrl }: SocialViewProp
   }, [ytChannelInput]);
 
   const addYouTubeVideo = useCallback(async (video: YouTubeRSSItem) => {
-    const res = await fetch("/api/admin/social", {
+    const res = await fetch("/admin/api/admin/social", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
