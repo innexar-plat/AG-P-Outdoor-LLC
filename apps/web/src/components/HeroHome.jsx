@@ -57,6 +57,7 @@ export function HeroHome({ site }) {
   // heroMedia: URL from admin panel (video or image), null while loading
   const [heroMedia, setHeroMedia] = useState(null);
   const [heroSlot, setHeroSlot] = useState(null);
+  const [heroPoster, setHeroPoster] = useState(HERO_IMAGE_FALLBACK);
 
   useEffect(() => {
     const connection = navigator.connection;
@@ -80,9 +81,15 @@ export function HeroHome({ site }) {
       const heroSlot = data.find(
         (s) => s.slotKey === 'home_hero' || s.slotKey === 'hero'
       );
+      const posterSlot = data.find(
+        (s) => s.slotKey === 'home_hero_poster' || s.slotKey === 'hero_poster'
+      );
       if (heroSlot?.url) {
         setHeroSlot(heroSlot);
         setHeroMedia(heroSlot.url);
+      }
+      if (posterSlot?.url) {
+        setHeroPoster(posterSlot.url);
       }
     }).catch(() => {});
   }, []);
@@ -98,7 +105,7 @@ export function HeroHome({ site }) {
   const slotHasVideo = Boolean(heroMedia && isLikelyVideo(heroMedia, heroSlot));
   const canRenderVideo = allowAutoVideo && !videoError && slotHasVideo;
   const fallbackImageSrc = slotHasVideo
-    ? HERO_IMAGE_FALLBACK
+    ? (heroPoster || HERO_IMAGE_FALLBACK)
     : (heroMedia || HERO_IMAGE_FALLBACK);
 
   return (
@@ -174,14 +181,14 @@ export function HeroHome({ site }) {
             transition={{ duration: 0.7, ease: 'easeOut' }}
             className="relative"
           >
-            <div className="rounded-2xl border border-[#cfe4e0] bg-[#0f1716] shadow-[0_18px_50px_rgba(20,73,67,0.20)] overflow-hidden">
+            <div className="rounded-2xl border border-[#cfe4e0] bg-[#e6f1ef] shadow-[0_18px_50px_rgba(20,73,67,0.20)] overflow-hidden">
               <div className="relative aspect-[16/10] w-full">
                 {slotHasVideo ? (
                   <motion.div
                     className="absolute inset-0"
                     style={{
-                      backgroundColor: '#102a26',
-                      backgroundImage: `url(${HERO_IMAGE_FALLBACK})`,
+                      backgroundColor: '#e6f1ef',
+                      backgroundImage: `url(${fallbackImageSrc})`,
                       backgroundSize: 'cover',
                       backgroundPosition: objectPos,
                       opacity: canRenderVideo && videoReady ? 0 : 1,
@@ -224,7 +231,7 @@ export function HeroHome({ site }) {
                     onLoadedData={() => setVideoReady(true)}
                     onCanPlay={() => setVideoReady(true)}
                     onError={() => setVideoError(true)}
-                    poster={HERO_IMAGE_FALLBACK}
+                    poster={fallbackImageSrc}
                   />
                 ) : null}
               </div>

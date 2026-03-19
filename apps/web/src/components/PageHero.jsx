@@ -28,6 +28,7 @@ function isLikelyVideo(url, slot) {
  */
 export function PageHero({ section, fallbackUrl, children, sectionClassName = 'relative h-[45vh] min-h-[320px] flex items-center justify-center overflow-hidden' }) {
   const [slot, setSlot] = useState(null);
+  const [posterUrl, setPosterUrl] = useState('');
   const [videoError, setVideoError] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const [allowAutoVideo, setAllowAutoVideo] = useState(false);
@@ -52,8 +53,11 @@ export function PageHero({ section, fallbackUrl, children, sectionClassName = 'r
     fetchSiteImages(section).then((data) => {
       if (Array.isArray(data)) {
         const heroKey = `${section.replace(/-/g, '_')}_hero`;
+        const posterKey = `${section.replace(/-/g, '_')}_hero_poster`;
         const hero = data.find((s) => s.slotKey === heroKey || s.slotKey === 'hero');
+        const poster = data.find((s) => s.slotKey === posterKey || s.slotKey === 'hero_poster');
         if (hero) setSlot(hero);
+        if (poster?.url) setPosterUrl(poster.url);
       }
     });
   }, [section]);
@@ -65,10 +69,11 @@ export function PageHero({ section, fallbackUrl, children, sectionClassName = 'r
 
   const slotHasVideo = Boolean(slot?.url && isLikelyVideo(slot.url, slot));
   const canRenderVideo = slotHasVideo && allowAutoVideo && !videoError;
+  const videoPoster = posterUrl || fallbackUrl;
 
   return (
     <section className={sectionClassName}>
-      <div className="absolute inset-0 bg-black">
+      <div className="absolute inset-0 bg-[#e6f1ef]">
         {slotHasVideo ? (
           <>
             <div
@@ -76,8 +81,8 @@ export function PageHero({ section, fallbackUrl, children, sectionClassName = 'r
               className="absolute inset-0 w-full h-full transition-opacity duration-200"
               style={{
                 opacity: canRenderVideo && videoReady ? 0 : 1,
-                backgroundColor: '#101819',
-                backgroundImage: fallbackUrl ? `url(${fallbackUrl})` : 'none',
+                backgroundColor: '#e6f1ef',
+                backgroundImage: videoPoster ? `url(${videoPoster})` : 'none',
                 backgroundSize: 'cover',
                 backgroundPosition: objectPos,
               }}
@@ -92,7 +97,7 @@ export function PageHero({ section, fallbackUrl, children, sectionClassName = 'r
                 playsInline
                 aria-hidden
                 preload="metadata"
-                poster={fallbackUrl}
+                poster={videoPoster}
                 onLoadedData={() => setVideoReady(true)}
                 onCanPlay={() => setVideoReady(true)}
                 onError={() => setVideoError(true)}
