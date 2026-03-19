@@ -22,6 +22,12 @@ function isInternalHost(hostname: string): boolean {
   );
 }
 
+function isLikelyMediaFilenamePath(pathname: string): boolean {
+  const clean = pathname.replace(/^\/+/, "");
+  if (!clean || clean.includes("/")) return false;
+  return /\.(mp4|webm|mov|avi|jpg|jpeg|png|webp|gif|svg)$/i.test(clean);
+}
+
 export function normalizeMediaUrl(
   value: string | null | undefined,
   proxyPrefix = "/admin/api/site/storage",
@@ -44,6 +50,13 @@ export function normalizeMediaUrl(
       if (isInternalHost(url.hostname)) {
         return `${proxyPrefix}${url.pathname}`;
       }
+
+      // Some legacy records may contain public absolute URLs with only a filename path.
+      // Route these through storage proxy so we can resolve by candidate prefixes.
+      if (isLikelyMediaFilenamePath(url.pathname)) {
+        return `${proxyPrefix}${url.pathname}`;
+      }
+
       if (url.protocol === "http:") {
         url.protocol = "https:";
         return url.toString();

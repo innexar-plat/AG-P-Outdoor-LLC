@@ -2,15 +2,53 @@ import { NextResponse } from "next/server";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { bucketName, r2 } from "@/lib/r2";
 
+const COMMON_MEDIA_PREFIXES = [
+  "site-images/home",
+  "site-images/services",
+  "site-images/residential-turf",
+  "site-images/putting-green",
+  "site-images/pet-turf",
+  "site-images/commercial-turf",
+  "site-images/pavers",
+  "site-images/drainage-grading",
+  "site-images/grass-removal",
+  "site-images/contact",
+  "site-images/about",
+  "site-images/blog",
+  "site-images/portfolio",
+  "site-images",
+  "portfolio",
+  "testimonials",
+  "banners",
+  "blog",
+  "uploads",
+];
+
 function buildCandidateKeys(rawKey: string): string[] {
   const normalized = rawKey.replace(/^\/+/, "");
   if (!normalized) return [];
 
+  const candidates = new Set<string>();
+
   if (normalized.startsWith("uploads/")) {
-    return [normalized, normalized.replace(/^uploads\//, "")];
+    candidates.add(normalized);
+    candidates.add(normalized.replace(/^uploads\//, ""));
+  } else {
+    candidates.add(normalized);
+    candidates.add(`uploads/${normalized}`);
   }
 
-  return [normalized, `uploads/${normalized}`];
+  // Legacy compatibility: if key is only a filename, try known media folders.
+  if (!normalized.includes("/")) {
+    for (const prefix of COMMON_MEDIA_PREFIXES) {
+      candidates.add(`${prefix}/${normalized}`);
+      if (!prefix.startsWith("uploads/")) {
+        candidates.add(`uploads/${prefix}/${normalized}`);
+      }
+    }
+  }
+
+  return Array.from(candidates);
 }
 
 /**
