@@ -21,7 +21,7 @@ const SiteBanner = ({ banners, position = 'header' }) => {
   }
 
   const wrapperClass = position === 'header'
-    ? 'bg-gradient-to-r from-slate-900 to-slate-800'
+    ? 'bg-[#dff3ed] border-b border-[#bfded6]'
     : position === 'footer'
     ? 'bg-gradient-to-r from-slate-800 to-slate-900'
     : '';

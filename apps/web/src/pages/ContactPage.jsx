@@ -16,13 +16,16 @@ import { useSite } from '@/lib/SiteProvider.jsx';
 function normalizeMapsEmbedUrl(rawUrl, address) {
   const fallbackQuery = `https://www.google.com/maps?q=${encodeURIComponent(address || 'AG&P Outdoor LLC, Ocoee, FL')}&output=embed`;
   if (!rawUrl || typeof rawUrl !== 'string') return fallbackQuery;
-
-  if (rawUrl.includes('/maps/embed?') || rawUrl.includes('output=embed')) {
-    return rawUrl;
-  }
-
-  if (rawUrl.includes('google.com/maps') || rawUrl.includes('maps.app.goo.gl') || rawUrl.includes('share.google')) {
-    return `https://www.google.com/maps?q=${encodeURIComponent(address || 'AG&P Outdoor LLC, Ocoee, FL')}&output=embed`;
+  try {
+    const parsed = new URL(rawUrl);
+    const host = parsed.hostname.toLowerCase();
+    const path = parsed.pathname.toLowerCase();
+    const hasEmbedFlag = parsed.searchParams.get('output') === 'embed' || path.includes('/maps/embed');
+    if ((host.includes('google.') || host.includes('maps.app.goo.gl') || host.includes('g.co')) && hasEmbedFlag) {
+      return parsed.toString();
+    }
+  } catch {
+    return fallbackQuery;
   }
 
   return fallbackQuery;
