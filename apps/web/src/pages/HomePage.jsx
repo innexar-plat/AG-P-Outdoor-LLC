@@ -66,7 +66,7 @@ const HomePage = () => {
         setDynamicGallery(
           portfolio
             .filter((item) => item.imageUrl && item.title)
-            .slice(0, 8)
+            .slice(0, 4)
             .map((item) => ({
               url: item.imageUrl,
               title: item.title,

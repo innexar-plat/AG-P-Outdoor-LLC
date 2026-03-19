@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { fetchSiteImages } from '@/lib/api';
 
 /** Fallback estático quando não há mídia no painel */
-const HERO_IMAGE_FALLBACK = 'https://images.unsplash.com/photo-1559824481-e384a5d50c1f?w=1200&h=600&fit=crop';
+const HERO_IMAGE_FALLBACK = 'https://images.unsplash.com/photo-1559824481-e384a5d50c1f?w=960&h=540&fit=crop&q=70&auto=format';
 
 /** Detecta se uma URL é um vídeo pelo sufixo */
 function isVideoUrl(url) {
@@ -40,6 +40,7 @@ const itemVariants = {
 export function HeroHome({ site }) {
   const [videoError, setVideoError] = useState(false);
   const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
+  const [allowAutoVideo, setAllowAutoVideo] = useState(false);
   // heroMedia: URL from admin panel (video or image), null while loading
   const [heroMedia, setHeroMedia] = useState(null);
   const [heroSlot, setHeroSlot] = useState(null);
@@ -48,11 +49,16 @@ export function HeroHome({ site }) {
     const connection = navigator.connection;
     const saveData = Boolean(connection?.saveData);
     const effectiveType = String(connection?.effectiveType ?? '').toLowerCase();
-    const isSlowNetwork = effectiveType.includes('2g');
+    const downlink = Number(connection?.downlink ?? 10);
+    const deviceMemory = Number(navigator.deviceMemory ?? 8);
+    const isSlowNetwork = effectiveType.includes('2g') || effectiveType.includes('3g') || downlink < 5;
+    const isLowMemoryDevice = deviceMemory > 0 && deviceMemory <= 4;
 
-    if (saveData || isSlowNetwork) return;
+    if (saveData || isSlowNetwork || isLowMemoryDevice) return;
 
-    const delayMs = window.innerWidth < 768 ? 1600 : 900;
+    setAllowAutoVideo(true);
+
+    const delayMs = window.innerWidth < 768 ? 5200 : 3200;
     const timer = window.setTimeout(() => setShouldLoadVideo(true), delayMs);
     return () => window.clearTimeout(timer);
   }, []);
@@ -74,7 +80,7 @@ export function HeroHome({ site }) {
   const objectPos = heroSlot
     ? `${heroSlot.focalX ?? 50}% ${heroSlot.focalY ?? 50}%`
     : '50% 50%';
-  const canRenderVideo = shouldLoadVideo && !videoError && heroMedia && isVideoUrl(heroMedia);
+  const canRenderVideo = allowAutoVideo && shouldLoadVideo && !videoError && heroMedia && isVideoUrl(heroMedia);
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-[#eff8f6] via-[#f7fcfb] to-[#edf7f5]">
@@ -167,7 +173,7 @@ export function HeroHome({ site }) {
                     muted
                     playsInline
                     aria-hidden
-                    preload="metadata"
+                    preload="none"
                     onError={() => setVideoError(true)}
                     poster={HERO_IMAGE_FALLBACK}
                   />
