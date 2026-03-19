@@ -57,10 +57,7 @@ export function HeroHome({ site }) {
     if (saveData || isSlowNetwork || isLowMemoryDevice) return;
 
     setAllowAutoVideo(true);
-
-    const delayMs = window.innerWidth < 768 ? 5200 : 3200;
-    const timer = window.setTimeout(() => setShouldLoadVideo(true), delayMs);
-    return () => window.clearTimeout(timer);
+    setShouldLoadVideo(true);
   }, []);
 
   useEffect(() => {
@@ -173,7 +170,7 @@ export function HeroHome({ site }) {
                     muted
                     playsInline
                     aria-hidden
-                    preload="none"
+                    preload="metadata"
                     onError={() => setVideoError(true)}
                     poster={HERO_IMAGE_FALLBACK}
                   />
