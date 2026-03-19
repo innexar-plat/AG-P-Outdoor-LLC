@@ -24,6 +24,35 @@ const COMMON_MEDIA_PREFIXES = [
   "uploads",
 ];
 
+const IMAGE_EXTENSIONS = [".webp", ".jpeg", ".jpg", ".png", ".gif", ".svg"];
+const VIDEO_EXTENSIONS = [".mp4", ".webm", ".mov", ".avi"];
+
+function withExtensionVariants(key: string): string[] {
+  const out = new Set<string>();
+  const normalized = key.replace(/^\/+/, "");
+  if (!normalized) return [];
+
+  out.add(normalized);
+
+  const dot = normalized.lastIndexOf(".");
+  if (dot <= 0) return Array.from(out);
+
+  const base = normalized.slice(0, dot);
+  const ext = normalized.slice(dot).toLowerCase();
+  const variants = VIDEO_EXTENSIONS.includes(ext) ? VIDEO_EXTENSIONS : IMAGE_EXTENSIONS;
+  for (const v of variants) {
+    out.add(`${base}${v}`);
+  }
+
+  return Array.from(out);
+}
+
+function basename(path: string): string {
+  const clean = path.replace(/^\/+/, "");
+  const parts = clean.split("/");
+  return parts[parts.length - 1] ?? clean;
+}
+
 function buildCandidateKeys(rawKey: string): string[] {
   const normalized = rawKey.replace(/^\/+/, "");
   if (!normalized) return [];
@@ -48,7 +77,25 @@ function buildCandidateKeys(rawKey: string): string[] {
     }
   }
 
-  return Array.from(candidates);
+  const fileName = basename(normalized);
+  if (fileName && fileName !== normalized) {
+    // If path is wrong but filename is right, try resolving from known prefixes.
+    for (const prefix of COMMON_MEDIA_PREFIXES) {
+      candidates.add(`${prefix}/${fileName}`);
+      if (!prefix.startsWith("uploads/")) {
+        candidates.add(`uploads/${prefix}/${fileName}`);
+      }
+    }
+  }
+
+  const expanded = new Set<string>();
+  for (const candidate of candidates) {
+    for (const item of withExtensionVariants(candidate)) {
+      expanded.add(item);
+    }
+  }
+
+  return Array.from(expanded);
 }
 
 /**
