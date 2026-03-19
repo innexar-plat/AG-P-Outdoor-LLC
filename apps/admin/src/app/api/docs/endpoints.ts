@@ -21,7 +21,7 @@ export const API_DOCS: ApiSection[] = [
     endpoints: [
       {
         method: "POST",
-        path: "/api/auth/sign-in/email",
+        path: "/admin/api/auth/sign-in/email",
         description: "Sign in with email and password",
         auth: false,
         body: { email: "string (required)", password: "string (required)" },
@@ -29,14 +29,14 @@ export const API_DOCS: ApiSection[] = [
       },
       {
         method: "POST",
-        path: "/api/auth/sign-out",
+        path: "/admin/api/auth/sign-out",
         description: "Sign out the current user",
         auth: true,
         response: '{ success: true }',
       },
       {
         method: "GET",
-        path: "/api/auth/get-session",
+        path: "/admin/api/auth/get-session",
         description: "Get current user session",
         auth: true,
         response: '{ user, session }',
@@ -61,19 +61,19 @@ export const API_DOCS: ApiSection[] = [
         auth: true,
         body: {
           title: "string (required)",
-          path: "/admin/api/auth/sign-in/email",
+          slug: "string (required, unique)",
           content: "string (required, HTML)",
           coverImage: "string? (URL)",
           metaTitle: "string? (max 70 chars)",
           metaDescription: "string? (max 160 chars)",
           status: '"draft" | "published"',
-          path: "/admin/api/auth/sign-out",
+        },
         response: '{ data: BlogPost, error: null }',
       },
       {
         method: "PUT",
         path: "/api/admin/blog/[id]",
-          path: "/admin/api/auth/get-session",
+        description: "Update a blog post",
         auth: true,
         body: { title: "string?", slug: "string?", content: "string?", status: '"draft" | "published"?' },
         response: '{ data: BlogPost, error: null }',
