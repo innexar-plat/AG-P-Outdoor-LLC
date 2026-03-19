@@ -1,4 +1,4 @@
-/** Innexar brand logo — geometric raven SVG + wordmark */
+/** AG&P Outdoor brand logo — turf grass icon + wordmark */
 export function Logo({
   size = "md",
   showText = true,
@@ -7,7 +7,7 @@ export function Logo({
   showText?: boolean;
 }) {
   const dims = { sm: 28, md: 36, lg: 48 }[size];
-  const textSize = { sm: "text-base", md: "text-xl", lg: "text-2xl" }[size];
+  const textSize = { sm: "text-sm", md: "text-base", lg: "text-xl" }[size];
 
   return (
     <div className="flex items-center gap-2.5">
@@ -17,32 +17,28 @@ export function Logo({
         viewBox="0 0 64 64"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        aria-label="Innexar"
+        aria-label="AG&P Outdoor"
       >
-        <defs>
-          <linearGradient id="raven-grad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#0ea5e9" />
-            <stop offset="50%" stopColor="#0d9488" />
-            <stop offset="100%" stopColor="#6366f1" />
-          </linearGradient>
-        </defs>
-        {/* Body */}
-        <polygon points="20,58 32,28 44,58" fill="url(#raven-grad)" opacity="0.85" />
-        {/* Left wing */}
-        <polygon points="8,40 24,20 32,38" fill="url(#raven-grad)" opacity="0.7" />
-        {/* Right wing */}
-        <polygon points="56,40 40,20 32,38" fill="url(#raven-grad)" opacity="0.7" />
-        {/* Head */}
-        <polygon points="26,24 32,8 38,24 32,28" fill="url(#raven-grad)" />
-        {/* Eye */}
-        <circle cx="32" cy="18" r="2" fill="#fff" opacity="0.9" />
-        {/* Beak */}
-        <polygon points="32,8 28,14 32,12" fill="#0ea5e9" />
+        {/* Dark green background */}
+        <circle cx="32" cy="32" r="30" fill="#1f3810" />
+        {/* Left grass blade */}
+        <path d="M20 46 Q16 34 18 20 Q22 28 22 40 Z" fill="#4ade80" opacity="0.9" />
+        {/* Center grass blade (tallest) */}
+        <path d="M32 46 Q32 28 32 12 Q36 24 34 40 Z" fill="#86efac" />
+        {/* Right grass blade */}
+        <path d="M44 46 Q48 34 46 20 Q42 28 42 40 Z" fill="#4ade80" opacity="0.9" />
+        {/* Ground bar */}
+        <rect x="14" y="45" width="36" height="5" rx="2.5" fill="#2d5016" />
       </svg>
       {showText && (
-        <span className={`font-bold tracking-wider ${textSize} bg-gradient-to-r from-sky-400 via-teal-400 to-indigo-400 bg-clip-text text-transparent`}>
-          INNEXAR
-        </span>
+        <div className="flex flex-col leading-tight">
+          <span className={`font-bold tracking-wide ${textSize} bg-gradient-to-r from-green-400 to-emerald-300 bg-clip-text text-transparent`}>
+            AG&amp;P Outdoor
+          </span>
+          <span className="text-[9px] text-slate-500 uppercase tracking-widest font-medium">
+            Admin Panel
+          </span>
+        </div>
       )}
     </div>
   );
@@ -57,21 +53,13 @@ export function LogoIcon({ size = 32 }: { size?: number }) {
       viewBox="0 0 64 64"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      aria-label="Innexar"
+      aria-label="AG&P Outdoor"
     >
-      <defs>
-        <linearGradient id="raven-icon" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#0ea5e9" />
-          <stop offset="50%" stopColor="#0d9488" />
-          <stop offset="100%" stopColor="#6366f1" />
-        </linearGradient>
-      </defs>
-      <polygon points="20,58 32,28 44,58" fill="url(#raven-icon)" opacity="0.85" />
-      <polygon points="8,40 24,20 32,38" fill="url(#raven-icon)" opacity="0.7" />
-      <polygon points="56,40 40,20 32,38" fill="url(#raven-icon)" opacity="0.7" />
-      <polygon points="26,24 32,8 38,24 32,28" fill="url(#raven-icon)" />
-      <circle cx="32" cy="18" r="2" fill="#fff" opacity="0.9" />
-      <polygon points="32,8 28,14 32,12" fill="#0ea5e9" />
+      <circle cx="32" cy="32" r="30" fill="#1f3810" />
+      <path d="M20 46 Q16 34 18 20 Q22 28 22 40 Z" fill="#4ade80" opacity="0.9" />
+      <path d="M32 46 Q32 28 32 12 Q36 24 34 40 Z" fill="#86efac" />
+      <path d="M44 46 Q48 34 46 20 Q42 28 42 40 Z" fill="#4ade80" opacity="0.9" />
+      <rect x="14" y="45" width="36" height="5" rx="2.5" fill="#2d5016" />
     </svg>
   );
 }

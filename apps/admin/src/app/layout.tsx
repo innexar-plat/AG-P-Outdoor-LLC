@@ -3,8 +3,12 @@ import { Providers } from "@/components/Providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Innexar Panel",
-  description: "Innexar Administration Panel",
+  title: "AG&P Admin Panel",
+  description: "AG&P Outdoor LLC — Administration Panel",
+  icons: {
+    icon: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
   // Prevent search engines from indexing the admin panel.
   robots: {
     index: false,
