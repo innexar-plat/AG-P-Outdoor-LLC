@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { getPublicSettings } from "@/lib/queries/settings";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 /**
  * GET /api/site/settings
  * Returns public settings for the site (pixels, company, CTA). No auth.

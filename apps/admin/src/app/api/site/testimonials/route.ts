@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { listApprovedTestimonials } from "@/lib/queries/testimonials";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 /**
  * GET /api/site/testimonials — approved testimonials sorted. No auth.
  */

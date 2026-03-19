@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { listVisiblePortfolioItems } from "@/lib/queries/portfolio";
 import { normalizeMediaUrl } from "@/lib/media-url";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 /**
  * GET /api/site/portfolio — visible portfolio items sorted. No auth.
  */
