@@ -89,11 +89,11 @@ function buildCandidateKeys(rawKey: string): string[] {
   }
 
   const expanded = new Set<string>();
-  for (const candidate of candidates) {
+  candidates.forEach((candidate) => {
     for (const item of withExtensionVariants(candidate)) {
       expanded.add(item);
     }
-  }
+  });
 
   return Array.from(expanded);
 }
