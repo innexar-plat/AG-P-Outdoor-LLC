@@ -2,6 +2,42 @@ import { NextResponse } from "next/server";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { bucketName, r2 } from "@/lib/r2";
 
+function normalizePublicBase(raw: string | undefined): string | null {
+  if (!raw) return null;
+  const value = raw.trim();
+  if (!value) return null;
+  return value.replace(/\/+$/, "");
+}
+
+function toHttpsIfHttp(url: string): string {
+  return url.startsWith("http://") ? `https://${url.slice(7)}` : url;
+}
+
+function buildPublicFallbackUrls(candidates: string[]): string[] {
+  const bases = [
+    normalizePublicBase(process.env.S3_PUBLIC_URL),
+    normalizePublicBase(process.env.R2_PUBLIC_URL),
+  ].filter(Boolean) as string[];
+
+  const out = new Set<string>();
+  for (let i = 0; i < candidates.length; i += 1) {
+    const key = candidates[i].replace(/^\/+/, "");
+    for (let j = 0; j < bases.length; j += 1) {
+      const base = bases[j];
+      const keyWithoutUploads = key.replace(/^uploads\//, "");
+      out.add(toHttpsIfHttp(`${base}/${key}`));
+      out.add(toHttpsIfHttp(`${base}/${keyWithoutUploads}`));
+
+      // If base already ends with /uploads, avoid duplicate segment.
+      if (base.endsWith("/uploads")) {
+        out.add(toHttpsIfHttp(`${base}/${keyWithoutUploads}`));
+      }
+    }
+  }
+
+  return Array.from(out);
+}
+
 const COMMON_MEDIA_PREFIXES = [
   "site-images/home",
   "site-images/services",
@@ -109,12 +145,20 @@ export async function GET(
   const { key } = await params;
   const objectKey = Array.isArray(key) ? key.map(decodeURIComponent).join("/") : "";
 
-  if (!objectKey || !r2 || !bucketName) {
+  if (!objectKey) {
     return NextResponse.json({ data: null, error: "Not found" }, { status: 404 });
   }
 
   const candidateKeys = buildCandidateKeys(objectKey);
   const rangeHeader = request.headers.get("range") ?? undefined;
+  const publicFallbackUrls = buildPublicFallbackUrls(candidateKeys);
+
+  if (!r2 || !bucketName) {
+    if (publicFallbackUrls.length > 0) {
+      return NextResponse.redirect(publicFallbackUrls[0], 307);
+    }
+    return NextResponse.json({ data: null, error: "Not found" }, { status: 404 });
+  }
 
   for (const candidate of candidateKeys) {
     try {
@@ -154,6 +198,16 @@ export async function GET(
     }
   }
 
-  console.error("[site/storage/[...key] GET] object not found", { objectKey, candidateKeys });
+  // Last-resort fallback: if object was not found via SDK, try public URL base.
+  if (publicFallbackUrls.length > 0) {
+    return NextResponse.redirect(publicFallbackUrls[0], 307);
+  }
+
+  console.error("[site/storage/[...key] GET] object not found", {
+    objectKey,
+    candidateCount: candidateKeys.length,
+    hasR2Client: Boolean(r2),
+    hasBucket: Boolean(bucketName),
+  });
   return NextResponse.json({ data: null, error: "Not found" }, { status: 404 });
 }
