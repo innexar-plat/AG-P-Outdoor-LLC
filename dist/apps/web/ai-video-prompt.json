@@ -1,0 +1,35 @@
+{
+  "purpose": "Gerar vídeo para hero do site a partir de fotos fornecidas (image-to-video AI)",
+  "tools": ["Runway Gen-3", "Pika Labs", "Kling", "Luma Dream Machine", "Sora"],
+  "prompts": {
+    "hero_playground": {
+      "en": "Children playing happily on a playground with synthetic artificial turf grass. Kids running, sliding, and having fun on a sunny day. Smooth camera movement, professional quality, cinematic lighting. The turf is green and well-maintained. Warm, inviting atmosphere. No text or logos.",
+      "pt": "Crianças brincando felizes em um playground com grama sintética artificial. Crianças correndo, deslizando e se divertindo em um dia ensolarado. Movimento suave de câmera, qualidade profissional, iluminação cinematográfica. A grama é verde e bem cuidada. Atmosfera acolhedora. Sem texto ou logos."
+    },
+    "hero_turf_general": {
+      "en": "Professional artificial turf installation. Green synthetic grass, smooth surface, natural look. Subtle wind moving the grass fibers. Clean, premium aesthetic. Ideal for landscaping company hero video.",
+      "pt": "Instalação profissional de grama artificial. Grama sintética verde, superfície lisa, aparência natural. Vento sutil movendo as fibras. Estética limpa e premium."
+    },
+    "hero_patio": {
+      "en": "Beautiful backyard patio with artificial turf. Family-friendly outdoor space. Green lawn, well-lit, peaceful. Slow pan or gentle zoom. Premium residential installation.",
+      "pt": "Pátio de quintal bonito com grama artificial. Espaço externo para família. Gramado verde, bem iluminado, tranquilo."
+    }
+  },
+  "technical": {
+    "aspectRatio": "16:9",
+    "duration": "5-15 seconds",
+    "resolution": "1920x1080 or 1280x720",
+    "motion": "slow, smooth - avoid fast cuts",
+    "loop": "yes - video will loop in hero"
+  },
+  "input_instructions": {
+    "photos": "Use suas fotos de instalações reais como referência. A IA vai animar/movimentar a cena.",
+    "best_results": [
+      "Fotos com boa iluminação",
+      "Ângulo amplo mostrando o espaço",
+      "Grama artificial visível e em destaque",
+      "Evitar pessoas com rostos muito visíveis (privacidade)"
+    ]
+  },
+  "copy_paste_prompt": "Children playing happily on a playground with synthetic artificial turf grass. Kids running, sliding, and having fun on a sunny day. Smooth camera movement, professional quality, cinematic lighting. The turf is green and well-maintained. Warm, inviting atmosphere. No text or logos. 16:9, 10 seconds, slow motion, loopable."
+}

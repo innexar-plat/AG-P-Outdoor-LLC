@@ -299,9 +299,9 @@ export default function HomePageDeferredSections({ site }) {
                   </motion.p>
                   <motion.div className="border-t border-gray-200 pt-4" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: index * 0.1 + 0.25 }}>
                     <div className="flex items-center gap-3">
-                      {review.photoUrl || review.photoUrls?.[0] ? (
+                      {review.photoUrl ? (
                         <img
-                          src={review.photoUrl || review.photoUrls?.[0]}
+                          src={review.photoUrl}
                           alt={review.name}
                           className="w-12 h-12 rounded-full object-cover border border-gray-200"
                           loading="lazy"
@@ -310,22 +310,9 @@ export default function HomePageDeferredSections({ site }) {
                           height="48"
                           onError={(event) => {
                             event.currentTarget.style.display = 'none';
-                            const fallback = event.currentTarget.nextElementSibling;
-                            if (fallback instanceof HTMLElement) fallback.style.display = 'inline-flex';
                           }}
                         />
                       ) : null}
-                      <span
-                        className="w-12 h-12 rounded-full bg-[#2f6f46] text-white text-sm font-semibold items-center justify-center border border-gray-200"
-                        style={{ display: review.photoUrl || review.photoUrls?.[0] ? 'none' : 'inline-flex' }}
-                      >
-                        {String(review.name || '?')
-                          .split(' ')
-                          .filter(Boolean)
-                          .slice(0, 2)
-                          .map((name) => name[0]?.toUpperCase())
-                          .join('') || '?'}
-                      </span>
                       <div>
                         <p className="font-bold text-[#1f3a2e]">{review.name}</p>
                         <p className="text-sm text-gray-600">{review.location}</p>

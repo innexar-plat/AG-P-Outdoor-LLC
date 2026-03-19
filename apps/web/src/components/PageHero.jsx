@@ -73,14 +73,16 @@ export function PageHero({ section, fallbackUrl, children, sectionClassName = 'r
       <div className="absolute inset-0 bg-black">
         {slotHasVideo ? (
           <>
-            <img
-              src={fallbackUrl}
-              alt=""
+            <div
               aria-hidden
-              className="absolute inset-0 w-full h-full object-cover transition-opacity duration-200"
-              style={{ opacity: canRenderVideo && videoReady ? 0 : 1 }}
-              loading="eager"
-              fetchPriority="high"
+              className="absolute inset-0 w-full h-full transition-opacity duration-200"
+              style={{
+                opacity: canRenderVideo && videoReady ? 0 : 1,
+                backgroundColor: '#101819',
+                backgroundImage: fallbackUrl ? `url(${fallbackUrl})` : 'none',
+                backgroundSize: 'cover',
+                backgroundPosition: objectPos,
+              }}
             />
             {canRenderVideo ? (
               <video

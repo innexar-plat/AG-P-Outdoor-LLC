@@ -75,45 +75,51 @@ const ReviewsPage = () => {
             <div className="text-center py-16 text-gray-500">No reviews yet.</div>
           ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
-            {reviews.map((review, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-                className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 hover:shadow-2xl transition-all duration-300"
-              >
-                <div className="flex items-center mb-4">
-                  {[...Array(review.rating)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-gray-700 mb-4 italic">"{review.text}"</p>
-                {Array.isArray(review.photoUrls) && review.photoUrls.length > 0 && (
-                  <div className="grid grid-cols-2 gap-2 mb-4">
-                    {review.photoUrls.slice(0, 4).map((url, idx) => (
-                      <img
-                        key={`${url}-${idx}`}
-                        src={url}
-                        alt={`${review.name} service photo ${idx + 1}`}
-                        className="w-full h-24 rounded-md object-cover border border-gray-200"
-                        loading="lazy"
-                      />
+            {reviews.map((review, index) => {
+              const servicePhotos = Array.isArray(review.photoUrls)
+                ? review.photoUrls.filter((url) => url && url !== review.photoUrl)
+                : [];
+
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.05 }}
+                  className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 hover:shadow-2xl transition-all duration-300"
+                >
+                  <div className="flex items-center mb-4">
+                    {[...Array(review.rating)].map((_, i) => (
+                      <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
                     ))}
                   </div>
-                )}
-                <div className="border-t border-gray-200 pt-4 flex items-center gap-3">
-                  {(review.photoUrl || review.photoUrls?.[0]) && (
-                    <img src={review.photoUrl || review.photoUrls?.[0]} alt={review.name} className="w-10 h-10 rounded-full object-cover" />
+                  <p className="text-gray-700 mb-4 italic">"{review.text}"</p>
+                  {servicePhotos.length > 0 && (
+                    <div className="grid grid-cols-2 gap-2 mb-4">
+                      {servicePhotos.slice(0, 4).map((url, idx) => (
+                        <img
+                          key={`${url}-${idx}`}
+                          src={url}
+                          alt={`${review.name} service photo ${idx + 1}`}
+                          className="w-full h-24 rounded-md object-cover border border-gray-200"
+                          loading="lazy"
+                        />
+                      ))}
+                    </div>
                   )}
-                  <div>
-                    <p className="font-bold text-[#1f3a2e]">{review.name}</p>
-                    {review.location && <p className="text-sm text-gray-600">{review.location}</p>}
+                  <div className="border-t border-gray-200 pt-4 flex items-center gap-3">
+                    {review.photoUrl ? (
+                      <img src={review.photoUrl} alt={review.name} className="w-10 h-10 rounded-full object-cover" />
+                    ) : null}
+                    <div>
+                      <p className="font-bold text-[#1f3a2e]">{review.name}</p>
+                      {review.location && <p className="text-sm text-gray-600">{review.location}</p>}
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
           </div>
           )}
         </div>

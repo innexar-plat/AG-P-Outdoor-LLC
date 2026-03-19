@@ -185,23 +185,40 @@ export function HeroHome({ site }) {
           >
             <div className="rounded-2xl border border-[#cfe4e0] bg-[#0f1716] shadow-[0_18px_50px_rgba(20,73,67,0.20)] overflow-hidden">
               <div className="relative aspect-[16/10] w-full">
-                <motion.img
-                  src={fallbackImageSrc}
-                  alt="Premium turf installation"
-                  className="absolute inset-0 w-full h-full object-cover"
-                  style={{ objectPosition: objectPos }}
-                  width="1600"
-                  height="1000"
-                  loading="eager"
-                  fetchPriority="high"
-                  decoding="async"
-                  onError={() => {
-                    if (!slotHasVideo) setHeroMedia(null);
-                  }}
-                  initial={{ opacity: 0, scale: 1.02 }}
-                  animate={{ opacity: canRenderVideo && videoReady ? 0 : 1, scale: 1 }}
-                  transition={{ duration: 0.25 }}
-                />
+                {slotHasVideo ? (
+                  <motion.div
+                    className="absolute inset-0"
+                    style={{
+                      backgroundColor: '#102a26',
+                      backgroundImage: `url(${HERO_IMAGE_FALLBACK})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: objectPos,
+                      opacity: canRenderVideo && videoReady ? 0 : 1,
+                    }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: canRenderVideo && videoReady ? 0 : 1 }}
+                    transition={{ duration: 0.25 }}
+                    aria-hidden
+                  />
+                ) : (
+                  <motion.img
+                    src={fallbackImageSrc}
+                    alt="Premium turf installation"
+                    className="absolute inset-0 w-full h-full object-cover"
+                    style={{ objectPosition: objectPos }}
+                    width="1600"
+                    height="1000"
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
+                    onError={() => {
+                      setHeroMedia(null);
+                    }}
+                    initial={{ opacity: 0, scale: 1.02 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.25 }}
+                  />
+                )}
 
                 {canRenderVideo ? (
                   <video

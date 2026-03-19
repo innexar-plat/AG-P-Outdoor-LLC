@@ -17,6 +17,23 @@ function buildGoogleEmbed(query) {
   return `https://www.google.com/maps?hl=en&q=${encodeURIComponent(query)}&z=14&output=embed`;
 }
 
+function buildGoogleSearchUrl(query) {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+
+function buildOsmEmbedUrl(lat, lon) {
+  const latitude = Number(lat);
+  const longitude = Number(lon);
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
+
+  const delta = 0.015;
+  const left = (longitude - delta).toFixed(6);
+  const right = (longitude + delta).toFixed(6);
+  const top = (latitude + delta).toFixed(6);
+  const bottom = (latitude - delta).toFixed(6);
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${left}%2C${bottom}%2C${right}%2C${top}&layer=mapnik&marker=${latitude.toFixed(6)}%2C${longitude.toFixed(6)}`;
+}
+
 function parseGooglePlaceFromPath(pathname) {
   if (!pathname || typeof pathname !== 'string') return '';
   const match = pathname.match(/\/maps\/place\/([^/]+)/i);
@@ -56,14 +73,15 @@ function normalizeMapsEmbedUrl(rawUrl, address) {
       return parsed.protocol === 'https:' || parsed.protocol === 'http:' ? parsed.toString() : fallbackQuery;
     }
 
-    // Rebuild Google URLs into a known embeddable format.
+    // Rebuild Google URLs into a known format; this may still be blocked by Google.
+    // We only use this when we don't have an explicit /maps/embed URL from admin.
     const q =
       parsed.searchParams.get('q') ||
       parsed.searchParams.get('query') ||
       parsed.searchParams.get('destination') ||
       parseGooglePlaceFromPath(parsed.pathname) ||
       address;
-    return buildGoogleEmbed(q || 'AG&P Outdoor LLC, Ocoee, FL');
+    return buildGoogleSearchUrl(q || 'AG&P Outdoor LLC, Ocoee, FL');
   } catch {
     return fallbackQuery;
   }
@@ -76,6 +94,7 @@ const ContactPage = () => {
   const site = useSite();
   const [seo, setSeo] = useState(null);
   const [mapFailed, setMapFailed] = useState(false);
+  const [resolvedMapEmbedUrl, setResolvedMapEmbedUrl] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -114,10 +133,39 @@ const ContactPage = () => {
     fetchSeo('contact').then((data) => data && setSeo(data));
   }, []);
 
-  const mapsEmbedUrl = normalizeMapsEmbedUrl(
-    site.company_map_embed_url || site.map_embed_url || site.google_maps_embed_url || site.google_maps_url,
-    site.address,
-  );
+  const rawMapUrl = site.company_map_embed_url || site.map_embed_url || site.google_maps_embed_url || site.google_maps_url;
+  const normalizedMapUrl = normalizeMapsEmbedUrl(rawMapUrl, site.address);
+  const hasExplicitGoogleEmbed = /google\.[^/]+\/maps\/embed/i.test(String(rawMapUrl || ''));
+
+  useEffect(() => {
+    let cancelled = false;
+    setMapFailed(false);
+
+    if (hasExplicitGoogleEmbed) {
+      setResolvedMapEmbedUrl(normalizedMapUrl);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    const addressQuery = site.address || '878 Keaton Pkwy, Ocoee, FL 34761';
+    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressQuery)}&limit=1`)
+      .then((res) => (res.ok ? res.json() : []))
+      .then((rows) => {
+        if (cancelled) return;
+        const first = Array.isArray(rows) ? rows[0] : null;
+        const osmUrl = first ? buildOsmEmbedUrl(first.lat, first.lon) : null;
+        setResolvedMapEmbedUrl(osmUrl || '');
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setResolvedMapEmbedUrl('');
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [hasExplicitGoogleEmbed, normalizedMapUrl, site.address]);
 
   const title = seo?.titleTag || "Contact AG&P Outdoor LLC | Free Estimates - Central Florida";
   const description = seo?.metaDescription || "Contact AG&P Outdoor LLC for a free estimate on artificial turf installation. Call 772-226-9087 or visit us in Ocoee, FL. Serving Central Florida.";
@@ -208,9 +256,9 @@ const ContactPage = () => {
                 <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
                   <h3 className="text-xl font-bold text-[#1f3a2e] mb-4">Our Location</h3>
                   <div className="aspect-video rounded-lg overflow-hidden">
-                    {!mapFailed ? (
+                    {!mapFailed && resolvedMapEmbedUrl ? (
                       <iframe
-                        src={mapsEmbedUrl}
+                        src={resolvedMapEmbedUrl}
                         width="100%"
                         height="100%"
                         style={{ border: 0 }}
@@ -225,7 +273,7 @@ const ContactPage = () => {
                         <MapPin className="h-8 w-8 text-[#2f6f46] mb-3" />
                         <p className="text-[#1f3a2e] font-semibold mb-2">Nao foi possivel carregar o mapa aqui.</p>
                         <a
-                          href={site.google_maps_url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.address || 'AG&P Outdoor LLC, Ocoee, FL')}`}
+                          href={site.google_maps_url || buildGoogleSearchUrl(site.address || 'AG&P Outdoor LLC, Ocoee, FL')}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-[#2f6f46] font-semibold underline"
