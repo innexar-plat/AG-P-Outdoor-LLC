@@ -36,15 +36,15 @@ export function PageHero({ section, fallbackUrl, children, sectionClassName = 'r
 
   useEffect(() => {
     const connection = navigator.connection;
-    const isMobile = window.matchMedia('(max-width: 1023px)').matches;
     const saveData = Boolean(connection?.saveData);
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const effectiveType = String(connection?.effectiveType ?? '').toLowerCase();
     const downlink = Number(connection?.downlink ?? 10);
     const deviceMemory = Number(navigator.deviceMemory ?? 8);
-    const isSlowNetwork = effectiveType.includes('2g') || effectiveType.includes('3g') || downlink < 5;
+    const isSlowNetwork = effectiveType.includes('2g') || downlink < 1.5;
     const isLowMemoryDevice = deviceMemory > 0 && deviceMemory <= 4;
 
-    if (isMobile || saveData || isSlowNetwork || isLowMemoryDevice) return;
+    if (saveData || prefersReducedMotion || isSlowNetwork || isLowMemoryDevice) return;
 
     setAllowAutoVideo(true);
   }, []);
@@ -96,7 +96,7 @@ export function PageHero({ section, fallbackUrl, children, sectionClassName = 'r
                 muted
                 playsInline
                 aria-hidden
-                preload="metadata"
+                preload="auto"
                 poster={videoPoster}
                 onLoadedData={() => setVideoReady(true)}
                 onCanPlay={() => setVideoReady(true)}

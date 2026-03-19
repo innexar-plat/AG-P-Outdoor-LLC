@@ -7,6 +7,50 @@ const API_BASE_RAW = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 const API_BASE_TRIMMED = API_BASE_RAW.replace(/\/+$/, '');
 const API_BASE = API_BASE_TRIMMED.endsWith('/admin') ? API_BASE_TRIMMED : `${API_BASE_TRIMMED}/admin`;
 
+function normalizeMediaUrl(url) {
+  if (!url || typeof url !== 'string') return url;
+
+  try {
+    // Keep current host (apex or www) when media URL points to one of our domains.
+    const parsed = new URL(url, window.location.origin);
+    const isOurHost = parsed.hostname === 'agpoutdoor.com' || parsed.hostname === 'www.agpoutdoor.com';
+    if (isOurHost) {
+      return `${window.location.origin}${parsed.pathname}${parsed.search}${parsed.hash}`;
+    }
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
+
+function normalizeSlotUrls(slot) {
+  if (!slot || typeof slot !== 'object') return slot;
+
+  const next = { ...slot };
+  if (next.url) next.url = normalizeMediaUrl(next.url);
+
+  if (next.carouselItems) {
+    try {
+      const parsed = Array.isArray(next.carouselItems)
+        ? next.carouselItems
+        : JSON.parse(next.carouselItems);
+      if (Array.isArray(parsed)) {
+        const normalizedItems = parsed.map((item) => ({
+          ...item,
+          url: normalizeMediaUrl(item?.url),
+        }));
+        next.carouselItems = Array.isArray(next.carouselItems)
+          ? normalizedItems
+          : JSON.stringify(normalizedItems);
+      }
+    } catch {
+      // Keep original carouselItems when parsing fails.
+    }
+  }
+
+  return next;
+}
+
 async function fetchJson(path) {
   try {
     const res = await fetch(`${API_BASE}${path}`);
@@ -50,7 +94,9 @@ export async function fetchSiteImages(section) {
     const res = await fetch(`${API_BASE}/api/site/images/${section}`, { cache: 'no-store' });
     if (!res.ok) return null;
     const json = await res.json();
-    return json.data ?? null;
+    const data = json.data ?? null;
+    if (!Array.isArray(data)) return data;
+    return data.map(normalizeSlotUrls);
   } catch {
     return null;
   }

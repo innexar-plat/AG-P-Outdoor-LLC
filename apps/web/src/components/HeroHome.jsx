@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { fetchSiteImages } from '@/lib/api';
 
 /** Fallback estático quando não há mídia no painel */
-const HERO_IMAGE_FALLBACK = 'https://images.unsplash.com/photo-1559824481-e384a5d50c1f?w=960&h=540&fit=crop&q=70&auto=format';
+const HERO_IMAGE_FALLBACK = '/thumbnail.jpeg';
 
 /** Detecta se uma URL é um vídeo pelo sufixo */
 function isVideoUrl(url) {
@@ -61,15 +61,15 @@ export function HeroHome({ site }) {
 
   useEffect(() => {
     const connection = navigator.connection;
-    const isMobile = window.matchMedia('(max-width: 1023px)').matches;
     const saveData = Boolean(connection?.saveData);
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const effectiveType = String(connection?.effectiveType ?? '').toLowerCase();
     const downlink = Number(connection?.downlink ?? 10);
     const deviceMemory = Number(navigator.deviceMemory ?? 8);
-    const isSlowNetwork = effectiveType.includes('2g') || effectiveType.includes('3g') || downlink < 5;
+    const isSlowNetwork = effectiveType.includes('2g') || downlink < 1.5;
     const isLowMemoryDevice = deviceMemory > 0 && deviceMemory <= 4;
 
-    if (isMobile || saveData || isSlowNetwork || isLowMemoryDevice) return;
+    if (saveData || prefersReducedMotion || isSlowNetwork || isLowMemoryDevice) return;
 
     setAllowAutoVideo(true);
   }, []);
@@ -227,7 +227,7 @@ export function HeroHome({ site }) {
                     muted
                     playsInline
                     aria-hidden
-                    preload="metadata"
+                    preload="auto"
                     onLoadedData={() => setVideoReady(true)}
                     onCanPlay={() => setVideoReady(true)}
                     onError={() => setVideoError(true)}
