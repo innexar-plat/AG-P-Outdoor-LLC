@@ -264,7 +264,15 @@ const HomePage = () => {
               duration: 0.5,
               ease: "easeOut"
             }} className="relative group overflow-hidden rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer h-64">
-                  <img src={image.url} alt={image.title} className="w-full h-full object-cover group-hover:scale-125 transition-transform duration-700 ease-out" loading="lazy" />
+                  <img
+                    src={image.url}
+                    alt={image.title}
+                    className="w-full h-full object-cover group-hover:scale-125 transition-transform duration-700 ease-out"
+                    loading="lazy"
+                    decoding="async"
+                    width="640"
+                    height="512"
+                  />
                   
                   {/* Dark overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -364,6 +372,9 @@ const HomePage = () => {
                             alt={review.name}
                             className="w-12 h-12 rounded-full object-cover border border-gray-200"
                             loading="lazy"
+                            decoding="async"
+                            width="48"
+                            height="48"
                             onError={(e) => {
                               e.currentTarget.style.display = 'none';
                               const fallback = e.currentTarget.nextElementSibling;

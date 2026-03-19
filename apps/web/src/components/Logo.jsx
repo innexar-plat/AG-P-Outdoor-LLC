@@ -22,6 +22,10 @@ const Logo = ({ size = 'md', onClick, className = '', disableLink = false }) => 
         src={site.logoUrl}
         alt={site.companyName}
         className={`${sizeClasses[size]} w-auto object-contain rounded-lg`}
+        width="320"
+        height="120"
+        decoding="async"
+        loading="eager"
       />
     </motion.div>
   );

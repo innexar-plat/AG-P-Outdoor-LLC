@@ -39,9 +39,23 @@ const itemVariants = {
  */
 export function HeroHome({ site }) {
   const [videoError, setVideoError] = useState(false);
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
   // heroMedia: URL from admin panel (video or image), null while loading
   const [heroMedia, setHeroMedia] = useState(null);
   const [heroSlot, setHeroSlot] = useState(null);
+
+  useEffect(() => {
+    const connection = navigator.connection;
+    const saveData = Boolean(connection?.saveData);
+    const effectiveType = String(connection?.effectiveType ?? '').toLowerCase();
+    const isSlowNetwork = effectiveType.includes('2g');
+
+    if (saveData || isSlowNetwork) return;
+
+    const delayMs = window.innerWidth < 768 ? 1600 : 900;
+    const timer = window.setTimeout(() => setShouldLoadVideo(true), delayMs);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     // Load hero media from admin panel site_images (home / home_hero slot)
@@ -60,6 +74,7 @@ export function HeroHome({ site }) {
   const objectPos = heroSlot
     ? `${heroSlot.focalX ?? 50}% ${heroSlot.focalY ?? 50}%`
     : '50% 50%';
+  const canRenderVideo = shouldLoadVideo && !videoError && heroMedia && isVideoUrl(heroMedia);
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-[#eff8f6] via-[#f7fcfb] to-[#edf7f5]">
@@ -143,7 +158,7 @@ export function HeroHome({ site }) {
           >
             <div className="rounded-2xl border border-[#cfe4e0] bg-[#0f1716] shadow-[0_18px_50px_rgba(20,73,67,0.20)] overflow-hidden">
               <div className="aspect-[16/10] w-full">
-                {!videoError && heroMedia && isVideoUrl(heroMedia) ? (
+                {canRenderVideo ? (
                   <video
                     className="w-full h-full object-contain"
                     src={heroMedia}
@@ -152,6 +167,7 @@ export function HeroHome({ site }) {
                     muted
                     playsInline
                     aria-hidden
+                    preload="metadata"
                     onError={() => setVideoError(true)}
                     poster={HERO_IMAGE_FALLBACK}
                   />
@@ -161,6 +177,11 @@ export function HeroHome({ site }) {
                     alt="Premium turf installation"
                     className="w-full h-full object-cover"
                     style={{ objectPosition: objectPos }}
+                    width="1600"
+                    height="1000"
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
                     initial={{ opacity: 0, scale: 1.02 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.6 }}

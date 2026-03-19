@@ -27,22 +27,24 @@ function App() {
       <PageTracker />
       <SiteBannerWrapper />
       <ScrollToTop />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/services/residential-turf" element={<ResidentialTurfPage />} />
-        <Route path="/services/putting-green" element={<PuttingGreenPage />} />
-        <Route path="/services/pet-turf" element={<PetTurfPage />} />
-        <Route path="/services/commercial-turf" element={<CommercialTurfPage />} />
-        <Route path="/services/pavers" element={<PaversPage />} />
-        <Route path="/services/drainage-grading" element={<DrainageGradingPage />} />
-        <Route path="/services/grass-removal" element={<NaturalGrassRemovalPage />} />
-        <Route path="/about" element={<AboutUsPage />} />
-        <Route path="/reviews" element={<ReviewsPage />} />
-        <Route path="/faq" element={<FAQPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/blog" element={<BlogPage />} />
-        <Route path="/gallery" element={<GalleryPage />} />
-      </Routes>
+      <main id="main-content">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/services/residential-turf" element={<ResidentialTurfPage />} />
+          <Route path="/services/putting-green" element={<PuttingGreenPage />} />
+          <Route path="/services/pet-turf" element={<PetTurfPage />} />
+          <Route path="/services/commercial-turf" element={<CommercialTurfPage />} />
+          <Route path="/services/pavers" element={<PaversPage />} />
+          <Route path="/services/drainage-grading" element={<DrainageGradingPage />} />
+          <Route path="/services/grass-removal" element={<NaturalGrassRemovalPage />} />
+          <Route path="/about" element={<AboutUsPage />} />
+          <Route path="/reviews" element={<ReviewsPage />} />
+          <Route path="/faq" element={<FAQPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/gallery" element={<GalleryPage />} />
+        </Routes>
+      </main>
       <Toaster />
     </Router>
     </SiteProvider>

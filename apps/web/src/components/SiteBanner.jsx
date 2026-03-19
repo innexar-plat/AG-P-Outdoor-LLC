@@ -93,6 +93,10 @@ function SingleBanner({ banner, animated = false }) {
           src={banner.imageUrl}
           alt={banner.title}
           className="w-10 h-10 rounded object-cover shrink-0"
+          width="40"
+          height="40"
+          loading="lazy"
+          decoding="async"
         />
       )}
       <div className="flex-1 min-w-0">
@@ -163,11 +167,20 @@ export function SitePopupBanner({ banners }) {
             <button
               onClick={close}
               className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-black/30 flex items-center justify-center hover:bg-black/50 transition-colors"
+              aria-label="Close popup banner"
             >
               <X className="h-4 w-4 text-white" />
             </button>
             {banner.imageUrl && (
-              <img src={banner.imageUrl} alt={banner.title} className="w-full h-48 object-cover" />
+              <img
+                src={banner.imageUrl}
+                alt={banner.title}
+                className="w-full h-48 object-cover"
+                width="640"
+                height="192"
+                loading="lazy"
+                decoding="async"
+              />
             )}
             <div className="p-6 space-y-3">
               <h3 className="text-xl font-bold">{banner.title}</h3>
@@ -192,6 +205,7 @@ export function SitePopupBanner({ banners }) {
                     className={`w-2 h-2 rounded-full transition-all ${
                       i === current ? 'bg-white w-4' : 'bg-white/40'
                     }`}
+                    aria-label={`Show banner ${i + 1}`}
                   />
                 ))}
               </div>

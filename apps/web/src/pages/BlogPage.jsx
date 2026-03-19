@@ -131,6 +131,10 @@ const BlogPage = () => {
                   src={selectedArticle.coverImage}
                   alt={selectedArticle.title}
                   className="w-full h-64 object-cover"
+                  width="1200"
+                  height="256"
+                  loading="lazy"
+                  decoding="async"
                 />
               )}
               <div className="p-8">
@@ -143,6 +147,7 @@ const BlogPage = () => {
                   <button
                     onClick={() => setSelectedArticle(null)}
                     className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                    aria-label="Close article"
                   >
                     <X className="h-5 w-5 text-gray-500" />
                   </button>
