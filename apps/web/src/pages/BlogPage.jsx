@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Seo from '@/components/Seo.jsx';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from '@/lib/motion-lite.jsx';
 import { Calendar, ArrowRight, X } from 'lucide-react';
 import Header from '@/components/Header.jsx';
 import Footer from '@/components/Footer.jsx';
-import StickyMobileButtons from '@/components/StickyMobileButtons.jsx';
+import StickyMobileButtons from '@/components/StickyMobileButtonsDeferred.jsx';
 import { Button } from '@/components/ui/button';
 import { useSite } from '@/lib/SiteProvider.jsx';
 import { fetchBlogPosts, fetchSeo } from '@/lib/api';

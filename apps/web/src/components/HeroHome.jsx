@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion } from '@/lib/motion-lite.jsx';
 import { ArrowRight, ChevronDown, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
@@ -47,6 +47,7 @@ export function HeroHome({ site }) {
 
   useEffect(() => {
     const connection = navigator.connection;
+    const isMobile = window.matchMedia('(max-width: 1023px)').matches;
     const saveData = Boolean(connection?.saveData);
     const effectiveType = String(connection?.effectiveType ?? '').toLowerCase();
     const downlink = Number(connection?.downlink ?? 10);
@@ -54,10 +55,11 @@ export function HeroHome({ site }) {
     const isSlowNetwork = effectiveType.includes('2g') || effectiveType.includes('3g') || downlink < 5;
     const isLowMemoryDevice = deviceMemory > 0 && deviceMemory <= 4;
 
-    if (saveData || isSlowNetwork || isLowMemoryDevice) return;
+    if (isMobile || saveData || isSlowNetwork || isLowMemoryDevice) return;
 
     setAllowAutoVideo(true);
-    setShouldLoadVideo(true);
+    const loadVideoId = window.setTimeout(() => setShouldLoadVideo(true), 900);
+    return () => window.clearTimeout(loadVideoId);
   }, []);
 
   useEffect(() => {
@@ -127,11 +129,12 @@ export function HeroHome({ site }) {
               variants={itemVariants}
               className="flex flex-col sm:flex-row gap-3 sm:gap-4"
             >
-              <Link to={site.ctaUrl} className="w-full sm:w-auto">
-                <Button
-                  size="lg"
-                  className="w-full bg-[#2f6f46] hover:bg-[#245739] text-white font-semibold px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-95 group"
-                >
+              <Button
+                asChild
+                size="lg"
+                className="w-full sm:w-auto min-h-12 bg-[#2f6f46] hover:bg-[#1f5b38] text-white font-semibold px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-95 group"
+              >
+                <Link to={site.ctaUrl}>
                   Get Free Estimate
                   <motion.div
                     animate={{ x: [0, 4, 0] }}
@@ -139,17 +142,16 @@ export function HeroHome({ site }) {
                   >
                     <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </motion.div>
-                </Button>
-              </Link>
-              <a href={`tel:${site.phone}`} className="w-full sm:w-auto">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="w-full bg-white border-[#cde2de] text-[#1f4b46] hover:bg-[#f2faf8] font-semibold px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base rounded-lg transition-all duration-300"
-                >
-                  Call {site.phone}
-                </Button>
-              </a>
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="w-full sm:w-auto min-h-12 bg-white border-[#9bbeb8] text-[#153a36] hover:bg-[#edf7f4] hover:text-[#0f2d2a] font-semibold px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base rounded-lg transition-all duration-300"
+              >
+                <a href={`tel:${site.phone}`}>Call {site.phone}</a>
+              </Button>
             </motion.div>
           </motion.div>
 

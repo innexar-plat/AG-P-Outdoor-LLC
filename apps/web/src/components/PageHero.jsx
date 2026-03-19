@@ -16,7 +16,26 @@ function isVideoUrl(url) {
  */
 export function PageHero({ section, fallbackUrl, children, sectionClassName = 'relative h-[45vh] min-h-[320px] flex items-center justify-center overflow-hidden' }) {
   const [slot, setSlot] = useState(null);
+  const [allowAutoVideo, setAllowAutoVideo] = useState(false);
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
   const objectPos = slot ? `${slot.focalX ?? 50}% ${slot.focalY ?? 50}%` : '50% 50%';
+
+  useEffect(() => {
+    const connection = navigator.connection;
+    const isMobile = window.matchMedia('(max-width: 1023px)').matches;
+    const saveData = Boolean(connection?.saveData);
+    const effectiveType = String(connection?.effectiveType ?? '').toLowerCase();
+    const downlink = Number(connection?.downlink ?? 10);
+    const deviceMemory = Number(navigator.deviceMemory ?? 8);
+    const isSlowNetwork = effectiveType.includes('2g') || effectiveType.includes('3g') || downlink < 5;
+    const isLowMemoryDevice = deviceMemory > 0 && deviceMemory <= 4;
+
+    if (isMobile || saveData || isSlowNetwork || isLowMemoryDevice) return;
+
+    setAllowAutoVideo(true);
+    const loadVideoId = window.setTimeout(() => setShouldLoadVideo(true), 900);
+    return () => window.clearTimeout(loadVideoId);
+  }, []);
 
   useEffect(() => {
     fetchSiteImages(section).then((data) => {
@@ -28,10 +47,13 @@ export function PageHero({ section, fallbackUrl, children, sectionClassName = 'r
     });
   }, [section]);
 
+  const slotHasVideo = Boolean(slot?.url && isVideoUrl(slot.url));
+  const canRenderVideo = slotHasVideo && allowAutoVideo && shouldLoadVideo;
+
   return (
     <section className={sectionClassName}>
       <div className="absolute inset-0 bg-black">
-        {slot?.url && isVideoUrl(slot.url) ? (
+        {canRenderVideo ? (
           <video
             className="w-full h-full object-contain"
             src={slot.url}
@@ -40,7 +62,17 @@ export function PageHero({ section, fallbackUrl, children, sectionClassName = 'r
             muted
             playsInline
             aria-hidden
+            preload="metadata"
             poster={fallbackUrl}
+          />
+        ) : slotHasVideo ? (
+          <img
+            src={fallbackUrl}
+            alt=""
+            aria-hidden
+            className="w-full h-full object-cover"
+            loading="eager"
+            fetchPriority="high"
           />
         ) : (
           <SiteImageSlot

@@ -2,10 +2,16 @@
 module.exports = {
 	darkMode: ['class'],
 	content: [
-		'./pages/**/*.{js,jsx}',
-		'./components/**/*.{js,jsx}',
-		'./app/**/*.{js,jsx}',
+		'./index.html',
 		'./src/**/*.{js,jsx}',
+		'!./src/components/ui/**/*.{js,jsx}',
+		'./src/components/ui/button.jsx',
+		'./src/components/ui/input.jsx',
+		'./src/components/ui/label.jsx',
+		'./src/components/ui/textarea.jsx',
+		'./src/components/ui/toaster.jsx',
+		'./src/components/ui/toast.jsx',
+		'./src/components/ui/use-toast.js',
 	],
 	theme: {
 		container: {

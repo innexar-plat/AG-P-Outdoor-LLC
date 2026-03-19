@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Seo from '@/components/Seo.jsx';
-import { motion } from 'framer-motion';
+import { motion } from '@/lib/motion-lite.jsx';
 import { Droplets, Shield, Home, CheckCircle } from 'lucide-react';
 import Header from '@/components/Header.jsx';
 import Footer from '@/components/Footer.jsx';
-import StickyMobileButtons from '@/components/StickyMobileButtons.jsx';
+import StickyMobileButtons from '@/components/StickyMobileButtonsDeferred.jsx';
 import EstimateForm from '@/components/EstimateForm.jsx';
 import { fetchSeo } from '@/lib/api';
 import { PageHero } from '@/components/PageHero.jsx';

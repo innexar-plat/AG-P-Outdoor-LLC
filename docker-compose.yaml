@@ -52,8 +52,8 @@ services:
       context: .
       dockerfile: Dockerfile.prod
     command: ["npm", "run", "start", "--prefix", "apps/web"]
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     labels:
       - "traefik.enable=true"
       # Route public website by domain (Coolify auto labels may be misconfigured,
@@ -71,8 +71,8 @@ services:
       context: .
       dockerfile: Dockerfile.prod
     command: ["sh", "-c", "npm run db:migrate --prefix apps/admin && npm run db:migrate-carousel --prefix apps/admin && npm run db:migrate-testimonial-images --prefix apps/admin && npm run db:migrate-focal-point --prefix apps/admin && npm run seed --prefix apps/admin && npm run db:migrate-content --prefix apps/admin && npm run db:migrate-google-reviews --prefix apps/admin && npm run start --prefix apps/admin"]
-    ports:
-      - "3001:3001"
+    expose:
+      - "3001"
     depends_on:
       - sqld
       - minio

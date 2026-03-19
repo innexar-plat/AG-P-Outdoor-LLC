@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Seo from '@/components/Seo.jsx';
-import { motion } from 'framer-motion';
+import { motion } from '@/lib/motion-lite.jsx';
 import { Phone, Mail, MapPin, Clock, MessageCircle } from 'lucide-react';
 import Header from '@/components/Header.jsx';
 import Footer from '@/components/Footer.jsx';
-import StickyMobileButtons from '@/components/StickyMobileButtons.jsx';
+import StickyMobileButtons from '@/components/StickyMobileButtonsDeferred.jsx';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -14,7 +14,7 @@ import { submitForm, fetchSeo } from '@/lib/api';
 import { useSite } from '@/lib/SiteProvider.jsx';
 
 function buildGoogleEmbed(query) {
-  return `https://maps.google.com/maps?hl=en&q=${encodeURIComponent(query)}&z=14&output=embed`;
+  return `https://www.google.com/maps?hl=en&q=${encodeURIComponent(query)}&z=14&output=embed`;
 }
 
 function normalizeMapsEmbedUrl(rawUrl, address) {
@@ -22,7 +22,7 @@ function normalizeMapsEmbedUrl(rawUrl, address) {
   if (!rawUrl || typeof rawUrl !== 'string') return fallbackQuery;
 
   const iframeSrcMatch = rawUrl.match(/src=["']([^"']+)["']/i);
-  const candidateRaw = iframeSrcMatch?.[1] ?? rawUrl;
+  const candidateRaw = (iframeSrcMatch?.[1] ?? rawUrl).trim().replace(/&amp;/g, '&');
   const normalizedRaw = candidateRaw.startsWith('//') ? `https:${candidateRaw}` : candidateRaw;
 
   try {
@@ -35,10 +35,13 @@ function normalizeMapsEmbedUrl(rawUrl, address) {
       host.includes('g.co') ||
       host.includes('googleusercontent.com');
 
-    if (!isGoogleHost) return fallbackQuery;
-
     const hasEmbedFlag = parsed.searchParams.get('output') === 'embed' || path.includes('/maps/embed');
     if (hasEmbedFlag) return parsed.toString();
+
+    if (!isGoogleHost) {
+      // Allow non-Google absolute embed URLs from admin settings (e.g. OpenStreetMap providers).
+      return parsed.protocol === 'https:' || parsed.protocol === 'http:' ? parsed.toString() : fallbackQuery;
+    }
 
     const q = parsed.searchParams.get('q') || parsed.searchParams.get('query');
     if (q) return buildGoogleEmbed(q);
@@ -53,6 +56,7 @@ const ContactPage = () => {
   const { toast } = useToast();
   const site = useSite();
   const [seo, setSeo] = useState(null);
+  const [mapFailed, setMapFailed] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -185,16 +189,32 @@ const ContactPage = () => {
                 <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
                   <h3 className="text-xl font-bold text-[#1f3a2e] mb-4">Our Location</h3>
                   <div className="aspect-video rounded-lg overflow-hidden">
-                    <iframe
-                      src={mapsEmbedUrl}
-                      width="100%"
-                      height="100%"
-                      style={{ border: 0 }}
-                      allowFullScreen=""
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                      title="AG&P Outdoor LLC Location"
-                    ></iframe>
+                    {!mapFailed ? (
+                      <iframe
+                        src={mapsEmbedUrl}
+                        width="100%"
+                        height="100%"
+                        style={{ border: 0 }}
+                        allowFullScreen=""
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                        title="AG&P Outdoor LLC Location"
+                        onError={() => setMapFailed(true)}
+                      ></iframe>
+                    ) : (
+                      <div className="h-full w-full bg-gray-50 border border-gray-200 rounded-lg flex flex-col items-center justify-center text-center p-6">
+                        <MapPin className="h-8 w-8 text-[#2f6f46] mb-3" />
+                        <p className="text-[#1f3a2e] font-semibold mb-2">Nao foi possivel carregar o mapa aqui.</p>
+                        <a
+                          href={site.google_maps_url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.address || 'AG&P Outdoor LLC, Ocoee, FL')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[#2f6f46] font-semibold underline"
+                        >
+                          Abrir mapa no Google Maps
+                        </a>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

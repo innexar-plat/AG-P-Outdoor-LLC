@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion } from '@/lib/motion-lite.jsx';
 import { useSite } from '@/lib/SiteProvider.jsx';
 
 const Logo = ({ size = 'md', onClick, className = '', disableLink = false }) => {

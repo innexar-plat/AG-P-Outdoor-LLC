@@ -1,4 +1,4 @@
-import { Helmet } from 'react-helmet';
+import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useSite } from '@/lib/SiteProvider.jsx';
 
@@ -29,28 +29,63 @@ export default function Seo({
   const finalDescription = description || site.company_description;
   const robots = noIndex ? 'noindex, nofollow' : noFollow ? 'index, nofollow' : 'index, follow';
 
-  return (
-    <Helmet>
-      <title>{finalTitle}</title>
-      <meta name="description" content={finalDescription} />
-      <link rel="canonical" href={canonicalUrl} />
+  useEffect(() => {
+    if (finalTitle) {
+      document.title = finalTitle;
+    }
 
-      {/* Open Graph */}
-      <meta property="og:type" content="website" />
-      <meta property="og:site_name" content={site.companyName} />
-      <meta property="og:title" content={finalTitle} />
-      <meta property="og:description" content={finalDescription} />
-      <meta property="og:url" content={ogUrl} />
-      {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+    const ensureMeta = (attrName, attrValue, content) => {
+      if (!content) return;
+      let node = document.head.querySelector(`meta[${attrName}="${attrValue}"]`);
+      if (!node) {
+        node = document.createElement('meta');
+        node.setAttribute(attrName, attrValue);
+        document.head.appendChild(node);
+      }
+      node.setAttribute('content', content);
+    };
 
-      {/* Twitter */}
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={finalTitle} />
-      <meta name="twitter:description" content={finalDescription} />
-      {ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
-      {site.social_twitter && <meta name="twitter:site" content={site.social_twitter} />}
+    const ensureCanonical = (url) => {
+      if (!url) return;
+      let node = document.head.querySelector('link[rel="canonical"]');
+      if (!node) {
+        node = document.createElement('link');
+        node.setAttribute('rel', 'canonical');
+        document.head.appendChild(node);
+      }
+      node.setAttribute('href', url);
+    };
 
-      <meta name="robots" content={robots} />
-    </Helmet>
-  );
+    ensureCanonical(canonicalUrl);
+    ensureMeta('name', 'description', finalDescription);
+    ensureMeta('property', 'og:type', 'website');
+    ensureMeta('property', 'og:site_name', site.companyName);
+    ensureMeta('property', 'og:title', finalTitle);
+    ensureMeta('property', 'og:description', finalDescription);
+    ensureMeta('property', 'og:url', ogUrl);
+
+    if (ogImageUrl) {
+      ensureMeta('property', 'og:image', ogImageUrl);
+      ensureMeta('name', 'twitter:image', ogImageUrl);
+    }
+
+    ensureMeta('name', 'twitter:card', 'summary_large_image');
+    ensureMeta('name', 'twitter:title', finalTitle);
+    ensureMeta('name', 'twitter:description', finalDescription);
+    if (site.social_twitter) {
+      ensureMeta('name', 'twitter:site', site.social_twitter);
+    }
+    ensureMeta('name', 'robots', robots);
+  }, [
+    canonicalUrl,
+    finalDescription,
+    finalTitle,
+    ogImageUrl,
+    ogUrl,
+    robots,
+    site.companyName,
+    site.social_twitter,
+  ]);
+
+  return null;
 }

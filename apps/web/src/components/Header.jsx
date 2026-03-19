@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from '@/lib/motion-lite.jsx';
 import { Menu, X, ChevronDown, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import Logo from '@/components/Logo.jsx';
 import { useSite } from '@/lib/SiteProvider.jsx';
 
@@ -81,20 +75,22 @@ const Header = () => {
             </Link>
 
             {/* Services Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center text-sm font-medium text-header-text hover:text-header-hover transition-colors">
-                Services <ChevronDown className="ml-1 h-4 w-4" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56">
+            <details className="relative group">
+              <summary className="list-none flex items-center text-sm font-medium text-header-text hover:text-header-hover transition-colors cursor-pointer">
+                Services <ChevronDown className="ml-1 h-4 w-4 group-open:rotate-180 transition-transform" />
+              </summary>
+              <div className="absolute top-full left-0 mt-2 w-56 rounded-md border border-gray-200 bg-white shadow-lg p-1 z-50">
                 {services.map((service) => (
-                  <DropdownMenuItem key={service.path} asChild>
-                    <Link to={service.path} className="cursor-pointer">
-                      {service.name}
-                    </Link>
-                  </DropdownMenuItem>
+                  <Link
+                    key={service.path}
+                    to={service.path}
+                    className="block px-3 py-2 rounded text-sm text-header-text hover:bg-gray-100 hover:text-header-hover transition-colors"
+                  >
+                    {service.name}
+                  </Link>
                 ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+              </div>
+            </details>
 
             {navLinks.slice(1).map((link) => (
               <Link
