@@ -28,18 +28,32 @@ export function PortfolioEditorForm({ editing, onClose, onSave }: PortfolioEdito
   const [form, setForm] = useState<PortfolioItem | null>(editing);
   const [batchImageUrls, setBatchImageUrls] = useState<string[]>([]);
   const [batchMode, setBatchMode] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setForm(editing);
     setBatchImageUrls([]);
     setBatchMode(true);
+    setError(null);
   }, [editing]);
 
   if (!editing) return null;
 
   const handleSave = async () => {
     if (!form) return;
+    const title = (form.title ?? "").trim();
+    const imageUrl = (form.imageUrl ?? "").trim();
+    if (!title && batchImageUrls.length <= 1) {
+      setError("Title is required.");
+      return;
+    }
+    if (!imageUrl && batchImageUrls.length === 0) {
+      setError("Upload at least one image before saving.");
+      return;
+    }
+
     setLoading(true);
+    setError(null);
     try {
       await onSave({
         ...form,
@@ -47,6 +61,8 @@ export function PortfolioEditorForm({ editing, onClose, onSave }: PortfolioEdito
         _batchMode: batchMode,
       });
       onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
     } finally {
       setLoading(false);
     }
@@ -59,6 +75,11 @@ export function PortfolioEditorForm({ editing, onClose, onSave }: PortfolioEdito
       title={editing.id === 0 ? t("newProject") : t("editProject")}
     >
       <div className="space-y-4">
+        {error && (
+          <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3">
+            <p className="text-sm text-red-700">{error}</p>
+          </div>
+        )}
         <Input
           label={t("title")}
           value={form?.title ?? editing.title}

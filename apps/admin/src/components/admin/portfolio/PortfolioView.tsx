@@ -30,21 +30,32 @@ export function PortfolioView({ items: initial }: PortfolioViewProps) {
   const [items, setItems] = useState(initial);
   const [editing, setEditing] = useState<PortfolioItem | null>(null);
   const [previewImg, setPreviewImg] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSave(data: PortfolioSavePayload) {
+    setError(null);
     const isNew = data.id === 0;
     const uploaded = Array.isArray(data._batchImageUrls) ? data._batchImageUrls.filter(Boolean) : [];
+    const baseTitle = (data.title ?? "").trim() || "Portfolio Project";
+    const primaryImageUrl = (data.imageUrl ?? "").trim() || uploaded[0] || "";
+
+    if (!primaryImageUrl) {
+      throw new Error("Upload at least one image before saving.");
+    }
+
     const shouldBatchCreate = isNew && !!data._batchMode && uploaded.length > 1;
 
     if (shouldBatchCreate) {
       const created: PortfolioItem[] = [];
+      const failures: string[] = [];
       for (let idx = 0; idx < uploaded.length; idx += 1) {
         const imageUrl = uploaded[idx];
+        const batchTitle = uploaded.length > 1 ? `${baseTitle} ${idx + 1}` : baseTitle;
         const res = await fetch(apiBase, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            title: data.title,
+            title: batchTitle,
             description: data.description,
             category: data.category,
             imageUrl,
@@ -56,7 +67,13 @@ export function PortfolioView({ items: initial }: PortfolioViewProps) {
         if (res.ok) {
           const { data: saved } = await res.json();
           created.push(saved);
+        } else {
+          const json = await res.json().catch(() => ({}));
+          failures.push(json.error ?? `Item ${idx + 1}: request failed (${res.status})`);
         }
+      }
+      if (failures.length > 0) {
+        throw new Error(`Failed to create some items: ${failures.join(" | ")}`);
       }
       if (created.length > 0) {
         setItems((prev) => [...prev, ...created]);
@@ -71,15 +88,19 @@ export function PortfolioView({ items: initial }: PortfolioViewProps) {
       method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        title: data.title,
+        title: baseTitle,
         description: data.description,
         category: data.category,
-        imageUrl: data.imageUrl,
+        imageUrl: primaryImageUrl,
         beforeImageUrl: data.beforeImageUrl || null,
         sortOrder: data.sortOrder,
         visible: data.visible,
       }),
     });
+    if (!res.ok) {
+      const json = await res.json().catch(() => ({}));
+      throw new Error(json.error ?? `Request failed (${res.status})`);
+    }
     if (res.ok) {
       const { data: saved } = await res.json();
       if (isNew) {
@@ -146,6 +167,12 @@ export function PortfolioView({ items: initial }: PortfolioViewProps) {
         }
       />
 
+      {error && (
+        <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3">
+          <p className="text-sm text-red-700">{error}</p>
+        </div>
+      )}
+
       {items.length === 0 && (
         <>
           <Card><CardBody className="text-center py-12 text-slate-400">{t("noProjects")}</CardBody></Card>
@@ -181,7 +208,15 @@ export function PortfolioView({ items: initial }: PortfolioViewProps) {
       <PortfolioEditorForm
         editing={editing}
         onClose={() => setEditing(null)}
-        onSave={handleSave}
+        onSave={async (payload) => {
+          try {
+            await handleSave(payload);
+          } catch (err) {
+            const message = err instanceof Error ? err.message : String(err);
+            setError(message);
+            throw err;
+          }
+        }}
       />
     </div>
   );

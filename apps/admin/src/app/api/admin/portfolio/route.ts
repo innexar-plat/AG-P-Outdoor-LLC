@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { listPortfolioItems, createPortfolioItem } from "@/lib/queries/portfolio";
 import { z } from "zod";
+import { normalizeMediaUrl } from "@/lib/media-url";
 
 const mediaUrlSchema = z
   .string()
@@ -31,7 +32,12 @@ export async function GET(request: Request) {
   }
   try {
     const rows = await listPortfolioItems();
-    return NextResponse.json({ data: rows, error: null });
+    const normalized = rows.map((row) => ({
+      ...row,
+      imageUrl: normalizeMediaUrl(row.imageUrl),
+      beforeImageUrl: row.beforeImageUrl ? normalizeMediaUrl(row.beforeImageUrl) : null,
+    }));
+    return NextResponse.json({ data: normalized, error: null });
   } catch (err) {
     console.error("[admin/portfolio GET]", err);
     return NextResponse.json({ data: null, error: "Something went wrong" }, { status: 500 });
@@ -57,8 +63,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ data: null, error: parsed.error.errors.map((e) => e.message).join("; ") }, { status: 400 });
   }
   try {
-    const row = await createPortfolioItem(parsed.data);
-    return NextResponse.json({ data: row, error: null }, { status: 201 });
+    const payload = {
+      ...parsed.data,
+      imageUrl: normalizeMediaUrl(parsed.data.imageUrl),
+      beforeImageUrl: parsed.data.beforeImageUrl ? normalizeMediaUrl(parsed.data.beforeImageUrl) : null,
+    };
+    const row = await createPortfolioItem(payload);
+    const normalized = row
+      ? {
+          ...row,
+          imageUrl: normalizeMediaUrl(row.imageUrl),
+          beforeImageUrl: row.beforeImageUrl ? normalizeMediaUrl(row.beforeImageUrl) : null,
+        }
+      : row;
+    return NextResponse.json({ data: normalized, error: null }, { status: 201 });
   } catch (err) {
     console.error("[admin/portfolio POST]", err);
     return NextResponse.json({ data: null, error: "Something went wrong" }, { status: 500 });

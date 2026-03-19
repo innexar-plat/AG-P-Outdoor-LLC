@@ -6,6 +6,7 @@ import {
   deletePortfolioItem,
 } from "@/lib/queries/portfolio";
 import { z } from "zod";
+import { normalizeMediaUrl } from "@/lib/media-url";
 
 const mediaUrlSchema = z
   .string()
@@ -55,8 +56,21 @@ export async function PUT(
     if (!existing) {
       return NextResponse.json({ data: null, error: "Not found" }, { status: 404 });
     }
-    const row = await updatePortfolioItem(id, parsed.data);
-    return NextResponse.json({ data: row ?? existing, error: null });
+    const payload = {
+      ...parsed.data,
+      ...(parsed.data.imageUrl !== undefined ? { imageUrl: normalizeMediaUrl(parsed.data.imageUrl) } : {}),
+      ...(parsed.data.beforeImageUrl !== undefined
+        ? { beforeImageUrl: parsed.data.beforeImageUrl ? normalizeMediaUrl(parsed.data.beforeImageUrl) : null }
+        : {}),
+    };
+    const row = await updatePortfolioItem(id, payload);
+    const data = row ?? existing;
+    const normalized = {
+      ...data,
+      imageUrl: normalizeMediaUrl(data.imageUrl),
+      beforeImageUrl: data.beforeImageUrl ? normalizeMediaUrl(data.beforeImageUrl) : null,
+    };
+    return NextResponse.json({ data: normalized, error: null });
   } catch (err) {
     console.error("[admin/portfolio/[id] PUT]", err);
     return NextResponse.json({ data: null, error: "Something went wrong" }, { status: 500 });

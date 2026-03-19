@@ -55,8 +55,8 @@ const Header = () => {
       <header
         className={`font-header fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? 'bg-white/92 backdrop-blur-xl border-b border-teal-100/90 shadow-[0_6px_24px_rgba(26,92,86,0.10)] py-2'
-            : 'bg-gradient-to-r from-[#f9fffe]/92 via-[#ecfbf8]/90 to-[#f4fffd]/92 backdrop-blur-xl border-b border-teal-100/60 py-3'
+            ? 'bg-white/98 backdrop-blur-xl border-b border-teal-100 shadow-[0_8px_28px_rgba(26,92,86,0.12)] py-2'
+            : 'bg-gradient-to-r from-[#f9fffe]/98 via-[#ecfbf8]/97 to-[#f4fffd]/98 backdrop-blur-xl border-b border-teal-100/90 py-3'
         }`}
       >
         <nav className="container mx-auto px-4">
