@@ -5,8 +5,12 @@ import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import { fetchSiteImages } from '@/lib/api';
 
-/** Fallback estático quando não há mídia no painel */
-const HERO_IMAGE_FALLBACK = '/thumbnail.jpeg';
+/** Fallbacks estáticos quando não há mídia no painel */
+const HERO_IMAGE_FALLBACKS = [
+  '/thumbnail.jpeg',
+  '/qr/agp-logo-source.png',
+  'https://images.unsplash.com/photo-1559824481-e384a5d50c1f?w=960&h=540&fit=crop&q=70&auto=format',
+];
 
 /** Detecta se uma URL é um vídeo pelo sufixo */
 function isVideoUrl(url) {
@@ -57,7 +61,8 @@ export function HeroHome({ site }) {
   // heroMedia: URL from admin panel (video or image), null while loading
   const [heroMedia, setHeroMedia] = useState(null);
   const [heroSlot, setHeroSlot] = useState(null);
-  const [heroPoster, setHeroPoster] = useState(HERO_IMAGE_FALLBACK);
+  const [heroPoster, setHeroPoster] = useState('');
+  const [fallbackImageIndex, setFallbackImageIndex] = useState(0);
 
   useEffect(() => {
     const connection = navigator.connection;
@@ -84,12 +89,18 @@ export function HeroHome({ site }) {
       const posterSlot = data.find(
         (s) => s.slotKey === 'home_hero_poster' || s.slotKey === 'hero_poster'
       );
+      const gallerySlot = data.find(
+        (s) => s.slotKey === 'home_gallery' || s.slotKey === 'gallery'
+      );
       if (heroSlot?.url) {
         setHeroSlot(heroSlot);
         setHeroMedia(heroSlot.url);
       }
       if (posterSlot?.url) {
         setHeroPoster(posterSlot.url);
+      } else if (gallerySlot?.url) {
+        // Reuse gallery image as hero/video cover when no explicit poster exists.
+        setHeroPoster(gallerySlot.url);
       }
     }).catch(() => {});
   }, []);
@@ -97,7 +108,12 @@ export function HeroHome({ site }) {
   useEffect(() => {
     setVideoError(false);
     setVideoReady(false);
+    setFallbackImageIndex(0);
   }, [heroMedia]);
+
+  const staticFallbackImage =
+    HERO_IMAGE_FALLBACKS[Math.min(fallbackImageIndex, HERO_IMAGE_FALLBACKS.length - 1)] ||
+    HERO_IMAGE_FALLBACKS[0];
 
   const objectPos = heroSlot
     ? `${heroSlot.focalX ?? 50}% ${heroSlot.focalY ?? 50}%`
@@ -105,8 +121,8 @@ export function HeroHome({ site }) {
   const slotHasVideo = Boolean(heroMedia && isLikelyVideo(heroMedia, heroSlot));
   const canRenderVideo = allowAutoVideo && !videoError && slotHasVideo;
   const fallbackImageSrc = slotHasVideo
-    ? (heroPoster || HERO_IMAGE_FALLBACK)
-    : (heroMedia || HERO_IMAGE_FALLBACK);
+    ? (heroPoster || staticFallbackImage)
+    : (heroMedia || heroPoster || staticFallbackImage);
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-[#eff8f6] via-[#f7fcfb] to-[#edf7f5]">
@@ -210,7 +226,13 @@ export function HeroHome({ site }) {
                     fetchPriority="high"
                     decoding="async"
                     onError={() => {
-                      setHeroMedia(null);
+                      if (heroMedia) {
+                        setHeroMedia(null);
+                        return;
+                      }
+                      setFallbackImageIndex((idx) =>
+                        Math.min(idx + 1, HERO_IMAGE_FALLBACKS.length - 1)
+                      );
                     }}
                     initial={{ opacity: 0, scale: 1.02 }}
                     animate={{ opacity: 1, scale: 1 }}
