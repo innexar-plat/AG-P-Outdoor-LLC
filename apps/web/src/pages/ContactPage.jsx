@@ -17,6 +17,13 @@ function buildGoogleEmbed(query) {
   return `https://www.google.com/maps?hl=en&q=${encodeURIComponent(query)}&z=14&output=embed`;
 }
 
+function parseGooglePlaceFromPath(pathname) {
+  if (!pathname || typeof pathname !== 'string') return '';
+  const match = pathname.match(/\/maps\/place\/([^/]+)/i);
+  if (!match?.[1]) return '';
+  return decodeURIComponent(match[1]).replace(/\+/g, ' ');
+}
+
 function normalizeMapsEmbedUrl(rawUrl, address) {
   const fallbackQuery = buildGoogleEmbed(address || 'AG&P Outdoor LLC, Ocoee, FL');
   if (!rawUrl || typeof rawUrl !== 'string') return fallbackQuery;
@@ -36,6 +43,12 @@ function normalizeMapsEmbedUrl(rawUrl, address) {
       host.includes('googleusercontent.com');
 
     const hasEmbedFlag = parsed.searchParams.get('output') === 'embed' || path.includes('/maps/embed');
+    if (hasEmbedFlag && isGoogleHost) {
+      // Canonicalize to a stable host to avoid "maps.google.com refused to connect".
+      parsed.hostname = 'www.google.com';
+      parsed.protocol = 'https:';
+      return parsed.toString();
+    }
     if (hasEmbedFlag) return parsed.toString();
 
     if (!isGoogleHost) {
@@ -43,8 +56,14 @@ function normalizeMapsEmbedUrl(rawUrl, address) {
       return parsed.protocol === 'https:' || parsed.protocol === 'http:' ? parsed.toString() : fallbackQuery;
     }
 
-    const q = parsed.searchParams.get('q') || parsed.searchParams.get('query');
-    if (q) return buildGoogleEmbed(q);
+    // Rebuild Google URLs into a known embeddable format.
+    const q =
+      parsed.searchParams.get('q') ||
+      parsed.searchParams.get('query') ||
+      parsed.searchParams.get('destination') ||
+      parseGooglePlaceFromPath(parsed.pathname) ||
+      address;
+    return buildGoogleEmbed(q || 'AG&P Outdoor LLC, Ocoee, FL');
   } catch {
     return fallbackQuery;
   }

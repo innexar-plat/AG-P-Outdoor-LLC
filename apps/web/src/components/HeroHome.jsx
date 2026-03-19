@@ -13,6 +13,19 @@ function isVideoUrl(url) {
   return /\.(mp4|webm|mov|avi)(\?|$)/i.test(url);
 }
 
+function isLikelyVideo(url, slot) {
+  if (!url || typeof url !== 'string') return false;
+  if (isVideoUrl(url)) return true;
+
+  const mimeType = String(slot?.mimeType ?? slot?.contentType ?? '').toLowerCase();
+  const mediaType = String(slot?.mediaType ?? slot?.type ?? '').toLowerCase();
+  if (mimeType.startsWith('video/')) return true;
+  if (mediaType === 'video') return true;
+
+  // Handles CDN-style video paths without a direct extension in the filename.
+  return /\/(video|videos?)\//i.test(url) || /[?&](format|fm)=mp4(\b|&|$)/i.test(url);
+}
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -39,6 +52,7 @@ const itemVariants = {
  */
 export function HeroHome({ site }) {
   const [videoError, setVideoError] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
   const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
   const [allowAutoVideo, setAllowAutoVideo] = useState(false);
   // heroMedia: URL from admin panel (video or image), null while loading
@@ -58,8 +72,7 @@ export function HeroHome({ site }) {
     if (isMobile || saveData || isSlowNetwork || isLowMemoryDevice) return;
 
     setAllowAutoVideo(true);
-    const loadVideoId = window.setTimeout(() => setShouldLoadVideo(true), 900);
-    return () => window.clearTimeout(loadVideoId);
+    setShouldLoadVideo(true);
   }, []);
 
   useEffect(() => {
@@ -76,10 +89,19 @@ export function HeroHome({ site }) {
     }).catch(() => {});
   }, []);
 
+  useEffect(() => {
+    setVideoError(false);
+    setVideoReady(false);
+  }, [heroMedia]);
+
   const objectPos = heroSlot
     ? `${heroSlot.focalX ?? 50}% ${heroSlot.focalY ?? 50}%`
     : '50% 50%';
-  const canRenderVideo = allowAutoVideo && shouldLoadVideo && !videoError && heroMedia && isVideoUrl(heroMedia);
+  const slotHasVideo = Boolean(heroMedia && isLikelyVideo(heroMedia, heroSlot));
+  const canRenderVideo = allowAutoVideo && shouldLoadVideo && !videoError && slotHasVideo;
+  const fallbackImageSrc = slotHasVideo
+    ? HERO_IMAGE_FALLBACK
+    : (heroMedia || HERO_IMAGE_FALLBACK);
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-[#eff8f6] via-[#f7fcfb] to-[#edf7f5]">
@@ -162,36 +184,41 @@ export function HeroHome({ site }) {
             className="relative"
           >
             <div className="rounded-2xl border border-[#cfe4e0] bg-[#0f1716] shadow-[0_18px_50px_rgba(20,73,67,0.20)] overflow-hidden">
-              <div className="aspect-[16/10] w-full">
+              <div className="relative aspect-[16/10] w-full">
+                <motion.img
+                  src={fallbackImageSrc}
+                  alt="Premium turf installation"
+                  className="absolute inset-0 w-full h-full object-cover"
+                  style={{ objectPosition: objectPos }}
+                  width="1600"
+                  height="1000"
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                  onError={() => {
+                    if (!slotHasVideo) setHeroMedia(null);
+                  }}
+                  initial={{ opacity: 0, scale: 1.02 }}
+                  animate={{ opacity: canRenderVideo && videoReady ? 0 : 1, scale: 1 }}
+                  transition={{ duration: 0.25 }}
+                />
+
                 {canRenderVideo ? (
                   <video
-                    className="w-full h-full object-contain"
+                    className="absolute inset-0 w-full h-full object-contain"
                     src={heroMedia}
                     autoPlay
                     loop
                     muted
                     playsInline
                     aria-hidden
-                    preload="metadata"
+                    preload="auto"
+                    onLoadedData={() => setVideoReady(true)}
+                    onCanPlay={() => setVideoReady(true)}
                     onError={() => setVideoError(true)}
                     poster={HERO_IMAGE_FALLBACK}
                   />
-                ) : (
-                  <motion.img
-                    src={heroMedia && !isVideoUrl(heroMedia) ? heroMedia : HERO_IMAGE_FALLBACK}
-                    alt="Premium turf installation"
-                    className="w-full h-full object-cover"
-                    style={{ objectPosition: objectPos }}
-                    width="1600"
-                    height="1000"
-                    loading="eager"
-                    fetchPriority="high"
-                    decoding="async"
-                    initial={{ opacity: 0, scale: 1.02 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.6 }}
-                  />
-                )}
+                ) : null}
               </div>
             </div>
             <div className="pointer-events-none absolute -bottom-5 -right-4 h-24 w-24 rounded-full bg-[#2f9e95]/25 blur-2xl" />

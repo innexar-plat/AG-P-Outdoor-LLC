@@ -6,6 +6,18 @@ function isVideoUrl(url) {
   return /\.(mp4|webm|mov|avi)(\?|$)/i.test(url || '');
 }
 
+function isLikelyVideo(url, slot) {
+  if (!url || typeof url !== 'string') return false;
+  if (isVideoUrl(url)) return true;
+
+  const mimeType = String(slot?.mimeType ?? slot?.contentType ?? '').toLowerCase();
+  const mediaType = String(slot?.mediaType ?? slot?.type ?? '').toLowerCase();
+  if (mimeType.startsWith('video/')) return true;
+  if (mediaType === 'video') return true;
+
+  return /\/(video|videos?)\//i.test(url) || /[?&](format|fm)=mp4(\b|&|$)/i.test(url);
+}
+
 /**
  * Hero section that uses site_images for the given section (slotKey: hero).
  * Falls back to fallbackUrl when no slot is configured.
@@ -16,6 +28,8 @@ function isVideoUrl(url) {
  */
 export function PageHero({ section, fallbackUrl, children, sectionClassName = 'relative h-[45vh] min-h-[320px] flex items-center justify-center overflow-hidden' }) {
   const [slot, setSlot] = useState(null);
+  const [videoError, setVideoError] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
   const [allowAutoVideo, setAllowAutoVideo] = useState(false);
   const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
   const objectPos = slot ? `${slot.focalX ?? 50}% ${slot.focalY ?? 50}%` : '50% 50%';
@@ -33,8 +47,7 @@ export function PageHero({ section, fallbackUrl, children, sectionClassName = 'r
     if (isMobile || saveData || isSlowNetwork || isLowMemoryDevice) return;
 
     setAllowAutoVideo(true);
-    const loadVideoId = window.setTimeout(() => setShouldLoadVideo(true), 900);
-    return () => window.clearTimeout(loadVideoId);
+    setShouldLoadVideo(true);
   }, []);
 
   useEffect(() => {
@@ -47,33 +60,45 @@ export function PageHero({ section, fallbackUrl, children, sectionClassName = 'r
     });
   }, [section]);
 
-  const slotHasVideo = Boolean(slot?.url && isVideoUrl(slot.url));
-  const canRenderVideo = slotHasVideo && allowAutoVideo && shouldLoadVideo;
+  useEffect(() => {
+    setVideoError(false);
+    setVideoReady(false);
+  }, [slot?.url]);
+
+  const slotHasVideo = Boolean(slot?.url && isLikelyVideo(slot.url, slot));
+  const canRenderVideo = slotHasVideo && allowAutoVideo && shouldLoadVideo && !videoError;
 
   return (
     <section className={sectionClassName}>
       <div className="absolute inset-0 bg-black">
-        {canRenderVideo ? (
-          <video
-            className="w-full h-full object-contain"
-            src={slot.url}
-            autoPlay
-            loop
-            muted
-            playsInline
-            aria-hidden
-            preload="metadata"
-            poster={fallbackUrl}
-          />
-        ) : slotHasVideo ? (
-          <img
-            src={fallbackUrl}
-            alt=""
-            aria-hidden
-            className="w-full h-full object-cover"
-            loading="eager"
-            fetchPriority="high"
-          />
+        {slotHasVideo ? (
+          <>
+            <img
+              src={fallbackUrl}
+              alt=""
+              aria-hidden
+              className="absolute inset-0 w-full h-full object-cover transition-opacity duration-200"
+              style={{ opacity: canRenderVideo && videoReady ? 0 : 1 }}
+              loading="eager"
+              fetchPriority="high"
+            />
+            {canRenderVideo ? (
+              <video
+                className="absolute inset-0 w-full h-full object-contain"
+                src={slot.url}
+                autoPlay
+                loop
+                muted
+                playsInline
+                aria-hidden
+                preload="auto"
+                poster={fallbackUrl}
+                onLoadedData={() => setVideoReady(true)}
+                onCanPlay={() => setVideoReady(true)}
+                onError={() => setVideoError(true)}
+              />
+            ) : null}
+          </>
         ) : (
           <SiteImageSlot
             slot={slot}
