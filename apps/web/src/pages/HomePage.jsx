@@ -35,19 +35,6 @@ const HomePage = () => {
     title: "Local Expertise",
     description: "Family-owned and operated in Central Florida. We understand our climate and soil conditions."
   }];
-  const process = [{
-    step: "1",
-    title: "Free Onsite Evaluation",
-    description: "We visit your property, assess the area, discuss your vision, and provide a detailed quote."
-  }, {
-    step: "2",
-    title: "Base Prep & Professional Installation",
-    description: "We remove existing grass, prepare the base with proper grading and drainage, then install your premium turf."
-  }, {
-    step: "3",
-    title: "Final Walk-Through & Care Instructions",
-    description: "We ensure you're 100% satisfied and provide maintenance tips to keep your turf looking perfect."
-  }];
   // Filled from Admin panel data (no Unsplash placeholders).
   const [dynamicGallery, setDynamicGallery] = useState([]);
   const [dynamicReviews, setDynamicReviews] = useState([]);
@@ -199,50 +186,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* 3-Step Process */}
-      <section className="py-16 bg-gradient-to-br from-[#2c3e50] to-[#1a252f] text-white">
-        <div className="container mx-auto px-4">
-          <motion.div initial={{
-          opacity: 0,
-          y: 20
-        }} whileInView={{
-          opacity: 1,
-          y: 0
-        }} viewport={{
-          once: true
-        }} className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Our 3-Step Process</h2>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              From consultation to completion, we make it easy
-            </p>
-          </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {process.map((item, index) => <motion.div key={index} initial={{
-            opacity: 0,
-            y: 20
-          }} whileInView={{
-            opacity: 1,
-            y: 0
-          }} viewport={{
-            once: true
-          }} transition={{
-            delay: index * 0.2
-          }} className="relative">
-                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300">
-                  <div className="bg-[#2d5016] text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl font-bold mb-4">
-                    {item.step}
-                  </div>
-                  <h3 className="text-2xl font-bold mb-3">{item.title}</h3>
-                  <p className="text-gray-300">{item.description}</p>
-                </div>
-                {(index < process.length - 1) && <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2">
-                    <ArrowRight className="h-8 w-8 text-[#2d5016]" />
-                  </div>}
-              </motion.div>)}
-          </div>
-        </div>
-      </section>
 
       {/* Project Gallery */}
       <section className="py-16 bg-white">

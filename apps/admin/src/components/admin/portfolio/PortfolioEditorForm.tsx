@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/Textarea";
 import { Select } from "@/components/ui/Select";
 import { SlideOver } from "@/components/ui/SlideOver";
 import { FileUpload } from "@/components/ui/FileUpload";
+import { MultiFileUpload } from "@/components/ui/MultiFileUpload";
 import type { PortfolioItem } from "./types";
 
 interface PortfolioEditorFormProps {
@@ -70,11 +71,16 @@ export function PortfolioEditorForm({ editing, onClose, onSave }: PortfolioEdito
 
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1.5">
-            {t("mainImage")}
+            {t("mainImage")} (or drag multiple images)
           </label>
-          <FileUpload
+          <MultiFileUpload
             folder="portfolio"
-            onUpload={(url) => form && setForm({ ...form, imageUrl: url })}
+            maxFiles={15}
+            onUpload={(urls) => {
+              if (form && urls.length > 0) {
+                setForm({ ...form, imageUrl: urls[0] });
+              }
+            }}
           />
         </div>
         <Input

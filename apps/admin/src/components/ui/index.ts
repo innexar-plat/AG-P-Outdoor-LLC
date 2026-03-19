@@ -12,3 +12,4 @@ export { Logo, LogoIcon } from "./Logo";
 export { LanguageSelector } from "./LanguageSelector";
 export { RichTextEditor } from "./RichTextEditor";
 export { FileUpload } from "./FileUpload";
+export { MultiFileUpload } from "./MultiFileUpload";
