@@ -96,10 +96,13 @@ services:
       # Public API calls from the browser typically use /api/*.
       - "traefik.http.routers.agp-admin-api-http.rule=Host(`agpoutdoor.com`) && PathPrefix(`/api`)"
       - "traefik.http.routers.agp-admin-api-http.priority=200"
+      - "traefik.http.routers.agp-admin-api-http.middlewares=agp-admin-api-prefix"
       - "traefik.http.routers.agp-admin-api-https.rule=Host(`agpoutdoor.com`) && PathPrefix(`/api`)"
       - "traefik.http.routers.agp-admin-api-https.priority=200"
+      - "traefik.http.routers.agp-admin-api-https.middlewares=agp-admin-api-prefix"
       - "traefik.http.routers.agp-admin-api-https.tls=true"
       - "traefik.http.routers.agp-admin-api-https.tls.certresolver=letsencrypt"
+      - "traefik.http.middlewares.agp-admin-api-prefix.addprefix.prefix=/admin"
     environment:
       # Keep S3 credentials aligned with MinIO root credentials.
       - S3_ENDPOINT=http://minio:9000
