@@ -37,6 +37,7 @@ COPY --from=base /app/apps/admin /app/apps/admin
 
 # Web runtime files (serve built static output via `vite preview` script)
 COPY --from=base /app/apps/web/package.json /app/apps/web/package.json
+COPY --from=base /app/apps/web/vite.preview.config.js /app/apps/web/vite.preview.config.js
 COPY --from=base /app/dist/apps/web /app/dist/apps/web
 
 ENV NODE_ENV=production
