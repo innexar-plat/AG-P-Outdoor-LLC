@@ -6,7 +6,6 @@ import { useState, useEffect } from 'react';
 import { fetchSiteImages } from '@/lib/api';
 
 /** Fallback estático quando não há mídia no painel */
-const HERO_VIDEO_FALLBACK = import.meta.env.VITE_HERO_VIDEO_URL || '/Roteiro%205.mp4';
 const HERO_IMAGE_FALLBACK = 'https://images.unsplash.com/photo-1559824481-e384a5d50c1f?w=1200&h=600&fit=crop';
 
 /** Detecta se uma URL é um vídeo pelo sufixo */
@@ -61,124 +60,126 @@ export function HeroHome({ site }) {
     }).catch(() => {});
   }, []);
   return (
-    <section className="relative min-h-[56vh] md:min-h-[62vh] flex items-center justify-center overflow-hidden">
-      {/* Background: vídeo ou imagem fallback */}
-      <div className="absolute inset-0 bg-black">
-        {!videoError && heroMedia && isVideoUrl(heroMedia) ? (
-          <video
-            className="absolute inset-0 w-full h-full object-contain"
-            src={heroMedia}
-            autoPlay
-            loop
-            muted
-            playsInline
-            aria-hidden
-            onError={() => setVideoError(true)}
-            poster={HERO_IMAGE_FALLBACK}
-          />
-        ) : (
-          <motion.img
-            src={heroMedia && !isVideoUrl(heroMedia) ? heroMedia : HERO_IMAGE_FALLBACK}
-            alt="Premium turf installation"
-            className="absolute inset-0 w-full h-full object-cover"
-            initial={{ opacity: 0, scale: 1.05 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
-          />
-        )}
-        {/* Overlay em gradiente mais sofisticado */}
-        <div
-          className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/40 mix-blend-multiply"
-          aria-hidden
-        />
-        {/* Subtle animated overlay */}
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20"
-          aria-hidden
-          initial={{ opacity: 0.5 }}
-          animate={{ opacity: [0.5, 0.7, 0.5] }}
-          transition={{ duration: 8, repeat: Infinity }}
-        />
+    <section className="relative overflow-hidden bg-gradient-to-br from-[#eff8f6] via-[#f7fcfb] to-[#edf7f5]">
+      <div className="absolute inset-0 pointer-events-none" aria-hidden>
+        <div className="absolute -top-24 -right-20 h-72 w-72 rounded-full bg-[#6fb6ad]/20 blur-3xl" />
+        <div className="absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-[#87c8bf]/18 blur-3xl" />
       </div>
 
-      {/* Conteúdo */}
-      <div className="relative z-10 container mx-auto px-4 py-20">
-        <motion.div
-          className="max-w-3xl"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
+      <div className="relative z-10 container mx-auto px-4 py-16 md:py-20">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           <motion.div
-            variants={itemVariants}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-6"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="max-w-2xl"
           >
-            <ShieldCheck className="h-4 w-4 text-[#c7a766]" />
-            <span className="text-sm font-medium text-white/95">Licensed & Insured</span>
-          </motion.div>
-
-          <motion.h1
-            variants={itemVariants}
-            className="text-3xl sm:text-5xl md:text-6xl font-bold text-white mb-5 leading-[1.1] tracking-tight drop-shadow-lg"
-          >
-            Premium Turf{' '}
-            <motion.span
-              className="text-[#c7a766]"
-              animate={{ opacity: [1, 0.8, 1] }}
-              transition={{ duration: 3, repeat: Infinity }}
+            <motion.div
+              variants={itemVariants}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-[#d6ebe7] mb-6 shadow-sm"
             >
-              Installation
-            </motion.span>
-          </motion.h1>
+              <ShieldCheck className="h-4 w-4 text-[#b48d4d]" />
+              <span className="text-sm font-medium text-[#1b4d47]">Licensed & Insured</span>
+            </motion.div>
 
-          <motion.p
-            variants={itemVariants}
-            className="text-base sm:text-lg md:text-xl text-gray-100 mb-8 max-w-2xl leading-relaxed drop-shadow-md"
-          >
-            Professional Base Preparation, Drainage & Clean Finishes
-          </motion.p>
+            <motion.h1
+              variants={itemVariants}
+              className="text-3xl sm:text-5xl md:text-6xl font-bold text-[#163d39] mb-5 leading-[1.05] tracking-tight"
+            >
+              Premium Turf{' '}
+              <motion.span
+                className="text-[#b48d4d]"
+                animate={{ opacity: [1, 0.85, 1] }}
+                transition={{ duration: 3, repeat: Infinity }}
+              >
+                Installation
+              </motion.span>
+            </motion.h1>
+
+            <motion.p
+              variants={itemVariants}
+              className="text-base sm:text-lg md:text-xl text-[#2f5c57] mb-8 max-w-xl leading-relaxed"
+            >
+              Professional Base Preparation, Drainage & Clean Finishes
+            </motion.p>
+
+            <motion.div
+              variants={itemVariants}
+              className="flex flex-col sm:flex-row gap-3 sm:gap-4"
+            >
+              <Link to={site.ctaUrl} className="w-full sm:w-auto">
+                <Button
+                  size="lg"
+                  className="w-full bg-[#2f6f46] hover:bg-[#245739] text-white font-semibold px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-95 group"
+                >
+                  Get Free Estimate
+                  <motion.div
+                    animate={{ x: [0, 4, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  >
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </motion.div>
+                </Button>
+              </Link>
+              <a href={`tel:${site.phone}`} className="w-full sm:w-auto">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full bg-white border-[#cde2de] text-[#1f4b46] hover:bg-[#f2faf8] font-semibold px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base rounded-lg transition-all duration-300"
+                >
+                  Call {site.phone}
+                </Button>
+              </a>
+            </motion.div>
+          </motion.div>
 
           <motion.div
-            variants={itemVariants}
-            className="flex flex-col sm:flex-row gap-3 sm:gap-4"
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: 'easeOut' }}
+            className="relative"
           >
-            <Link to={site.ctaUrl} className="w-full sm:w-auto">
-              <Button
-                size="lg"
-                className="w-full bg-[#2f6f46] hover:bg-[#245739] text-white font-semibold px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.03] active:scale-95 group"
-              >
-                Get Free Estimate
-                <motion.div
-                  animate={{ x: [0, 4, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                >
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </motion.div>
-              </Button>
-            </Link>
-            <a href={`tel:${site.phone}`} className="w-full sm:w-auto">
-              <Button
-                variant="outline"
-                size="lg"
-                className="w-full bg-white/10 backdrop-blur-md border-2 border-white/40 text-white hover:bg-white hover:text-[#1f3a2e] font-semibold px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base rounded-lg transition-all duration-300 hover:shadow-xl"
-              >
-                Call {site.phone}
-              </Button>
-            </a>
+            <div className="rounded-2xl border border-[#cfe4e0] bg-[#0f1716] shadow-[0_18px_50px_rgba(20,73,67,0.20)] overflow-hidden">
+              <div className="aspect-[16/10] w-full">
+                {!videoError && heroMedia && isVideoUrl(heroMedia) ? (
+                  <video
+                    className="w-full h-full object-contain"
+                    src={heroMedia}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    aria-hidden
+                    onError={() => setVideoError(true)}
+                    poster={HERO_IMAGE_FALLBACK}
+                  />
+                ) : (
+                  <motion.img
+                    src={heroMedia && !isVideoUrl(heroMedia) ? heroMedia : HERO_IMAGE_FALLBACK}
+                    alt="Premium turf installation"
+                    className="w-full h-full object-cover"
+                    initial={{ opacity: 0, scale: 1.02 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.6 }}
+                  />
+                )}
+              </div>
+            </div>
+            <div className="pointer-events-none absolute -bottom-5 -right-4 h-24 w-24 rounded-full bg-[#2f9e95]/25 blur-2xl" />
           </motion.div>
-        </motion.div>
+        </div>
       </div>
 
       {/* Scroll indicator */}
       <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.2, duration: 0.5 }}
       >
         <a
           href="#why-choose"
-          className="flex flex-col items-center gap-1 text-white/80 hover:text-white transition-colors"
+          className="flex flex-col items-center gap-1 text-[#2e645d]/80 hover:text-[#1f4f49] transition-colors"
           aria-label="Scroll to content"
         >
           <span className="text-xs font-medium uppercase tracking-widest">Scroll</span>
