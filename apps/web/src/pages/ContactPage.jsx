@@ -14,7 +14,7 @@ import { submitForm, fetchSeo } from '@/lib/api';
 import { useSite } from '@/lib/SiteProvider.jsx';
 
 function buildGoogleEmbedUrl(address) {
-  return `https://maps.google.com/maps?q=${encodeURIComponent(address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+  return `https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`;
 }
 
 function extractEmbedSrc(rawUrl) {
@@ -29,6 +29,17 @@ function extractEmbedSrc(rawUrl) {
     const isGoogleHost = host.includes('google.');
     // Avoid third-party embeds that often block framing in production.
     if (!isGoogleHost) return '';
+
+    const path = parsed.pathname.toLowerCase();
+    const isGoogleEmbedPath = path.includes('/maps/embed');
+    const hasOutputEmbed = parsed.searchParams.get('output') === 'embed';
+
+    // Only accept URLs that are already embeddable.
+    if (!isGoogleEmbedPath && !hasOutputEmbed) return '';
+
+    // Canonical host/protocol for stable rendering.
+    parsed.protocol = 'https:';
+    parsed.hostname = 'www.google.com';
     return parsed.toString();
   } catch {
     return '';
