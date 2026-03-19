@@ -14,8 +14,8 @@ export async function GET(
     const rows = await getSiteImagesBySection(section);
     const normalized = rows.map((row) => ({
       ...row,
-      url: normalizeMediaUrl(row.url),
-      carouselItems: normalizeCarouselItems(row.carouselItems),
+      url: normalizeMediaUrl(row.url, "/api/site/storage"),
+      carouselItems: normalizeCarouselItems(row.carouselItems, "/api/site/storage"),
     }));
     return NextResponse.json({ data: normalized, error: null });
   } catch (err) {

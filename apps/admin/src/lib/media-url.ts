@@ -29,6 +29,12 @@ export function normalizeMediaUrl(
   if (!value) return "";
   if (value.startsWith("data:")) return value;
   if (value.startsWith("/api/site/storage/") || value.startsWith("/admin/api/site/storage/")) {
+    if (proxyPrefix === "/api/site/storage" && value.startsWith("/admin/api/site/storage/")) {
+      return value.replace("/admin/api/site/storage", "/api/site/storage");
+    }
+    if (proxyPrefix === "/admin/api/site/storage" && value.startsWith("/api/site/storage/")) {
+      return value.replace("/api/site/storage", "/admin/api/site/storage");
+    }
     return value;
   }
 

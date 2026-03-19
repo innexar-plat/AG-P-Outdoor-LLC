@@ -61,12 +61,12 @@ export function HeroHome({ site }) {
     }).catch(() => {});
   }, []);
   return (
-    <section className="relative min-h-[60vh] md:min-h-[70vh] flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[56vh] md:min-h-[62vh] flex items-center justify-center overflow-hidden">
       {/* Background: vídeo ou imagem fallback */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 bg-black">
         {!videoError && heroMedia && isVideoUrl(heroMedia) ? (
           <video
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-contain"
             src={heroMedia}
             autoPlay
             loop

@@ -18,7 +18,7 @@ function buildCandidateKeys(rawKey: string): string[] {
  * Useful when stored URLs point to private/internal endpoints.
  */
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ key: string[] }> },
 ) {
   const { key } = await params;
@@ -29,6 +29,7 @@ export async function GET(
   }
 
   const candidateKeys = buildCandidateKeys(objectKey);
+  const rangeHeader = request.headers.get("range") ?? undefined;
 
   for (const candidate of candidateKeys) {
     try {
@@ -36,6 +37,7 @@ export async function GET(
         new GetObjectCommand({
           Bucket: bucketName,
           Key: candidate,
+          ...(rangeHeader ? { Range: rangeHeader } : {}),
         }),
       );
 
@@ -43,13 +45,24 @@ export async function GET(
 
       const bytes = await object.Body.transformToByteArray();
 
+      const headers: Record<string, string> = {
+        "Content-Type": object.ContentType ?? "application/octet-stream",
+        "Cache-Control": object.CacheControl ?? "public, max-age=31536000, immutable",
+        "Accept-Ranges": "bytes",
+        ...(object.ETag ? { ETag: object.ETag } : {}),
+      };
+
+      if (object.ContentLength != null) {
+        headers["Content-Length"] = String(object.ContentLength);
+      }
+
+      if (object.ContentRange) {
+        headers["Content-Range"] = object.ContentRange;
+      }
+
       return new NextResponse(Buffer.from(bytes), {
-        status: 200,
-        headers: {
-          "Content-Type": object.ContentType ?? "application/octet-stream",
-          "Cache-Control": object.CacheControl ?? "public, max-age=31536000, immutable",
-          ...(object.ETag ? { ETag: object.ETag } : {}),
-        },
+        status: object.ContentRange ? 206 : 200,
+        headers,
       });
     } catch {
       // Try next candidate key.

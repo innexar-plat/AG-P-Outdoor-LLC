@@ -29,10 +29,10 @@ export function PageHero({ section, fallbackUrl, children, sectionClassName = 'r
 
   return (
     <section className={sectionClassName}>
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 bg-black">
         {slot?.url && isVideoUrl(slot.url) ? (
           <video
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
             src={slot.url}
             autoPlay
             loop
