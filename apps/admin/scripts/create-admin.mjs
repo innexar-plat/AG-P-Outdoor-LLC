@@ -4,8 +4,16 @@
  */
 const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3001";
 
+function getSignUpUrl(base) {
+  const normalized = base.replace(/\/+$/, "");
+  if (normalized.endsWith("/admin")) {
+    return `${normalized}/api/auth/sign-up/email`;
+  }
+  return `${normalized}/admin/api/auth/sign-up/email`;
+}
+
 async function main() {
-  const res = await fetch(`${BASE}/api/auth/sign-up/email`, {
+  const res = await fetch(getSignUpUrl(BASE), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
