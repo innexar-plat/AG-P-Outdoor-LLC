@@ -98,10 +98,15 @@ export function ImageEditorForm({ editing, onClose, onSave }: ImageEditorFormPro
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState<SiteImage | null>(editing);
+  const [heroMediaType, setHeroMediaType] = useState<"image" | "video">("image");
 
   useEffect(() => {
     setForm(editing);
     setError(null);
+
+    const currentUrl = editing?.url ?? "";
+    const isVideo = /\.(mp4|webm|mov|avi)(\?|$)/i.test(currentUrl);
+    setHeroMediaType(isVideo ? "video" : "image");
   }, [editing]);
 
   if (!editing) return null;
@@ -240,8 +245,40 @@ export function ImageEditorForm({ editing, onClose, onSave }: ImageEditorFormPro
           const isHero = (form?.slotKey ?? editing.slotKey ?? "").includes("hero");
           const currentUrl = form?.url ?? editing.url ?? "";
           const isVideoUrl = /\.(mp4|webm|mov|avi)(\?|$)/i.test(currentUrl);
+          const uploadAccept = isHero
+            ? heroMediaType === "video"
+              ? "video/mp4,video/webm,video/quicktime"
+              : "image/*"
+            : "image/*";
           return (
             <>
+              {isHero && (
+                <div className="space-y-1">
+                  <label className="block text-sm font-medium text-slate-700">Hero media type</label>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={heroMediaType === "image" ? "primary" : "outline"}
+                      onClick={() => setHeroMediaType("image")}
+                    >
+                      Image
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={heroMediaType === "video" ? "primary" : "outline"}
+                      onClick={() => setHeroMediaType("video")}
+                    >
+                      Video
+                    </Button>
+                  </div>
+                  <p className="text-xs text-slate-500">
+                    Select Video to upload MP4/WebM for hero backgrounds.
+                  </p>
+                </div>
+              )}
+
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1.5">
                   {isHero ? t("fileUpload") + " (image or video)" : t("fileUpload")}
@@ -250,7 +287,7 @@ export function ImageEditorForm({ editing, onClose, onSave }: ImageEditorFormPro
                   folder={`site-images/${form?.section ?? editing.section}`}
                   onUpload={(url) => form && setForm({ ...form, url })}
                   maxSizeMb={isHero ? 200 : 10}
-                  accept={isHero ? "image/*,video/mp4,video/webm,video/quicktime" : "image/*"}
+                  accept={uploadAccept}
                 />
               </div>
 
