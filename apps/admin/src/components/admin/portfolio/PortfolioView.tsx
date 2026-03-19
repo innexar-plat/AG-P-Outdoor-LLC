@@ -21,13 +21,14 @@ interface PortfolioViewProps {
 export function PortfolioView({ items: initial }: PortfolioViewProps) {
   const { t } = useI18n();
   const router = useRouter();
+  const apiBase = "/admin/api/admin/portfolio";
   const [items, setItems] = useState(initial);
   const [editing, setEditing] = useState<PortfolioItem | null>(null);
   const [previewImg, setPreviewImg] = useState<string | null>(null);
 
   async function handleSave(data: PortfolioItem) {
     const isNew = data.id === 0;
-    const url = isNew ? "/api/admin/portfolio" : `/api/admin/portfolio/${data.id}`;
+    const url = isNew ? apiBase : `${apiBase}/${data.id}`;
     const method = isNew ? "POST" : "PUT";
     const res = await fetch(url, {
       method,
@@ -55,7 +56,7 @@ export function PortfolioView({ items: initial }: PortfolioViewProps) {
 
   async function handleDelete(id: number) {
     if (!confirm(t("confirmRemoveProject"))) return;
-    await fetch(`/api/admin/portfolio/${id}`, { method: "DELETE" });
+    await fetch(`${apiBase}/${id}`, { method: "DELETE" });
     setItems((prev) => prev.filter((i) => i.id !== id));
     router.refresh();
   }
@@ -69,12 +70,12 @@ export function PortfolioView({ items: initial }: PortfolioViewProps) {
     const a = items[idx];
     const b = items[swapIdx];
     await Promise.all([
-      fetch(`/api/admin/portfolio/${a.id}`, {
+      fetch(`${apiBase}/${a.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sortOrder: b.sortOrder }),
       }),
-      fetch(`/api/admin/portfolio/${b.id}`, {
+      fetch(`${apiBase}/${b.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sortOrder: a.sortOrder }),
@@ -88,7 +89,7 @@ export function PortfolioView({ items: initial }: PortfolioViewProps) {
   }
 
   async function toggleVisibility(item: PortfolioItem) {
-    await fetch(`/api/admin/portfolio/${item.id}`, {
+    await fetch(`${apiBase}/${item.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ visible: !item.visible }),
