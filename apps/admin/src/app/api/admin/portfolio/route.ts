@@ -15,11 +15,13 @@ const mediaUrlSchema = z
 const createSchema = z.object({
   title: z.string().min(1).max(500),
   description: z.string().max(2000).optional().nullable(),
-  category: z.enum(["residential", "commercial", "sports"]).optional().nullable(),
+  category: z.string().min(1).max(100).optional().nullable(),
   imageUrl: mediaUrlSchema,
   beforeImageUrl: mediaUrlSchema.optional().nullable(),
   sortOrder: z.number().int().optional(),
   visible: z.boolean().optional(),
+  categoryIds: z.array(z.number().int().positive()).optional(),
+  tagIds: z.array(z.number().int().positive()).optional(),
 });
 
 /**

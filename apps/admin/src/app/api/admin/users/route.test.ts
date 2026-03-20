@@ -12,10 +12,10 @@ vi.mock("@/lib/auth", () => ({
   },
 }));
 
-const mockGetUserById = vi.fn(() => Promise.resolve(null));
+const mockGetUserById = vi.fn((..._args: unknown[]) => Promise.resolve(null));
 vi.mock("@/lib/queries/users", () => ({
   listUsers: vi.fn(() => Promise.resolve([])),
-  getUserById: (...args: unknown[]) => mockGetUserById(...args),
+  getUserById: (id: string) => mockGetUserById(id),
   updateUser: vi.fn(() =>
     Promise.resolve({ id: "u1", name: "Admin", email: "a@b.com", role: "editor" })
   ),

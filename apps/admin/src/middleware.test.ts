@@ -54,7 +54,7 @@ describe("middleware", () => {
     const res = middleware(req);
     expect(res.status).toBe(307);
     expect(res.headers.get("location")).toContain("/admin/login");
-    expect(res.headers.get("location")).toContain("callbackUrl=%2Fadmin%2Fdashboard");
+    expect(res.headers.get("location")).toContain("callbackUrl=%2Fdashboard");
   });
 
   it("redirects /api/admin path to login when no session", () => {

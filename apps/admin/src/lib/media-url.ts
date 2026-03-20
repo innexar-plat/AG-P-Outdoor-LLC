@@ -22,6 +22,16 @@ function isInternalHost(hostname: string): boolean {
   );
 }
 
+function isOwnPublicHost(hostname: string): boolean {
+  const host = hostname.toLowerCase();
+  return (
+    host === "agpoutdoor.com" ||
+    host === "www.agpoutdoor.com" ||
+    host === "localhost" ||
+    host === "127.0.0.1"
+  );
+}
+
 function isLikelyMediaFilenamePath(pathname: string): boolean {
   const clean = pathname.replace(/^\/+/, "");
   if (!clean || clean.includes("/")) return false;
@@ -47,6 +57,11 @@ export function normalizeMediaUrl(
   if (/^https?:\/\//i.test(value)) {
     try {
       const url = new URL(value);
+      // Keep site media consistent by serving /uploads/* through the storage proxy.
+      if (isOwnPublicHost(url.hostname) && url.pathname.startsWith("/uploads/")) {
+        return `${proxyPrefix}${url.pathname}`;
+      }
+
       if (isInternalHost(url.hostname)) {
         return `${proxyPrefix}${url.pathname}`;
       }

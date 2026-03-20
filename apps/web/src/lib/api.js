@@ -2,7 +2,8 @@
  * API client for the admin panel's public endpoints.
  * All data the site needs comes from /api/site/* routes on the admin server.
  */
-const API_BASE_RAW = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_BASE_RAW = import.meta.env.VITE_API_URL?.trim()
+  || (typeof window !== 'undefined' ? window.location.origin : '/admin');
 // Prevent double slashes when env has trailing `/` (e.g. `.../admin/`).
 const API_BASE_TRIMMED = API_BASE_RAW.replace(/\/+$/, '');
 const API_BASE = API_BASE_TRIMMED.endsWith('/admin') ? API_BASE_TRIMMED : `${API_BASE_TRIMMED}/admin`;
@@ -66,15 +67,25 @@ export async function fetchSettings() {
   return fetchJson('/api/site/settings');
 }
 
-export async function fetchPortfolio() {
+export async function fetchPortfolio(filters = {}) {
   try {
-    const res = await fetch(`${API_BASE}/api/site/portfolio`, { cache: 'no-store' });
+    const params = new URLSearchParams();
+    if (filters.category) params.set('category', String(filters.category));
+    if (filters.tag) params.set('tag', String(filters.tag));
+    if (filters.q) params.set('q', String(filters.q));
+    const suffix = params.toString() ? `?${params.toString()}` : '';
+
+    const res = await fetch(`${API_BASE}/api/site/portfolio${suffix}`, { cache: 'no-store' });
     if (!res.ok) return null;
     const json = await res.json();
     return json.data ?? null;
   } catch {
     return null;
   }
+}
+
+export async function fetchPortfolioMeta() {
+  return fetchJson('/api/site/portfolio/meta');
 }
 
 export async function fetchTestimonials() {

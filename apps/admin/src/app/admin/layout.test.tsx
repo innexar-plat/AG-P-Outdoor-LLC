@@ -61,10 +61,10 @@ describe("AdminLayout", () => {
     mockGetUserById.mockResolvedValue({ id: "1", role: "admin", allowedModules: null });
   });
 
-  it("redirects to /admin/login when no session", async () => {
+  it("redirects to /login when no session", async () => {
     mockGetSession.mockResolvedValue(null);
     await expect(AdminLayout({ children: <div>Child</div> })).rejects.toThrow("NEXT_REDIRECT");
-    expect(mockRedirect).toHaveBeenCalledWith("/admin/login");
+    expect(mockRedirect).toHaveBeenCalledWith("/login");
   });
 
   it("renders layout when session exists", async () => {

@@ -3,6 +3,8 @@ export type PortfolioItem = {
   title: string;
   description: string | null;
   category: string | null;
+  categories?: Array<{ id: number; name: string; slug: string }>;
+  tags?: Array<{ id: number; name: string; slug: string }>;
   imageUrl: string;
   beforeImageUrl: string | null;
   sortOrder: number;
@@ -15,6 +17,8 @@ export const EMPTY: PortfolioItem = {
   title: "",
   description: "",
   category: "residential",
+  categories: [],
+  tags: [],
   imageUrl: "",
   beforeImageUrl: null,
   sortOrder: 0,

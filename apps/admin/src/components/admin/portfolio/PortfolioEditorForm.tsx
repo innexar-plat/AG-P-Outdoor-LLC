@@ -12,32 +12,98 @@ import { MultiFileUpload } from "@/components/ui/MultiFileUpload";
 import type { PortfolioItem } from "./types";
 
 type PortfolioSavePayload = PortfolioItem & {
+  categoryIds?: number[];
+  tagIds?: number[];
   _batchImageUrls?: string[];
   _batchMode?: boolean;
 };
 
+type TaxonomyOption = { id: number; name: string; slug: string };
+
 interface PortfolioEditorFormProps {
   editing: PortfolioItem | null;
+  categories: TaxonomyOption[];
+  tags: TaxonomyOption[];
   onClose: () => void;
   onSave: (data: PortfolioSavePayload) => Promise<void>;
+  onTaxonomyCreated?: (payload: { type: "category" | "tag"; item: TaxonomyOption }) => void;
 }
 
-export function PortfolioEditorForm({ editing, onClose, onSave }: PortfolioEditorFormProps) {
+export function PortfolioEditorForm({
+  editing,
+  categories,
+  tags,
+  onClose,
+  onSave,
+  onTaxonomyCreated,
+}: PortfolioEditorFormProps) {
   const { t } = useI18n();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState<PortfolioItem | null>(editing);
   const [batchImageUrls, setBatchImageUrls] = useState<string[]>([]);
   const [batchMode, setBatchMode] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+  const [selectedTagIds, setSelectedTagIds] = useState<number[]>([]);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [newTagName, setNewTagName] = useState("");
 
   useEffect(() => {
     setForm(editing);
     setBatchImageUrls([]);
     setBatchMode(true);
     setError(null);
+
+    const initialCategoryId = editing?.categories?.[0]?.id ?? null;
+    setSelectedCategoryId(initialCategoryId);
+    setSelectedTagIds(Array.isArray(editing?.tags) ? editing.tags.map((t) => t.id) : []);
+    setNewCategoryName("");
+    setNewTagName("");
   }, [editing]);
 
   if (!editing) return null;
+
+  async function createCategoryQuick() {
+    const name = newCategoryName.trim();
+    if (!name) return;
+    try {
+      const res = await fetch("/admin/api/admin/portfolio/categories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json?.data) {
+        throw new Error(json?.error ?? "Failed to create category");
+      }
+      onTaxonomyCreated?.({ type: "category", item: json.data });
+      setSelectedCategoryId(json.data.id);
+      setNewCategoryName("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    }
+  }
+
+  async function createTagQuick() {
+    const name = newTagName.trim();
+    if (!name) return;
+    try {
+      const res = await fetch("/admin/api/admin/portfolio/tags", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json?.data) {
+        throw new Error(json?.error ?? "Failed to create tag");
+      }
+      onTaxonomyCreated?.({ type: "tag", item: json.data });
+      setSelectedTagIds((prev) => (prev.includes(json.data.id) ? prev : [...prev, json.data.id]));
+      setNewTagName("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    }
+  }
 
   const handleSave = async () => {
     if (!form) return;
@@ -57,6 +123,8 @@ export function PortfolioEditorForm({ editing, onClose, onSave }: PortfolioEdito
     try {
       await onSave({
         ...form,
+        categoryIds: selectedCategoryId ? [selectedCategoryId] : [],
+        tagIds: selectedTagIds,
         _batchImageUrls: batchImageUrls,
         _batchMode: batchMode,
       });
@@ -94,14 +162,78 @@ export function PortfolioEditorForm({ editing, onClose, onSave }: PortfolioEdito
         />
         <Select
           label={t("category")}
-          value={form?.category ?? editing.category ?? "residential"}
-          onChange={(e) => form && setForm({ ...form, category: e.target.value })}
+          value={selectedCategoryId ? String(selectedCategoryId) : ""}
+          onChange={(e) => {
+            const val = Number(e.target.value);
+            setSelectedCategoryId(Number.isNaN(val) ? null : val);
+            if (form) {
+              const selected = categories.find((c) => c.id === val);
+              setForm({ ...form, category: selected?.slug ?? null });
+            }
+          }}
           options={[
-            { value: "residential", label: t("residential") },
-            { value: "commercial", label: t("commercial") },
-            { value: "sports", label: t("sports") },
+            { value: "", label: "No category" },
+            ...categories.map((c) => ({ value: String(c.id), label: c.name })),
           ]}
         />
+
+        <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
+          <Input
+            label="New category"
+            value={newCategoryName}
+            onChange={(e) => setNewCategoryName(e.target.value)}
+            placeholder="e.g. Backyard Transformations"
+          />
+          <div className="pt-7">
+            <Button type="button" variant="secondary" onClick={createCategoryQuick}>
+              Add category
+            </Button>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-slate-700">Tags</label>
+          <div className="flex flex-wrap gap-2 rounded-lg border border-slate-200 p-2">
+            {tags.map((tag) => {
+              const selected = selectedTagIds.includes(tag.id);
+              return (
+                <button
+                  key={tag.id}
+                  type="button"
+                  onClick={() => {
+                    setSelectedTagIds((prev) =>
+                      prev.includes(tag.id)
+                        ? prev.filter((id) => id !== tag.id)
+                        : [...prev, tag.id],
+                    );
+                  }}
+                  className={`rounded-full px-3 py-1 text-xs font-medium transition ${
+                    selected
+                      ? "bg-brand-600 text-white"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
+                >
+                  {tag.name}
+                </button>
+              );
+            })}
+            {tags.length === 0 && <span className="text-xs text-slate-500">No tags yet</span>}
+          </div>
+        </div>
+
+        <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
+          <Input
+            label="New tag"
+            value={newTagName}
+            onChange={(e) => setNewTagName(e.target.value)}
+            placeholder="e.g. premium, modern, pet-friendly"
+          />
+          <div className="pt-7">
+            <Button type="button" variant="secondary" onClick={createTagQuick}>
+              Add tag
+            </Button>
+          </div>
+        </div>
 
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1.5">

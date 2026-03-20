@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -14,9 +14,13 @@ import { ImagePreviewModal } from "./ImagePreviewModal";
 import { PortfolioEditorForm } from "./PortfolioEditorForm";
 
 type PortfolioSavePayload = PortfolioItem & {
+  categoryIds?: number[];
+  tagIds?: number[];
   _batchImageUrls?: string[];
   _batchMode?: boolean;
 };
+
+type TaxonomyOption = { id: number; name: string; slug: string };
 
 interface PortfolioViewProps {
   items: PortfolioItem[];
@@ -31,6 +35,30 @@ export function PortfolioView({ items: initial }: PortfolioViewProps) {
   const [editing, setEditing] = useState<PortfolioItem | null>(null);
   const [previewImg, setPreviewImg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [categories, setCategories] = useState<TaxonomyOption[]>([]);
+  const [tags, setTags] = useState<TaxonomyOption[]>([]);
+
+  useEffect(() => {
+    async function loadTaxonomy() {
+      try {
+        const [categoriesRes, tagsRes] = await Promise.all([
+          fetch("/admin/api/admin/portfolio/categories"),
+          fetch("/admin/api/admin/portfolio/tags"),
+        ]);
+
+        const categoriesJson = await categoriesRes.json().catch(() => ({ data: [] }));
+        const tagsJson = await tagsRes.json().catch(() => ({ data: [] }));
+
+        setCategories(Array.isArray(categoriesJson.data) ? categoriesJson.data : []);
+        setTags(Array.isArray(tagsJson.data) ? tagsJson.data : []);
+      } catch {
+        setCategories([]);
+        setTags([]);
+      }
+    }
+
+    loadTaxonomy();
+  }, []);
 
   async function handleSave(data: PortfolioSavePayload) {
     setError(null);
@@ -58,6 +86,8 @@ export function PortfolioView({ items: initial }: PortfolioViewProps) {
             title: batchTitle,
             description: data.description,
             category: data.category,
+            categoryIds: data.categoryIds,
+            tagIds: data.tagIds,
             imageUrl,
             beforeImageUrl: null,
             sortOrder: data.sortOrder + idx,
@@ -91,6 +121,8 @@ export function PortfolioView({ items: initial }: PortfolioViewProps) {
         title: baseTitle,
         description: data.description,
         category: data.category,
+        categoryIds: data.categoryIds,
+        tagIds: data.tagIds,
         imageUrl: primaryImageUrl,
         beforeImageUrl: data.beforeImageUrl || null,
         sortOrder: data.sortOrder,
@@ -207,7 +239,16 @@ export function PortfolioView({ items: initial }: PortfolioViewProps) {
 
       <PortfolioEditorForm
         editing={editing}
+        categories={categories}
+        tags={tags}
         onClose={() => setEditing(null)}
+        onTaxonomyCreated={(next) => {
+          if (next.type === "category") {
+            setCategories((prev) => [next.item, ...prev.filter((i) => i.id !== next.item.id)]);
+          } else {
+            setTags((prev) => [next.item, ...prev.filter((i) => i.id !== next.item.id)]);
+          }
+        }}
         onSave={async (payload) => {
           try {
             await handleSave(payload);

@@ -21,7 +21,7 @@ export const API_DOCS: ApiSection[] = [
     endpoints: [
       {
         method: "POST",
-        path: "/admin/api/auth/sign-in/email",
+        path: "/api/auth/sign-in/email",
         description: "Sign in with email and password",
         auth: false,
         body: { email: "string (required)", password: "string (required)" },
@@ -29,14 +29,14 @@ export const API_DOCS: ApiSection[] = [
       },
       {
         method: "POST",
-        path: "/admin/api/auth/sign-out",
+        path: "/api/auth/sign-out",
         description: "Sign out the current user",
         auth: true,
         response: '{ success: true }',
       },
       {
         method: "GET",
-        path: "/admin/api/auth/get-session",
+        path: "/api/auth/get-session",
         description: "Get current user session",
         auth: true,
         response: '{ user, session }',

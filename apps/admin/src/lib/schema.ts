@@ -204,6 +204,56 @@ export const portfolioItems = sqliteTable("portfolio_items", {
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
 });
 
+export const portfolioCategories = sqliteTable("portfolio_categories", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
+  sortOrder: integer("sort_order").notNull().default(0),
+  active: integer("active", { mode: "boolean" }).notNull().default(true),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+});
+
+export const portfolioTags = sqliteTable("portfolio_tags", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+});
+
+export const portfolioItemCategories = sqliteTable(
+  "portfolio_item_categories",
+  {
+    itemId: integer("item_id")
+      .notNull()
+      .references(() => portfolioItems.id, { onDelete: "cascade" }),
+    categoryId: integer("category_id")
+      .notNull()
+      .references(() => portfolioCategories.id, { onDelete: "cascade" }),
+    createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.itemId, table.categoryId] }),
+  }),
+);
+
+export const portfolioItemTags = sqliteTable(
+  "portfolio_item_tags",
+  {
+    itemId: integer("item_id")
+      .notNull()
+      .references(() => portfolioItems.id, { onDelete: "cascade" }),
+    tagId: integer("tag_id")
+      .notNull()
+      .references(() => portfolioTags.id, { onDelete: "cascade" }),
+    createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.itemId, table.tagId] }),
+  }),
+);
+
 export const testimonials = sqliteTable("testimonials", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   name: text("name").notNull(),

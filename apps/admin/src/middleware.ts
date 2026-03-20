@@ -51,7 +51,10 @@ export function middleware(request: NextRequest) {
 
   if (!hasSession) {
     const loginUrl = new URL("/admin/login", request.url);
-    loginUrl.searchParams.set("callbackUrl", pathname);
+    const internalPath = pathname.startsWith("/admin")
+      ? pathname.replace(/^\/admin(?=\/|$)/, "") || "/"
+      : pathname;
+    loginUrl.searchParams.set("callbackUrl", internalPath);
     return NextResponse.redirect(loginUrl);
   }
 

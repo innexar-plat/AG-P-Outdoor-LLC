@@ -22,7 +22,7 @@ function LoginForm() {
     setError(null);
     setLoading(true);
     try {
-      const res = await fetch("/admin/api/auth/sign-in/email", {
+      const res = await fetch("/api/auth/sign-in/email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -33,10 +33,13 @@ function LoginForm() {
         return;
       }
       const callbackUrl = searchParams.get("callbackUrl");
+      const internalCallback = callbackUrl
+        ? callbackUrl.replace(/^\/admin(?=\/|$)/, "") || "/"
+        : null;
       const redirectTo =
-        callbackUrl && callbackUrl.startsWith("/admin")
-          ? callbackUrl
-          : "/admin/dashboard";
+        internalCallback && internalCallback.startsWith("/")
+          ? internalCallback
+          : "/dashboard";
       router.push(redirectTo);
       router.refresh();
     } catch {

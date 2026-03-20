@@ -92,7 +92,7 @@ describe("LoginPage", () => {
     vi.clearAllMocks();
     vi.mocked(useSearchParams).mockReturnValue({
       get: () => null,
-    } as ReturnType<typeof useSearchParams>);
+    } as unknown as ReturnType<typeof useSearchParams>);
   });
 
   it("renders login form with email and password fields", () => {
@@ -136,14 +136,14 @@ describe("LoginPage", () => {
     fireEvent.click(submitBtn);
 
     await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith("/admin/dashboard");
+      expect(mockPush).toHaveBeenCalledWith("/dashboard");
     });
   });
 
   it("redirects to callbackUrl when provided and valid", async () => {
     vi.mocked(useSearchParams).mockReturnValue({
       get: (key: string) => (key === "callbackUrl" ? "/admin/forms" : null),
-    } as ReturnType<typeof useSearchParams>);
+    } as unknown as ReturnType<typeof useSearchParams>);
 
     global.fetch = vi.fn().mockResolvedValue({ ok: true });
 
@@ -157,7 +157,7 @@ describe("LoginPage", () => {
     fireEvent.click(submitBtn);
 
     await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith("/admin/forms");
+      expect(mockPush).toHaveBeenCalledWith("/forms");
     });
   });
 });

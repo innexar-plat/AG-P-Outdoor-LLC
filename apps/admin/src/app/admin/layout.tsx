@@ -16,7 +16,7 @@ export default async function AdminLayout({
 }) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) {
-    redirect("/admin/login");
+    redirect("/login");
   }
 
   const [activeBanners, userRecord] = await Promise.all([

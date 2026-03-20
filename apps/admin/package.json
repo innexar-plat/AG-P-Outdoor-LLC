@@ -17,6 +17,8 @@
     "db:migrate-google-reviews": "tsx scripts/migrate-0010-google-reviews.ts",
     "db:migrate-testimonial-images": "tsx scripts/migrate-0011-testimonial-images.ts",
     "db:migrate-focal-point": "tsx scripts/migrate-0012-focal-point.ts",
+    "db:migrate-portfolio-taxonomy": "tsx scripts/migrate-0013-portfolio-taxonomy.ts",
+    "seed:portfolio-taxonomy": "tsx scripts/seed-portfolio-taxonomy.ts",
     "db:studio": "drizzle-kit studio",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -44,6 +46,7 @@
     "zod": "^3.23.0"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/node": "^20.17.10",

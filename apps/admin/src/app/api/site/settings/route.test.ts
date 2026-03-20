@@ -9,8 +9,7 @@ vi.mock("@/lib/queries/settings", () => ({
 
 describe("GET /api/site/settings", () => {
   it("returns 200 with public settings (no auth required)", async () => {
-    const req = new Request("http://localhost/api/site/settings");
-    const res = await GET(req);
+    const res = await GET();
     expect(res.status).toBe(200);
     const json = await res.json();
     expect(json.data).toBeDefined();

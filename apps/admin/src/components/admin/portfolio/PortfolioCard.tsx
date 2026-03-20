@@ -50,8 +50,16 @@ export function PortfolioCard({
       </div>
       <CardBody className="space-y-2">
         <h3 className="font-semibold text-sm">{item.title}</h3>
-        {item.category && (
-          <Badge>{t(item.category as "residential" | "commercial" | "sports")}</Badge>
+        {item.categories && item.categories.length > 0 && (
+          <Badge>{item.categories[0].name}</Badge>
+        )}
+        {item.tags && item.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {item.tags.slice(0, 3).map((tag) => (
+              <Badge key={tag.id} variant="warning">{tag.name}</Badge>
+            ))}
+            {item.tags.length > 3 && <Badge variant="warning">+{item.tags.length - 3}</Badge>}
+          </div>
         )}
         <div className="flex items-center gap-1 pt-2">
           <Button size="sm" variant="ghost" onClick={() => onReorder(item.id, "up")} disabled={index === 0}>↑</Button>

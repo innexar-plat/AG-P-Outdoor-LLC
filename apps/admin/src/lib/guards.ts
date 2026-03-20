@@ -28,7 +28,7 @@ const PATH_MODULE_MAP: Record<string, ModuleKey> = {
  */
 export async function requireSession() {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) redirect("/admin/login");
+  if (!session) redirect("/login");
   return session;
 }
 
@@ -47,7 +47,7 @@ export async function requireAdmin() {
   const session = await requireSession();
   const role = await getCurrentUserRole(session.user.id);
   if (role !== "admin") {
-    redirect("/admin/dashboard");
+    redirect("/dashboard");
   }
   return { session, role };
 }
@@ -63,7 +63,7 @@ export async function requireModule(moduleKey: ModuleKey) {
   const allowed = hasModuleAccess(role, userRecord?.allowedModules ?? null, moduleKey);
 
   if (!allowed) {
-    redirect("/admin/dashboard");
+    redirect("/dashboard");
   }
 
   return { session, role, userRecord };

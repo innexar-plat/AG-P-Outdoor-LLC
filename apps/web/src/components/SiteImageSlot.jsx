@@ -158,9 +158,11 @@ export function SiteImageSlot({ slot, options = {} }) {
  */
 export async function getSlot(section, slotKey) {
   try {
-    const API_BASE_RAW = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-    // Prevent double slashes when env has trailing `/` (e.g. `.../admin/`).
-    const API_BASE = API_BASE_RAW.replace(/\/+$/, '');
+    const API_BASE_RAW = import.meta.env.VITE_API_URL?.trim()
+      || (typeof window !== 'undefined' ? window.location.origin : '/admin');
+    // Prevent double slashes and guarantee requests go through admin prefix.
+    const API_BASE_TRIMMED = API_BASE_RAW.replace(/\/+$/, '');
+    const API_BASE = API_BASE_TRIMMED.endsWith('/admin') ? API_BASE_TRIMMED : `${API_BASE_TRIMMED}/admin`;
     const res = await fetch(`${API_BASE}/api/site/images/${section}`);
     if (!res.ok) return null;
     const json = await res.json();

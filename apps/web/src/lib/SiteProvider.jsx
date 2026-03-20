@@ -3,6 +3,10 @@ import { fetchSettings, fetchBanners } from './api';
 
 const SiteContext = createContext(null);
 
+function normalizeWhatsApp(value) {
+  return String(value || '').replace(/\D+/g, '');
+}
+
 const DEFAULTS = {
   company_name: 'AG&P Outdoor LLC',
   company_email: 'INFO@APGOUTDOOR.COM',
@@ -11,7 +15,7 @@ const DEFAULTS = {
   company_description: 'Professional artificial turf installation done right — with expert base preparation, drainage solutions, and clean finishes.',
   company_tagline: 'Professional Turf Installation',
   company_website: 'https://agpoutdoor.com',
-  company_whatsapp: '7722269087',
+  company_whatsapp: '',
   logo_url: '/qr/agp-logo-source.png',
   cta_primary_text: 'Free Estimate',
   cta_primary_url: '/contact',
@@ -68,7 +72,7 @@ export function SiteProvider({ children }) {
     tagline: settings.company_tagline || DEFAULTS.company_tagline,
     address: settings.company_address || DEFAULTS.company_address,
     logoUrl: settings.logo_url || DEFAULTS.logo_url,
-    whatsapp: settings.company_whatsapp || DEFAULTS.company_whatsapp,
+    whatsapp: normalizeWhatsApp(settings.company_whatsapp || settings.company_phone || DEFAULTS.company_phone),
     ctaText: settings.cta_primary_text || DEFAULTS.cta_primary_text,
     ctaUrl: settings.cta_primary_url || DEFAULTS.cta_primary_url,
   };

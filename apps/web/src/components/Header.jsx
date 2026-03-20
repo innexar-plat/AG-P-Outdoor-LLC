@@ -12,9 +12,15 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
 
-  const rawAdminUrl = import.meta.env.VITE_ADMIN_URL ?? 'http://localhost:3001';
+  const configuredAdminUrl = import.meta.env.VITE_ADMIN_URL;
+  const fallbackAdminUrl = typeof window !== 'undefined' ? window.location.origin : '/admin';
+  const rawAdminUrl = configuredAdminUrl?.trim() ? configuredAdminUrl : fallbackAdminUrl;
   const normalizedAdminUrl = rawAdminUrl.replace(/\/+$/, '');
-  const adminUrl = normalizedAdminUrl.endsWith('/admin') ? normalizedAdminUrl : `${normalizedAdminUrl}/admin`;
+  const adminUrl = normalizedAdminUrl.endsWith('/admin/login')
+    ? normalizedAdminUrl
+    : normalizedAdminUrl.endsWith('/admin')
+      ? `${normalizedAdminUrl}/login`
+      : `${normalizedAdminUrl}/admin/login`;
 
   useEffect(() => {
     const handleScroll = () => {
