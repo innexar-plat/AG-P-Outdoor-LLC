@@ -32,6 +32,7 @@ export function PageHero({ section, fallbackUrl, children, sectionClassName = 'r
   const [videoError, setVideoError] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const [allowAutoVideo, setAllowAutoVideo] = useState(false);
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
   const objectPos = slot ? `${slot.focalX ?? 50}% ${slot.focalY ?? 50}%` : '50% 50%';
 
   useEffect(() => {
@@ -48,6 +49,39 @@ export function PageHero({ section, fallbackUrl, children, sectionClassName = 'r
 
     setAllowAutoVideo(true);
   }, []);
+
+  useEffect(() => {
+    if (!allowAutoVideo) {
+      setShouldLoadVideo(false);
+      return;
+    }
+
+    let activated = false;
+    const activate = () => {
+      if (activated) return;
+      activated = true;
+      setShouldLoadVideo(true);
+      window.removeEventListener('pointerdown', activate);
+      window.removeEventListener('keydown', activate);
+      window.removeEventListener('touchstart', activate);
+      window.removeEventListener('scroll', activate);
+    };
+
+    window.addEventListener('pointerdown', activate, { passive: true });
+    window.addEventListener('keydown', activate);
+    window.addEventListener('touchstart', activate, { passive: true });
+    window.addEventListener('scroll', activate, { passive: true });
+
+    const timeoutId = window.setTimeout(activate, 8000);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      window.removeEventListener('pointerdown', activate);
+      window.removeEventListener('keydown', activate);
+      window.removeEventListener('touchstart', activate);
+      window.removeEventListener('scroll', activate);
+    };
+  }, [allowAutoVideo]);
 
   useEffect(() => {
     fetchSiteImages(section).then((data) => {
@@ -68,7 +102,7 @@ export function PageHero({ section, fallbackUrl, children, sectionClassName = 'r
   }, [slot?.url]);
 
   const slotHasVideo = Boolean(slot?.url && isLikelyVideo(slot.url, slot));
-  const canRenderVideo = slotHasVideo && allowAutoVideo && !videoError;
+  const canRenderVideo = slotHasVideo && allowAutoVideo && shouldLoadVideo && !videoError;
   const videoPoster = posterUrl || fallbackUrl;
 
   return (
@@ -76,16 +110,16 @@ export function PageHero({ section, fallbackUrl, children, sectionClassName = 'r
       <div className="absolute inset-0 bg-[#e6f1ef]">
         {slotHasVideo ? (
           <>
-            <div
-              aria-hidden
-              className="absolute inset-0 w-full h-full transition-opacity duration-200"
+            <img
+              src={videoPoster || fallbackUrl}
+              alt="Page hero"
+              className="absolute inset-0 w-full h-full object-cover transition-opacity duration-200"
               style={{
+                objectPosition: objectPos,
                 opacity: canRenderVideo && videoReady ? 0 : 1,
-                backgroundColor: '#e6f1ef',
-                backgroundImage: videoPoster ? `url(${videoPoster})` : 'none',
-                backgroundSize: 'cover',
-                backgroundPosition: objectPos,
               }}
+              loading="eager"
+              decoding="async"
             />
             {canRenderVideo ? (
               <video
@@ -96,7 +130,7 @@ export function PageHero({ section, fallbackUrl, children, sectionClassName = 'r
                 muted
                 playsInline
                 aria-hidden
-                preload="auto"
+                preload="metadata"
                 poster={videoPoster}
                 onLoadedData={() => setVideoReady(true)}
                 onCanPlay={() => setVideoReady(true)}

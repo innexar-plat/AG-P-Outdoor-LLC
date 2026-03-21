@@ -136,7 +136,7 @@ describe("LoginPage", () => {
     fireEvent.click(submitBtn);
 
     await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith("/dashboard");
+      expect(mockPush).toHaveBeenCalledWith("/admin/dashboard");
     });
   });
 
@@ -157,7 +157,7 @@ describe("LoginPage", () => {
     fireEvent.click(submitBtn);
 
     await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith("/forms");
+      expect(mockPush).toHaveBeenCalledWith("/admin/forms");
     });
   });
 });

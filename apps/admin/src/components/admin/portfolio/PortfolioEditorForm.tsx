@@ -27,6 +27,7 @@ interface PortfolioEditorFormProps {
   onClose: () => void;
   onSave: (data: PortfolioSavePayload) => Promise<void>;
   onTaxonomyCreated?: (payload: { type: "category" | "tag"; item: TaxonomyOption }) => void;
+  onTaxonomyDeleted?: (payload: { type: "category" | "tag"; id: number }) => void;
 }
 
 export function PortfolioEditorForm({
@@ -36,6 +37,7 @@ export function PortfolioEditorForm({
   onClose,
   onSave,
   onTaxonomyCreated,
+  onTaxonomyDeleted,
 }: PortfolioEditorFormProps) {
   const { t } = useI18n();
   const [loading, setLoading] = useState(false);
@@ -100,6 +102,50 @@ export function PortfolioEditorForm({
       onTaxonomyCreated?.({ type: "tag", item: json.data });
       setSelectedTagIds((prev) => (prev.includes(json.data.id) ? prev : [...prev, json.data.id]));
       setNewTagName("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    }
+  }
+
+  async function deleteSelectedCategory() {
+    if (!selectedCategoryId) return;
+    const selected = categories.find((c) => c.id === selectedCategoryId);
+    if (!selected) return;
+    if (!confirm(`Delete category "${selected.name}"? This will remove category links from projects.`)) return;
+
+    try {
+      const res = await fetch(`/admin/api/admin/portfolio/categories/${selectedCategoryId}`, {
+        method: "DELETE",
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(json?.error ?? "Failed to delete category");
+      }
+      onTaxonomyDeleted?.({ type: "category", id: selectedCategoryId });
+      setSelectedCategoryId(null);
+      if (form) {
+        setForm({ ...form, category: null });
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    }
+  }
+
+  async function deleteTag(tagId: number) {
+    const selected = tags.find((t) => t.id === tagId);
+    if (!selected) return;
+    if (!confirm(`Delete tag "${selected.name}"? This will remove tag links from projects.`)) return;
+
+    try {
+      const res = await fetch(`/admin/api/admin/portfolio/tags/${tagId}`, {
+        method: "DELETE",
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(json?.error ?? "Failed to delete tag");
+      }
+      onTaxonomyDeleted?.({ type: "tag", id: tagId });
+      setSelectedTagIds((prev) => prev.filter((id) => id !== tagId));
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     }
@@ -176,6 +222,13 @@ export function PortfolioEditorForm({
             ...categories.map((c) => ({ value: String(c.id), label: c.name })),
           ]}
         />
+        {selectedCategoryId && (
+          <div className="-mt-1">
+            <Button type="button" variant="ghost" onClick={deleteSelectedCategory}>
+              Delete selected category
+            </Button>
+          </div>
+        )}
 
         <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
           <Input
@@ -219,6 +272,20 @@ export function PortfolioEditorForm({
             })}
             {tags.length === 0 && <span className="text-xs text-slate-500">No tags yet</span>}
           </div>
+          {tags.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {tags.map((tag) => (
+                <button
+                  key={`delete-${tag.id}`}
+                  type="button"
+                  onClick={() => deleteTag(tag.id)}
+                  className="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-medium text-red-700 hover:bg-red-100"
+                >
+                  Delete {tag.name}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="grid gap-2 sm:grid-cols-[1fr_auto]">

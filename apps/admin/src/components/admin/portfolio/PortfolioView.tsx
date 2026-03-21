@@ -249,6 +249,13 @@ export function PortfolioView({ items: initial }: PortfolioViewProps) {
             setTags((prev) => [next.item, ...prev.filter((i) => i.id !== next.item.id)]);
           }
         }}
+        onTaxonomyDeleted={(next) => {
+          if (next.type === "category") {
+            setCategories((prev) => prev.filter((i) => i.id !== next.id));
+          } else {
+            setTags((prev) => prev.filter((i) => i.id !== next.id));
+          }
+        }}
         onSave={async (payload) => {
           try {
             await handleSave(payload);

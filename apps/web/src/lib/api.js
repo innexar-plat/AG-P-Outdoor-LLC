@@ -73,9 +73,10 @@ export async function fetchPortfolio(filters = {}) {
     if (filters.category) params.set('category', String(filters.category));
     if (filters.tag) params.set('tag', String(filters.tag));
     if (filters.q) params.set('q', String(filters.q));
-    const suffix = params.toString() ? `?${params.toString()}` : '';
 
-    const res = await fetch(`${API_BASE}/api/site/portfolio${suffix}`, { cache: 'no-store' });
+    const query = params.toString();
+    const url = `${API_BASE}/api/site/portfolio${query ? `?${query}` : ''}`;
+    const res = await fetch(url, { cache: 'no-store' });
     if (!res.ok) return null;
     const json = await res.json();
     return json.data ?? null;

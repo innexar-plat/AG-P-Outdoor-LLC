@@ -7,10 +7,10 @@ import { fetchSiteImages } from '@/lib/api';
 
 /** Fallbacks estáticos quando não há mídia no painel */
 const HERO_IMAGE_FALLBACKS = [
-  '/thumbnail.jpeg',
+  '/thumbnail-960.webp',
   'https://images.unsplash.com/photo-1559824481-e384a5d50c1f?w=960&h=540&fit=crop&q=70&auto=format',
 ];
-const HERO_VIDEO_LOADING_POSTER = '/thumbnail.jpeg';
+const HERO_VIDEO_LOADING_POSTER = '/thumbnail-960.webp';
 
 /** Detecta se uma URL é um vídeo pelo sufixo */
 function isVideoUrl(url) {
@@ -64,6 +64,7 @@ export function HeroHome({ site }) {
   const [videoError, setVideoError] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const [allowAutoVideo, setAllowAutoVideo] = useState(false);
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
   // heroMedia: URL from admin panel (video or image), null while loading
   const [heroMedia, setHeroMedia] = useState(null);
   const [heroSlot, setHeroSlot] = useState(null);
@@ -84,6 +85,39 @@ export function HeroHome({ site }) {
 
     setAllowAutoVideo(true);
   }, []);
+
+  useEffect(() => {
+    if (!allowAutoVideo) {
+      setShouldLoadVideo(false);
+      return;
+    }
+
+    let activated = false;
+    const activate = () => {
+      if (activated) return;
+      activated = true;
+      setShouldLoadVideo(true);
+      window.removeEventListener('pointerdown', activate);
+      window.removeEventListener('keydown', activate);
+      window.removeEventListener('touchstart', activate);
+      window.removeEventListener('scroll', activate);
+    };
+
+    window.addEventListener('pointerdown', activate, { passive: true });
+    window.addEventListener('keydown', activate);
+    window.addEventListener('touchstart', activate, { passive: true });
+    window.addEventListener('scroll', activate, { passive: true });
+
+    const timeoutId = window.setTimeout(activate, 8000);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      window.removeEventListener('pointerdown', activate);
+      window.removeEventListener('keydown', activate);
+      window.removeEventListener('touchstart', activate);
+      window.removeEventListener('scroll', activate);
+    };
+  }, [allowAutoVideo]);
 
   useEffect(() => {
     // Load hero media from admin panel site_images (home / home_hero slot)
@@ -126,7 +160,7 @@ export function HeroHome({ site }) {
     : '50% 50%';
   const slotHasVideo = Boolean(heroMedia && isLikelyVideo(heroMedia, heroSlot));
   const slotHasImage = Boolean(heroMedia && isImageUrl(heroMedia));
-  const canRenderVideo = allowAutoVideo && !videoError && slotHasVideo;
+  const canRenderVideo = allowAutoVideo && shouldLoadVideo && !videoError && slotHasVideo;
   const fallbackImageSrc = slotHasVideo
     ? HERO_VIDEO_LOADING_POSTER
     : (slotHasImage ? heroMedia : staticFallbackImage);
@@ -207,19 +241,31 @@ export function HeroHome({ site }) {
             <div className="rounded-2xl border border-[#cfe4e0] bg-[#e6f1ef] shadow-[0_18px_50px_rgba(20,73,67,0.20)] overflow-hidden">
               <div className="relative aspect-[16/10] w-full">
                 {slotHasVideo ? (
-                  <motion.div
-                    className="absolute inset-0"
+                  <img
+                    src={fallbackImageSrc}
+                    srcSet="/thumbnail-640.webp 640w, /thumbnail-960.webp 960w"
+                    sizes="(max-width: 1024px) 92vw, 48vw"
+                    alt="Premium turf installation"
+                    className="absolute inset-0 w-full h-full object-cover transition-opacity duration-200"
                     style={{
-                      backgroundColor: '#e6f1ef',
-                      backgroundImage: `url(${fallbackImageSrc})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: objectPos,
+                      objectPosition: objectPos,
                       opacity: canRenderVideo && videoReady ? 0 : 1,
                     }}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: canRenderVideo && videoReady ? 0 : 1 }}
-                    transition={{ duration: 0.25 }}
-                    aria-hidden
+                    width="1600"
+                    height="1000"
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
+                    onError={(e) => {
+                      const img = e.currentTarget;
+                      if (!img.src.endsWith('/thumbnail-960.webp')) {
+                        img.src = HERO_VIDEO_LOADING_POSTER;
+                        return;
+                      }
+                      setFallbackImageIndex((idx) =>
+                        Math.min(idx + 1, HERO_IMAGE_FALLBACKS.length - 1)
+                      );
+                    }}
                   />
                 ) : (
                   <motion.img
@@ -235,7 +281,7 @@ export function HeroHome({ site }) {
                     onError={(e) => {
                       const img = e.currentTarget;
                       // Avoid showing broken-image icon; immediately fallback to thumbnail.
-                      if (!img.src.endsWith('/thumbnail.jpeg')) {
+                      if (!img.src.endsWith('/thumbnail-960.webp')) {
                         img.src = HERO_VIDEO_LOADING_POSTER;
                         return;
                       }
@@ -258,7 +304,7 @@ export function HeroHome({ site }) {
                     muted
                     playsInline
                     aria-hidden
-                    preload="auto"
+                    preload="metadata"
                     onLoadedData={() => setVideoReady(true)}
                     onCanPlay={() => setVideoReady(true)}
                     onError={() => setVideoError(true)}

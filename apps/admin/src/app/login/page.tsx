@@ -33,13 +33,11 @@ function LoginForm() {
         return;
       }
       const callbackUrl = searchParams.get("callbackUrl");
-      const internalCallback = callbackUrl
-        ? callbackUrl.replace(/^\/admin(?=\/|$)/, "") || "/"
-        : null;
+      const internalCallback = callbackUrl ?? null;
       const redirectTo =
         internalCallback && internalCallback.startsWith("/")
           ? internalCallback
-          : "/dashboard";
+          : "/admin/dashboard";
       router.push(redirectTo);
       router.refresh();
     } catch {

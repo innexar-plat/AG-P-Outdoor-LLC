@@ -47,7 +47,7 @@ export async function requireAdmin() {
   const session = await requireSession();
   const role = await getCurrentUserRole(session.user.id);
   if (role !== "admin") {
-    redirect("/dashboard");
+    redirect("/admin/dashboard");
   }
   return { session, role };
 }
@@ -63,7 +63,7 @@ export async function requireModule(moduleKey: ModuleKey) {
   const allowed = hasModuleAccess(role, userRecord?.allowedModules ?? null, moduleKey);
 
   if (!allowed) {
-    redirect("/dashboard");
+    redirect("/admin/dashboard");
   }
 
   return { session, role, userRecord };

@@ -5,9 +5,11 @@ import { useSite } from '@/lib/SiteProvider.jsx';
 
 const Logo = ({ size = 'md', onClick, className = '', disableLink = false }) => {
   const site = useSite();
-  const localLogoFallback = '/qr/agp-logo-source.png';
+  const localLogoFallback = '/qr/agp-logo-nav.webp';
   const isLocalLogo = typeof site.logoUrl === 'string' && site.logoUrl.startsWith('/');
-  const logoSrc = isLocalLogo ? site.logoUrl : localLogoFallback;
+  const logoSrc = isLocalLogo
+    ? site.logoUrl.replace('/qr/agp-logo-source.png', '/qr/agp-logo-nav.webp')
+    : localLogoFallback;
   const sizeClasses = {
     sm: 'h-12 md:h-16',
     md: 'h-16 md:h-20',
@@ -25,8 +27,8 @@ const Logo = ({ size = 'md', onClick, className = '', disableLink = false }) => 
         src={logoSrc}
         alt={site.companyName}
         className={`${sizeClasses[size]} w-auto object-contain rounded-lg`}
-        width="320"
-        height="120"
+        width="96"
+        height="96"
         decoding="async"
         loading="eager"
         onError={(e) => {
