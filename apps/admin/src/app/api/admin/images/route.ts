@@ -40,7 +40,7 @@ const upsertSchema = z.preprocess(
       label: String(o.label ?? "").trim(),
       url: String(o.url ?? "").trim(),
       altText: o.altText ?? null,
-      displayType: ["single", "gallery", "carousel"].includes(String(o.displayType ?? "single")) ? o.displayType : "single",
+      displayType: ["single", "gallery", "carousel"].includes(String(o.displayType ?? "single")) ? String(o.displayType ?? "single") : "single",
       sortOrder: Number(o.sortOrder) || 0,
       carouselItems: Array.isArray(o.carouselItems) ? o.carouselItems : o.carouselItems,
       carouselInterval: o.carouselInterval != null ? Number(o.carouselInterval) : undefined,

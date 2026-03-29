@@ -13,16 +13,7 @@ export async function GET(
   try {
     const row = await getPageSeo(page);
     if (!row) {
-      return NextResponse.json({
-        data: {
-          pageKey: page,
-          titleTag: null,
-          metaDescription: null,
-          ogImage: null,
-          updatedAt: null,
-        },
-        error: null,
-      });
+      return NextResponse.json({ data: null, error: "Not found" }, { status: 404 });
     }
 
     return NextResponse.json({

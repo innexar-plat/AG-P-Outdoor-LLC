@@ -5,15 +5,27 @@ let mockWhereLimitRows: unknown[] = [];
 
 vi.mock("@/lib/db", () => ({
   db: {
-    select: () => ({
-      from: () => ({
+    select: () => {
+      const base = {
         orderBy: () => Promise.resolve(mockOrderByRows),
         where: () => ({
           limit: () => Promise.resolve(mockWhereLimitRows),
           orderBy: () => Promise.resolve(mockOrderByRows),
         }),
-      }),
-    }),
+        // allow chaining innerJoin in queries
+        innerJoin: () => ({
+          where: () => ({
+            limit: () => Promise.resolve(mockWhereLimitRows),
+            orderBy: () => Promise.resolve(mockOrderByRows),
+          }),
+          orderBy: () => Promise.resolve(mockOrderByRows),
+        }),
+      };
+
+      return {
+        from: () => base,
+      };
+    },
   },
 }));
 

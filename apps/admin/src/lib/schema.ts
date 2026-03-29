@@ -105,6 +105,8 @@ export const formSubmissions = sqliteTable("form_submissions", {
   message: text("message"),
   metadata: text("metadata"),
   read: integer("read", { mode: "boolean" }).notNull().default(false),
+  leadStatus: text("lead_status", { enum: ["new", "called", "not_called"] }).notNull().default("new"),
+  crmComment: text("crm_comment"),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
 });
 

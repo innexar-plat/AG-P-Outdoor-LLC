@@ -56,6 +56,18 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=fixelo_fixelo-network"
+      # Force host canonicalization (www -> apex) to avoid duplicate host indexing.
+      - "traefik.http.middlewares.agp-www-redirect.redirectregex.regex=^https?://www\\.agpoutdoor\\.com/(.*)"
+      - "traefik.http.middlewares.agp-www-redirect.redirectregex.replacement=https://agpoutdoor.com/$${1}"
+      - "traefik.http.middlewares.agp-www-redirect.redirectregex.permanent=true"
+      - "traefik.http.routers.agp-www-redirect-http.rule=Host(`www.agpoutdoor.com`) && PathPrefix(`/`)"
+      - "traefik.http.routers.agp-www-redirect-http.priority=10000"
+      - "traefik.http.routers.agp-www-redirect-http.middlewares=agp-www-redirect"
+      - "traefik.http.routers.agp-www-redirect-https.rule=Host(`www.agpoutdoor.com`) && PathPrefix(`/`)"
+      - "traefik.http.routers.agp-www-redirect-https.priority=10000"
+      - "traefik.http.routers.agp-www-redirect-https.middlewares=agp-www-redirect"
+      - "traefik.http.routers.agp-www-redirect-https.tls=true"
+      - "traefik.http.routers.agp-www-redirect-https.tls.certresolver=cloudflare"
       # Route public website by domain (Coolify auto labels may be misconfigured,
       # so we force the rules explicitly).
       - "traefik.http.routers.agp-web-http.priority=1"
@@ -63,7 +75,7 @@ services:
       - "traefik.http.routers.agp-web-https.rule=(Host(`agpoutdoor.com`) || Host(`www.agpoutdoor.com`)) && PathPrefix(`/`) && !PathPrefix(`/admin`) && !PathPrefix(`/api`) && !PathPrefix(`/login`)"
       - "traefik.http.routers.agp-web-https.priority=1"
       - "traefik.http.routers.agp-web-https.tls=true"
-      - "traefik.http.routers.agp-web-https.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.agp-web-https.tls.certresolver=cloudflare"
     env_file:
       - .env.local
     environment:
@@ -88,14 +100,14 @@ services:
       - "traefik.http.routers.agp-admin-https.rule=(Host(`agpoutdoor.com`) || Host(`www.agpoutdoor.com`)) && PathPrefix(`/admin`)"
       - "traefik.http.routers.agp-admin-https.priority=100"
       - "traefik.http.routers.agp-admin-https.tls=true"
-      - "traefik.http.routers.agp-admin-https.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.agp-admin-https.tls.certresolver=cloudflare"
       # Auth redirect/login pages may hit /login (no /admin prefix).
       - "traefik.http.routers.agp-admin-login-http.rule=(Host(`agpoutdoor.com`) || Host(`www.agpoutdoor.com`)) && PathPrefix(`/login`)"
       - "traefik.http.routers.agp-admin-login-http.priority=200"
       - "traefik.http.routers.agp-admin-login-https.rule=(Host(`agpoutdoor.com`) || Host(`www.agpoutdoor.com`)) && PathPrefix(`/login`)"
       - "traefik.http.routers.agp-admin-login-https.priority=200"
       - "traefik.http.routers.agp-admin-login-https.tls=true"
-      - "traefik.http.routers.agp-admin-login-https.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.agp-admin-login-https.tls.certresolver=cloudflare"
       # Public API calls from the browser typically use /api/*.
       - "traefik.http.routers.agp-admin-api-http.rule=(Host(`agpoutdoor.com`) || Host(`www.agpoutdoor.com`)) && PathPrefix(`/api`)"
       - "traefik.http.routers.agp-admin-api-http.priority=200"
@@ -104,7 +116,7 @@ services:
       - "traefik.http.routers.agp-admin-api-https.priority=200"
       - "traefik.http.routers.agp-admin-api-https.middlewares=agp-admin-api-prefix"
       - "traefik.http.routers.agp-admin-api-https.tls=true"
-      - "traefik.http.routers.agp-admin-api-https.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.agp-admin-api-https.tls.certresolver=cloudflare"
       - "traefik.http.middlewares.agp-admin-api-prefix.addprefix.prefix=/admin"
     environment:
       # Keep S3 credentials aligned with MinIO root credentials.

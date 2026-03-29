@@ -8,6 +8,7 @@ const querySchema = z.object({
   offset: z.coerce.number().int().min(0).default(0),
   form_type: z.string().optional(),
   read: z.enum(["true", "false"]).optional(),
+  lead_status: z.enum(["new", "called", "not_called"]).optional(),
   from: z.string().datetime({ offset: true }).optional().or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional()),
   to: z.string().datetime({ offset: true }).optional().or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional()),
 });
@@ -33,7 +34,7 @@ export async function GET(request: Request) {
       );
     }
 
-    const { limit, offset, form_type, read: readParam, from: fromStr, to: toStr } = parsed.data;
+    const { limit, offset, form_type, lead_status, read: readParam, from: fromStr, to: toStr } = parsed.data;
     const read = readParam === "true" ? true : readParam === "false" ? false : undefined;
     const from = fromStr ? new Date(fromStr) : undefined;
     const to = toStr ? new Date(toStr) : undefined;
@@ -42,6 +43,7 @@ export async function GET(request: Request) {
       limit,
       offset,
       formType: form_type,
+      leadStatus: lead_status,
       read,
       from,
       to,

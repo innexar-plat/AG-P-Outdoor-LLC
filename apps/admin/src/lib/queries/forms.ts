@@ -10,6 +10,7 @@ export async function listFormSubmissions(opts?: {
   offset?: number;
   formType?: string;
   read?: boolean;
+  leadStatus?: "new" | "called" | "not_called";
   from?: Date;
   to?: Date;
 }) {
@@ -21,6 +22,9 @@ export async function listFormSubmissions(opts?: {
   }
   if (opts?.read !== undefined) {
     conditions.push(eq(formSubmissions.read, opts.read));
+  }
+  if (opts?.leadStatus) {
+    conditions.push(eq(formSubmissions.leadStatus, opts.leadStatus));
   }
   if (opts?.from !== undefined) {
     conditions.push(gte(formSubmissions.createdAt, opts.from));
@@ -107,6 +111,28 @@ export async function updateFormSubmissionRead(id: number, read: boolean) {
     .set({ read })
     .where(eq(formSubmissions.id, id))
     .returning();
+  return row ?? null;
+}
+
+/**
+ * Updates CRM fields for a form submission.
+ */
+export async function updateFormSubmission(id: number, data: Partial<{
+  read: boolean;
+  leadStatus: "new" | "called" | "not_called";
+  crmComment: string | null;
+}>) {
+  const set: Record<string, unknown> = {};
+  if (data.read !== undefined) set.read = data.read;
+  if (data.leadStatus !== undefined) set.leadStatus = data.leadStatus;
+  if (data.crmComment !== undefined) set.crmComment = data.crmComment;
+
+  const [row] = await db
+    .update(formSubmissions)
+    .set(set)
+    .where(eq(formSubmissions.id, id))
+    .returning();
+
   return row ?? null;
 }
 

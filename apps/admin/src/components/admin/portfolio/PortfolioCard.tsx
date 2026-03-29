@@ -10,7 +10,15 @@ interface PortfolioCardProps {
   item: PortfolioItem;
   index: number;
   total: number;
+  mobileReorderMode?: boolean;
+  disablePreviewClick?: boolean;
+  isDragging?: boolean;
+  isDragOver?: boolean;
   onReorder: (id: number, direction: "up" | "down") => void;
+  onDragStart?: (id: number) => void;
+  onDragOver?: (id: number) => void;
+  onDrop?: (id: number) => void;
+  onDragEnd?: () => void;
   onToggleVisibility: (item: PortfolioItem) => void;
   onEdit: (item: PortfolioItem) => void;
   onDelete: (id: number) => void;
@@ -21,19 +29,47 @@ export function PortfolioCard({
   item,
   index,
   total,
+  mobileReorderMode = false,
+  disablePreviewClick = false,
+  isDragging = false,
+  isDragOver = false,
   onReorder,
+  onDragStart,
+  onDragOver,
+  onDrop,
+  onDragEnd,
   onToggleVisibility,
   onEdit,
   onDelete,
   onPreview,
 }: PortfolioCardProps) {
   const { t } = useI18n();
+  const canMoveUp = index > 0;
+  const canMoveDown = index < total - 1;
 
   return (
-    <Card hover>
+    <Card
+      hover
+      draggable
+      onDragStart={() => onDragStart?.(item.id)}
+      onDragOver={(event) => {
+        event.preventDefault();
+        onDragOver?.(item.id);
+      }}
+      onDrop={(event) => {
+        event.preventDefault();
+        onDrop?.(item.id);
+      }}
+      onDragEnd={() => onDragEnd?.()}
+      className={`${isDragging ? "opacity-50" : ""} ${isDragOver ? "ring-2 ring-brand-500" : ""}`.trim()}
+    >
       <div
-        className="relative h-44 bg-slate-100 overflow-hidden rounded-t-xl cursor-pointer group"
-        onClick={() => onPreview(item.imageUrl)}
+        className={`relative h-44 bg-slate-100 overflow-hidden rounded-t-xl ${disablePreviewClick ? "cursor-default" : "cursor-pointer"} group`}
+        onClick={() => {
+          if (!disablePreviewClick) {
+            onPreview(item.imageUrl);
+          }
+        }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
@@ -62,8 +98,8 @@ export function PortfolioCard({
           </div>
         )}
         <div className="flex items-center gap-1 pt-2">
-          <Button size="sm" variant="ghost" onClick={() => onReorder(item.id, "up")} disabled={index === 0}>↑</Button>
-          <Button size="sm" variant="ghost" onClick={() => onReorder(item.id, "down")} disabled={index === total - 1}>↓</Button>
+          <Button size="sm" variant="ghost" onClick={() => onReorder(item.id, "up")} disabled={!canMoveUp}>↑</Button>
+          <Button size="sm" variant="ghost" onClick={() => onReorder(item.id, "down")} disabled={!canMoveDown}>↓</Button>
           <Button size="sm" variant="ghost" onClick={() => onToggleVisibility(item)}>
             {item.visible ? "👁" : "👁‍🗨"}
           </Button>
@@ -74,6 +110,29 @@ export function PortfolioCard({
             {t("remove")}
           </Button>
         </div>
+
+        {mobileReorderMode && (
+          <div className="grid grid-cols-2 gap-2 pt-2 sm:hidden">
+            <Button
+              size="sm"
+              variant="secondary"
+              className="w-full"
+              onClick={() => onReorder(item.id, "up")}
+              disabled={!canMoveUp}
+            >
+              {t("moveUp")}
+            </Button>
+            <Button
+              size="sm"
+              variant="secondary"
+              className="w-full"
+              onClick={() => onReorder(item.id, "down")}
+              disabled={!canMoveDown}
+            >
+              {t("moveDown")}
+            </Button>
+          </div>
+        )}
       </CardBody>
     </Card>
   );

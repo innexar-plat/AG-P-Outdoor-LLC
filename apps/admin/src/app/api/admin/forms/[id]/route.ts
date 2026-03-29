@@ -4,10 +4,15 @@ import { auth } from "@/lib/auth";
 import {
   getFormSubmissionById,
   updateFormSubmissionRead,
+  updateFormSubmission,
   deleteFormSubmission,
 } from "@/lib/queries/forms";
 
-const patchSchema = z.object({ read: z.boolean().optional() });
+const patchSchema = z.object({
+  read: z.boolean().optional(),
+  leadStatus: z.enum(["new", "called", "not_called"]).optional(),
+  crmComment: z.string().max(5000).nullable().optional(),
+});
 
 /**
  * PATCH /api/admin/forms/[id]
@@ -41,7 +46,15 @@ export async function PATCH(
     if (!existing) {
       return NextResponse.json({ data: null, error: "Not found" }, { status: 404 });
     }
-    const row = await updateFormSubmissionRead(id, parsed.data.read ?? true);
+    const payload = {
+      ...(parsed.data.read !== undefined ? { read: parsed.data.read } : {}),
+      ...(parsed.data.leadStatus !== undefined ? { leadStatus: parsed.data.leadStatus } : {}),
+      ...(parsed.data.crmComment !== undefined ? { crmComment: parsed.data.crmComment } : {}),
+    };
+    const row =
+      parsed.data.leadStatus !== undefined || parsed.data.crmComment !== undefined
+        ? await updateFormSubmission(id, payload)
+        : await updateFormSubmissionRead(id, parsed.data.read ?? true);
     return NextResponse.json({ data: row ?? existing, error: null });
   } catch (err) {
     console.error("[admin/forms/[id] PATCH]", err);

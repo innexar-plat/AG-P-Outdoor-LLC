@@ -86,13 +86,13 @@ export async function createPortfolioItem(data: {
     .returning();
   if (!row) return null;
 
-  let categoryIds = data.categoryIds ?? [];
-  if (!categoryIds.length && data.category) {
+  let categoryIds = data.categoryIds;
+  if (categoryIds === undefined && data.category) {
     const category = await ensurePortfolioCategoryBySlug(data.category);
-    if (category?.id) categoryIds = [category.id];
+    categoryIds = category?.id ? [category.id] : [];
   }
 
-  await syncPortfolioItemCategories(row.id, categoryIds);
+  await syncPortfolioItemCategories(row.id, categoryIds ?? []);
   await syncPortfolioItemTags(row.id, data.tagIds ?? []);
 
   return getPortfolioItemById(row.id);

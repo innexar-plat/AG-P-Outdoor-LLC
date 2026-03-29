@@ -32,6 +32,12 @@ const mockT = (key: string) =>
     phone: "Phone",
     newBadge: "New",
     confirmRemove: "Confirm remove?",
+    leadClassification: "Lead classification",
+    crmComment: "CRM comment",
+    saveLead: "Save lead",
+    called: "Called",
+    notCalled: "Did not call",
+    newLead: "New lead",
   })[key] ?? key;
 
 vi.mock("@/lib/i18n", () => ({
@@ -48,6 +54,8 @@ const initialSubmissions = [
     message: "Hello",
     metadata: null,
     read: false,
+    leadStatus: "new",
+    crmComment: null,
     createdAt: "2024-01-15",
   },
 ];

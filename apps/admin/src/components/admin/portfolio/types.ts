@@ -16,7 +16,7 @@ export const EMPTY: PortfolioItem = {
   id: 0,
   title: "",
   description: "",
-  category: "residential",
+  category: null,
   categories: [],
   tags: [],
   imageUrl: "",

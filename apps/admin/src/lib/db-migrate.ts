@@ -1,5 +1,5 @@
 /**
- * Runtime migration: ensures carousel columns exist on site_images.
+ * Runtime migrations for additive columns used by recent features.
  * Called from instrumentation.ts on server startup.
  */
 import { createClient } from "@libsql/client";
@@ -8,9 +8,11 @@ const COLUMNS = [
   { name: "carousel_items", sql: "ALTER TABLE site_images ADD COLUMN carousel_items text" },
   { name: "carousel_interval", sql: "ALTER TABLE site_images ADD COLUMN carousel_interval integer" },
   { name: "carousel_effect", sql: "ALTER TABLE site_images ADD COLUMN carousel_effect text" },
+  { name: "lead_status", sql: "ALTER TABLE form_submissions ADD COLUMN lead_status text DEFAULT 'new'" },
+  { name: "crm_comment", sql: "ALTER TABLE form_submissions ADD COLUMN crm_comment text" },
 ] as const;
 
-export async function ensureCarouselColumns(): Promise<void> {
+export async function ensureRuntimeColumns(): Promise<void> {
   const url = process.env.DATABASE_URL;
   if (!url) return;
 

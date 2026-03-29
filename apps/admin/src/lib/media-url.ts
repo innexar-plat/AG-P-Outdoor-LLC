@@ -67,9 +67,12 @@ export function normalizeMediaUrl(
       }
 
       // Some legacy records may contain public absolute URLs with only a filename path.
-      // Route these through storage proxy so we can resolve by candidate prefixes.
+      // Route these through storage proxy only when the hostname is our own public host
+      // or the URL points to an internal host. External hosts should remain untouched.
       if (isLikelyMediaFilenamePath(url.pathname)) {
-        return `${proxyPrefix}${url.pathname}`;
+        if (isOwnPublicHost(url.hostname) || isInternalHost(url.hostname)) {
+          return `${proxyPrefix}${url.pathname}`;
+        }
       }
 
       if (url.protocol === "http:") {

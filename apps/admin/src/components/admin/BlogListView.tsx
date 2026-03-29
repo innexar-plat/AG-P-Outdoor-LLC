@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Button } from "@/components/ui/Button";
@@ -12,6 +14,17 @@ type Post = { id: number; title: string; slug: string; status: string };
 /** Client-side blog list view with i18n */
 export function BlogListView({ posts }: { posts: Post[] }) {
   const { t } = useI18n();
+  const router = useRouter();
+  const [items, setItems] = useState(posts);
+
+  async function remove(id: number) {
+    if (!confirm(t("confirmRemovePost"))) return;
+    const res = await fetch(`/admin/api/admin/blog/${id}`, { method: "DELETE" });
+    if (res.ok) {
+      setItems((prev) => prev.filter((post) => post.id !== id));
+      router.refresh();
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -34,10 +47,10 @@ export function BlogListView({ posts }: { posts: Post[] }) {
           </tr>
         </Thead>
         <tbody>
-          {posts.length === 0 ? (
+          {items.length === 0 ? (
             <TableEmpty colSpan={4} message={t("noPosts")} />
           ) : (
-            posts.map((p) => (
+            items.map((p) => (
               <tr key={p.id} className="border-t border-surface-border hover:bg-surface-muted transition-colors">
                 <Td className="font-medium text-slate-900">{p.title}</Td>
                 <Td className="font-mono text-xs text-slate-500">{p.slug}</Td>
@@ -48,9 +61,12 @@ export function BlogListView({ posts }: { posts: Post[] }) {
                   }
                 </Td>
                 <Td>
-                  <Link href={`/admin/blog/${p.id}`}>
-                    <Button variant="ghost" size="sm">{t("edit")}</Button>
-                  </Link>
+                  <div className="flex gap-2">
+                    <Link href={`/admin/blog/${p.id}`}>
+                      <Button variant="ghost" size="sm">{t("edit")}</Button>
+                    </Link>
+                    <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700" onClick={() => remove(p.id)}>{t("remove")}</Button>
+                  </div>
                 </Td>
               </tr>
             ))
