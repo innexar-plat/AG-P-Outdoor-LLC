@@ -81,10 +81,6 @@ const ResidentialTurfPage = () => {
       description: "Precise grading for water flow and installation of drainage systems where needed."
     },
     {
-      step: "Weed Barrier",
-      description: "Installation of commercial-grade weed barrier to prevent future growth."
-    },
-    {
       step: "Turf Installation",
       description: "Professional laying, cutting, and seaming of premium artificial turf."
     },
