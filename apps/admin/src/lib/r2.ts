@@ -14,12 +14,6 @@ import { normalizeMediaUrl } from "@/lib/media-url";
  *   3. Neither → null (upload falls back to base64 data URLs)
  */
 
-const r2AccountId = process.env.R2_ACCOUNT_ID;
-const r2Bucket = process.env.R2_BUCKET_NAME;
-
-const s3Endpoint = process.env.S3_ENDPOINT;
-const s3Bucket = process.env.S3_BUCKET_NAME;
-
 type StorageConfig = {
   client: S3Client;
   bucket: string;
@@ -28,6 +22,11 @@ type StorageConfig = {
 };
 
 function buildConfig(): StorageConfig | null {
+  const r2AccountId = process.env.R2_ACCOUNT_ID;
+  const r2Bucket = process.env.R2_BUCKET_NAME;
+  const s3Endpoint = process.env.S3_ENDPOINT;
+  const s3Bucket = process.env.S3_BUCKET_NAME;
+
   if (r2AccountId && r2Bucket) {
     return {
       client: new S3Client({
@@ -65,16 +64,32 @@ function buildConfig(): StorageConfig | null {
   return null;
 }
 
-const storage = buildConfig();
+let cachedStorage: StorageConfig | null | undefined;
 
-/** The S3 client (R2, MinIO, or null) */
-export const r2 = storage?.client ?? null;
+function getStorage(): StorageConfig | null {
+  if (cachedStorage === undefined) {
+    cachedStorage = buildConfig();
+  }
+  return cachedStorage;
+}
+
+export function isStorageConfigured(): boolean {
+  return getStorage() !== null;
+}
+
+export function getR2Client(): S3Client | null {
+  return getStorage()?.client ?? null;
+}
 
 /** Active bucket name */
-export const bucketName = storage?.bucket ?? null;
+export function getBucketName(): string | null {
+  return getStorage()?.bucket ?? null;
+}
 
 /** Storage provider label */
-export const storageProvider = storage?.provider ?? null;
+export function getStorageProvider(): "r2" | "s3" | null {
+  return getStorage()?.provider ?? null;
+}
 
 /**
  * Uploads a file buffer to S3-compatible storage and returns the public URL.
@@ -84,6 +99,7 @@ export async function uploadToR2(
   key: string,
   contentType: string,
 ): Promise<string> {
+  const storage = getStorage();
   if (!storage) {
     throw new Error(
       "Storage is not configured. Set R2_* (production) or S3_* (dev/MinIO) environment variables.",
@@ -109,6 +125,7 @@ export async function uploadToR2(
  * Deletes an object by key.
  */
 export async function deleteFromR2(key: string): Promise<void> {
+  const storage = getStorage();
   if (!storage) return;
   await storage.client.send(
     new DeleteObjectCommand({

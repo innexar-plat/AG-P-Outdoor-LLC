@@ -2,7 +2,7 @@ import { z } from "zod";
 import { NextResponse } from "next/server";
 import { createFormSubmission } from "@/lib/queries/forms";
 import { checkRateLimit } from "@/lib/rate-limit";
-import { sendNotificationEmail } from "@/lib/services/email";
+import { buildLeadNotificationEmail, sendNotificationEmail } from "@/lib/services/email";
 import { getSetting } from "@/lib/queries/settings";
 
 const submitSchema = z.object({
@@ -52,12 +52,22 @@ export async function POST(request: Request) {
       message: message ?? null,
       metadata: metadata ?? null,
     });
-    const notifyEmail = (await getSetting("notification_email")) ?? process.env.NOTIFICATION_EMAIL;
-    await sendNotificationEmail(
-      `New form: ${formType} from ${name}`,
-      `Name: ${name}\nEmail: ${email}\nPhone: ${phone ?? "—"}\nMessage: ${message ?? "—"}\nMetadata: ${metadata ?? "—"}`,
-      notifyEmail ?? undefined
-    );
+    const notifyEmail = (await getSetting("notification_email"))
+      ?? process.env.NOTIFICATION_EMAILS
+      ?? process.env.NOTIFICATION_EMAIL;
+    const notification = buildLeadNotificationEmail({
+      formType,
+      name,
+      email,
+      phone: phone ?? null,
+      message: message ?? null,
+      metadata: metadata ?? null,
+    });
+
+    await sendNotificationEmail(notification.subject, notification.text, {
+      to: notifyEmail ?? undefined,
+      html: notification.html,
+    });
     return NextResponse.json({ data: { id }, error: null }, { status: 201 });
   } catch (err) {
     console.error("[forms/submit]", err);

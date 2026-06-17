@@ -24,7 +24,7 @@ const FAQPage = () => {
     { question: "Will artificial turf get hot in the Florida sun?", answer: "Modern artificial turf is designed to minimize heat retention. We use premium turf with heat-reducing technology. A quick rinse with water cools it down instantly. Many homeowners find it cooler than natural grass in direct sunlight." },
     { question: "Can I install artificial turf myself?", answer: "While DIY is possible, professional installation is strongly recommended. Proper base preparation, drainage, grading, and seaming require specialized equipment and expertise. Poor installation leads to drainage issues, settling, and premature failure." },
     { question: "What's the difference between cheap and quality turf?", answer: "Quality turf uses better materials, has higher density, more realistic appearance, better UV protection, and longer warranties. Cheap turf fades quickly, flattens, and doesn't last. We only use premium materials that are built to last." },
-    { question: "Do you offer warranties?", answer: "Yes! We offer warranties on both materials and installation. Turf manufacturers typically provide 8-15 year warranties on materials. We stand behind our installation work and will address any issues that arise." },
+    { question: "Do you offer warranties?", answer: "We offer a 15-year warranty on turf and a 2-year warranty on installation." },
     { question: "How does artificial turf compare to natural grass?", answer: "Artificial turf eliminates mowing, watering, fertilizing, and pest control. It stays green year-round, handles heavy use better, and saves money long-term. Initial cost is higher, but ROI is excellent when you factor in water savings and eliminated maintenance costs." }
   ];
 

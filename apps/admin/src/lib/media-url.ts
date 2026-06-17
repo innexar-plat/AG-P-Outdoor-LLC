@@ -38,13 +38,39 @@ function isLikelyMediaFilenamePath(pathname: string): boolean {
   return /\.(mp4|webm|mov|avi|jpg|jpeg|png|webp|gif|svg)$/i.test(clean);
 }
 
+/** Public bucket objects are served directly at /uploads/* via Traefik → MinIO. */
+function toPublicUploadsPath(pathname: string): string | null {
+  const normalized = pathname.replace(/^\/+/, "");
+  if (!normalized.startsWith("uploads/")) return null;
+  return `/${normalized}`;
+}
+
+function fromStorageProxyPath(value: string): string | null {
+  const stripped = value
+    .replace(/^\/admin\/api\/site\/storage/, "")
+    .replace(/^\/api\/site\/storage/, "");
+  return toPublicUploadsPath(stripped);
+}
+
 export function normalizeMediaUrl(
   value: string | null | undefined,
   proxyPrefix = "/admin/api/site/storage",
 ): string {
   if (!value) return "";
   if (value.startsWith("data:")) return value;
+
+  if (value.startsWith("/uploads/")) {
+    return value;
+  }
+
+  if (value.startsWith("uploads/")) {
+    return `/${value}`;
+  }
+
   if (value.startsWith("/api/site/storage/") || value.startsWith("/admin/api/site/storage/")) {
+    const publicPath = fromStorageProxyPath(value);
+    if (publicPath) return publicPath;
+
     if (proxyPrefix === "/api/site/storage" && value.startsWith("/admin/api/site/storage/")) {
       return value.replace("/admin/api/site/storage", "/api/site/storage");
     }
@@ -57,9 +83,9 @@ export function normalizeMediaUrl(
   if (/^https?:\/\//i.test(value)) {
     try {
       const url = new URL(value);
-      // Keep site media consistent by serving /uploads/* through the storage proxy.
-      if (isOwnPublicHost(url.hostname) && url.pathname.startsWith("/uploads/")) {
-        return `${proxyPrefix}${url.pathname}`;
+      const publicPath = toPublicUploadsPath(url.pathname);
+      if (publicPath && isOwnPublicHost(url.hostname)) {
+        return publicPath;
       }
 
       if (isInternalHost(url.hostname)) {

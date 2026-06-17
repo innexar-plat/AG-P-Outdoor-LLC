@@ -12,7 +12,18 @@ services:
   minio:
     image: minio/minio:latest
     labels:
-      - "traefik.enable=false"
+      - "traefik.enable=true"
+      - "traefik.docker.network=fixelo_fixelo-network"
+      # Serve public bucket files at /uploads/* (MinIO path-style: /uploads/<key>).
+      - "traefik.http.services.agp-minio.loadbalancer.server.port=9000"
+      - "traefik.http.routers.agp-minio-http.rule=(Host(`agpoutdoor.com`) || Host(`www.agpoutdoor.com`)) && PathPrefix(`/uploads`)"
+      - "traefik.http.routers.agp-minio-http.priority=50"
+      - "traefik.http.routers.agp-minio-http.service=agp-minio"
+      - "traefik.http.routers.agp-minio-https.rule=(Host(`agpoutdoor.com`) || Host(`www.agpoutdoor.com`)) && PathPrefix(`/uploads`)"
+      - "traefik.http.routers.agp-minio-https.priority=50"
+      - "traefik.http.routers.agp-minio-https.service=agp-minio"
+      - "traefik.http.routers.agp-minio-https.tls=true"
+      - "traefik.http.routers.agp-minio-https.tls.certresolver=cloudflare"
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -88,8 +99,10 @@ services:
     expose:
       - "3001"
     depends_on:
-      - sqld
-      - minio
+      sqld:
+        condition: service_started
+      minio:
+        condition: service_healthy
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=fixelo_fixelo-network"

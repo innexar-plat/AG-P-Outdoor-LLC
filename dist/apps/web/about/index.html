@@ -32,207 +32,196 @@
 			gtag('js', new Date());
 			gtag('config', 'G-JHJHVRGNFB');
 		</script>
+		<style>
+			.contact-popup-trigger {
+				position: fixed;
+				right: 20px;
+				bottom: 20px;
+				z-index: 45;
+				border: 0;
+				border-radius: 999px;
+				padding: 12px 18px;
+				font: 600 14px/1.1 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+				color: #ffffff;
+				background: linear-gradient(135deg, #2f6f46 0%, #245739 100%);
+				box-shadow: 0 10px 28px rgba(36, 87, 57, 0.28);
+				cursor: pointer;
+				transition: transform 0.2s ease, box-shadow 0.2s ease;
+			}
+
+			.contact-popup-trigger:hover {
+				transform: translateY(-1px);
+				box-shadow: 0 14px 32px rgba(36, 87, 57, 0.34);
+			}
+
+			.contact-popup-backdrop {
+				position: fixed;
+				inset: 0;
+				z-index: 60;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				padding: 16px;
+				background: rgba(16, 20, 18, 0.62);
+				opacity: 0;
+				pointer-events: none;
+				transition: opacity 0.26s ease;
+			}
+
+			.contact-popup-backdrop.is-open {
+				opacity: 1;
+				pointer-events: auto;
+			}
+
+			.contact-popup-modal {
+				width: min(100%, 520px);
+				max-height: calc(100vh - 32px);
+				overflow: auto;
+				border-radius: 18px;
+				background: #ffffff;
+				border: 1px solid #dce8e3;
+				box-shadow: 0 30px 65px rgba(20, 43, 33, 0.28);
+				transform: translateY(20px) scale(0.98);
+				opacity: 0;
+				transition: transform 0.26s ease, opacity 0.26s ease;
+			}
+
+			.contact-popup-backdrop.is-open .contact-popup-modal {
+				transform: translateY(0) scale(1);
+				opacity: 1;
+			}
+
+			.contact-popup-header {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 16px 18px;
+				border-bottom: 1px solid #edf2ef;
+			}
+
+			.contact-popup-title {
+				margin: 0;
+				font: 700 26px/1.1 'Playfair Display', Georgia, serif;
+				color: #1f3a2e;
+			}
+
+			.contact-popup-close {
+				border: 0;
+				background: #f2f6f4;
+				color: #1f3a2e;
+				width: 36px;
+				height: 36px;
+				border-radius: 999px;
+				font-size: 22px;
+				line-height: 1;
+				cursor: pointer;
+			}
+
+			.contact-popup-content {
+				padding: 16px 18px 18px;
+			}
+
+			.contact-popup-subtitle {
+				margin: 0 0 14px;
+				font: 500 14px/1.5 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+				color: #52655b;
+			}
+
+			.contact-popup-form {
+				display: grid;
+				gap: 12px;
+			}
+
+			.contact-popup-grid {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 12px;
+			}
+
+			.contact-popup-field {
+				display: grid;
+				gap: 6px;
+			}
+
+			.contact-popup-label {
+				font: 600 13px/1.2 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+				color: #1f3a2e;
+			}
+
+			.contact-popup-input,
+			.contact-popup-textarea,
+			.contact-popup-select {
+				border: 1px solid #d3ddd8;
+				border-radius: 10px;
+				padding: 10px 12px;
+				font: 500 14px/1.4 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+				color: #22392d;
+				background: #ffffff;
+				outline: none;
+				transition: border-color 0.18s ease, box-shadow 0.18s ease;
+			}
+
+			.contact-popup-input:focus,
+			.contact-popup-textarea:focus,
+			.contact-popup-select:focus {
+				border-color: #2f6f46;
+				box-shadow: 0 0 0 3px rgba(47, 111, 70, 0.16);
+			}
+
+			.contact-popup-textarea {
+				min-height: 110px;
+				resize: vertical;
+			}
+
+			.contact-popup-error {
+				margin: 0;
+				font: 600 13px/1.3 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+				color: #b42318;
+			}
+
+			.contact-popup-success {
+				margin: 0;
+				font: 600 13px/1.3 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+				color: #1f6f3c;
+			}
+
+			.contact-popup-submit {
+				margin-top: 4px;
+				border: 0;
+				border-radius: 10px;
+				padding: 12px 16px;
+				font: 700 14px/1.2 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+				color: #ffffff;
+				background: linear-gradient(135deg, #2f6f46 0%, #245739 100%);
+				cursor: pointer;
+			}
+
+			.contact-popup-submit[disabled] {
+				opacity: 0.75;
+				cursor: not-allowed;
+			}
+
+			@media (max-width: 768px) {
+				.contact-popup-trigger {
+					right: 12px;
+					bottom: 72px;
+					padding: 11px 15px;
+				}
+
+				.contact-popup-grid {
+					grid-template-columns: 1fr;
+				}
+
+				.contact-popup-title {
+					font-size: 24px;
+				}
+			}
+		</style>
 		<title>About AG&amp;P Outdoor LLC | Turf Experts in Central Florida</title>
-		<script type="module" crossorigin src="/assets/index-CjoWlZ-8.js"></script>
+		<script type="module" crossorigin src="/assets/index-H7nnJR2F.js"></script>
 		<link rel="modulepreload" crossorigin href="/assets/vendor-react-BZLmlORa.js">
 		<link rel="modulepreload" crossorigin href="/assets/vendor-ui-Cy75_bOw.js">
-		<link rel="stylesheet" crossorigin href="/assets/index-B4dlefBR.css">
-		<script type="module">
-window.onerror = (message, source, lineno, colno, errorObj) => {
-	const errorDetails = errorObj ? JSON.stringify({
-		name: errorObj.name,
-		message: errorObj.message,
-		stack: errorObj.stack,
-		source,
-		lineno,
-		colno,
-	}) : null;
-
-	window.parent.postMessage({
-		type: 'horizons-runtime-error',
-		message,
-		error: errorDetails
-	}, '*');
-};
-</script>
-		<script type="module">
-const observer = new MutationObserver((mutations) => {
-	for (const mutation of mutations) {
-		for (const addedNode of mutation.addedNodes) {
-			if (
-				addedNode.nodeType === Node.ELEMENT_NODE &&
-				(
-					addedNode.tagName?.toLowerCase() === 'vite-error-overlay' ||
-					addedNode.classList?.contains('backdrop')
-				)
-			) {
-				handleViteOverlay(addedNode);
-			}
-		}
-	}
-});
-
-observer.observe(document.documentElement, {
-	childList: true,
-	subtree: true
-});
-
-function handleViteOverlay(node) {
-	if (!node.shadowRoot) {
-		return;
-	}
-
-	const backdrop = node.shadowRoot.querySelector('.backdrop');
-
-	if (backdrop) {
-		const overlayHtml = backdrop.outerHTML;
-		const parser = new DOMParser();
-		const doc = parser.parseFromString(overlayHtml, 'text/html');
-		const messageBodyElement = doc.querySelector('.message-body');
-		const fileElement = doc.querySelector('.file');
-		const messageText = messageBodyElement ? messageBodyElement.textContent.trim() : '';
-		const fileText = fileElement ? fileElement.textContent.trim() : '';
-		const error = messageText + (fileText ? ' File:' + fileText : '');
-
-		window.parent.postMessage({
-			type: 'horizons-vite-error',
-			error,
-		}, '*');
-	}
-}
-</script>
-		<script type="module">
-const originalConsoleError = console.error;
-const MATCH_LINE_COL_REGEX = /:(\d+):(\d+)\)?\s*$/; // regex to match the :lineNum:colNum
-const MATCH_AT_REGEX = /^\s*at\s+(?:async\s+)?(?:.*?\s+)?\(?/; // regex to remove the 'at' keyword and any 'async' or function name
-const MATCH_PATH_REGEX = /^\//; // regex to remove the leading slash
-
-function parseStackFrameLine(line) {
-	const lineColMatch = line.match(MATCH_LINE_COL_REGEX);
-	if (!lineColMatch) return null;
-	const [, lineNum, colNum] = lineColMatch;
-	const suffix = `:${lineNum}:${colNum}`;
-	const idx = line.lastIndexOf(suffix);
-	if (idx === -1) return null;
-	const before = line.substring(0, idx);
-	const path = before.replace(MATCH_AT_REGEX, '').trim();
-	
-	if (!path) return null;
-
-	try {
-		const pathname = new URL(path).pathname;
-		const filePath = pathname.replace(MATCH_PATH_REGEX, '') || pathname;
-		return `${filePath}:${lineNum}:${colNum}`;
-	} catch (e) {
-		const filePath = path.replace(MATCH_PATH_REGEX, '') || path;
-		return `${filePath}:${lineNum}:${colNum}`;
-	}
-}
-
-function getFilePathFromStack(stack, skipFrames = 0) {
-	if (!stack || typeof stack !== 'string') return null;
-	const lines = stack.split('\n').slice(1);
-
-	const frames = lines.map(line => parseStackFrameLine(line.replace(/\r$/, ''))).filter(Boolean);
-
-	return frames[skipFrames] ?? null;
-}
-
-console.error = function(...args) {
-	originalConsoleError.apply(console, args);
-
-	let errorString = '';
-	let filePath = null;
-
-	for (let i = 0; i < args.length; i++) {
-		const arg = args[i];
-		if (arg instanceof Error) {
-			filePath = getFilePathFromStack(arg.stack, 0);
-			errorString = `${arg.name}: ${arg.message}`;
-			if (filePath) {
-				errorString = `${errorString} at ${filePath}`;
-			}
-			break;
-		}
-	}
-
-	if (!errorString) {
-		errorString = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : String(arg)).join(' ');
-		const stack = new Error().stack;
-		filePath = getFilePathFromStack(stack, 1);
-		if (filePath) {
-			errorString = `${errorString} at ${filePath}`;
-		}
-	}
-
-	window.parent.postMessage({
-		type: 'horizons-console-error',
-		error: errorString
-	}, '*');
-};
-</script>
-		<script type="module">
-const originalFetch = window.fetch;
-
-window.fetch = function(...args) {
-	const url = args[0] instanceof Request ? args[0].url : args[0];
-
-	// Skip WebSocket URLs
-	if (url.startsWith('ws:') || url.startsWith('wss:')) {
-		return originalFetch.apply(this, args);
-	}
-
-	return originalFetch.apply(this, args)
-		.then(async response => {
-			const contentType = response.headers.get('Content-Type') || '';
-
-			// Exclude HTML document responses
-			const isDocumentResponse =
-				contentType.includes('text/html') ||
-				contentType.includes('application/xhtml+xml');
-
-			if (!response.ok && !isDocumentResponse) {
-					const responseClone = response.clone();
-					const errorFromRes = await responseClone.text();
-					const requestUrl = response.url;
-					console.error(`Fetch error from ${requestUrl}: ${errorFromRes}`);
-			}
-
-			return response;
-		})
-		.catch(error => {
-			if (!url.match(/.html?$/i)) {
-				console.error(error);
-			}
-
-			throw error;
-		});
-};
-</script>
-		<script type="module">
-if (window.navigation && window.self !== window.top) {
-	window.navigation.addEventListener('navigate', (event) => {
-		const url = event.destination.url;
-
-		try {
-			const destinationUrl = new URL(url);
-			const destinationOrigin = destinationUrl.origin;
-			const currentOrigin = window.location.origin;
-
-			if (destinationOrigin === currentOrigin) {
-				return;
-			}
-		} catch (error) {
-			return;
-		}
-
-		window.parent.postMessage({
-			type: 'horizons-navigation-error',
-			url,
-		}, '*');
-	});
-}
-</script>
+		<link rel="stylesheet" crossorigin href="/assets/index-B1pNLkXO.css">
 	</head>
 	<body>
 		<div id="root">
@@ -243,5 +232,254 @@ if (window.navigation && window.self !== window.top) {
     <ul style="padding-left:1.25rem;display:grid;gap:.35rem;"><li><a href="/">Home</a></li><li><a href="/about">about</a></li><li><a href="/blog">blog</a></li><li><a href="/contact">contact</a></li><li><a href="/faq">faq</a></li><li><a href="/gallery">gallery</a></li><li><a href="/reviews">reviews</a></li><li><a href="/services/commercial-turf">services/commercial turf</a></li><li><a href="/services/drainage-grading">services/drainage grading</a></li><li><a href="/services/grass-removal">services/grass removal</a></li><li><a href="/services/pavers">services/pavers</a></li><li><a href="/services/pet-turf">services/pet turf</a></li><li><a href="/services/putting-green">services/putting green</a></li><li><a href="/services/residential-turf">services/residential turf</a></li></ul>
   </main>
 </div>
+
+		<button id="contactPopupTrigger" class="contact-popup-trigger" type="button" aria-haspopup="dialog" aria-controls="contactPopupModal">
+			Talk to us
+		</button>
+
+		<div id="contactPopupBackdrop" class="contact-popup-backdrop" aria-hidden="true">
+			<div id="contactPopupModal" class="contact-popup-modal" role="dialog" aria-modal="true" aria-labelledby="contactPopupTitle">
+				<div class="contact-popup-header">
+					<h2 id="contactPopupTitle" class="contact-popup-title">Let's Talk</h2>
+					<button id="contactPopupClose" class="contact-popup-close" type="button" aria-label="Close popup">&times;</button>
+				</div>
+				<div class="contact-popup-content">
+					<p class="contact-popup-subtitle">Send us a quick message and our team will get back to you shortly.</p>
+					<form id="contactPopupForm" class="contact-popup-form" novalidate>
+						<div class="contact-popup-grid">
+							<div class="contact-popup-field">
+								<label class="contact-popup-label" for="popupName">Name *</label>
+								<input id="popupName" class="contact-popup-input" type="text" name="name" required />
+							</div>
+							<div class="contact-popup-field">
+								<label class="contact-popup-label" for="popupEmail">Email *</label>
+								<input id="popupEmail" class="contact-popup-input" type="email" name="email" required />
+							</div>
+						</div>
+
+						<div class="contact-popup-grid">
+							<div class="contact-popup-field">
+								<label class="contact-popup-label" for="popupPhone">Phone (optional)</label>
+								<input id="popupPhone" class="contact-popup-input" type="tel" name="phone" />
+							</div>
+							<div class="contact-popup-field">
+								<label class="contact-popup-label" for="popupService">Service</label>
+								<select id="popupService" class="contact-popup-select" name="service">
+									<option value="">Select a service...</option>
+									<option value="residential-turf">Residential Turf</option>
+									<option value="putting-green">Putting Green</option>
+									<option value="pet-turf">Pet Turf</option>
+									<option value="commercial-turf">Commercial Turf</option>
+									<option value="pavers">Pavers</option>
+									<option value="drainage-grading">Drainage &amp; Grading</option>
+									<option value="grass-removal">Natural Grass Removal</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="contact-popup-field">
+							<label class="contact-popup-label" for="popupMessage">Message *</label>
+							<textarea id="popupMessage" class="contact-popup-textarea" name="message" required></textarea>
+						</div>
+
+						<p id="contactPopupError" class="contact-popup-error" style="display: none;"></p>
+						<p id="contactPopupSuccess" class="contact-popup-success" style="display: none;"></p>
+
+						<button id="contactPopupSubmit" class="contact-popup-submit" type="submit">Send Message</button>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			(function () {
+				var DISMISSED_KEY = 'agp_contact_popup_dismissed';
+				var OPENED_ONCE_KEY = 'agp_contact_popup_opened_once';
+				var AUTO_OPEN_DELAY = 5000;
+
+				var trigger = document.getElementById('contactPopupTrigger');
+				var backdrop = document.getElementById('contactPopupBackdrop');
+				var closeBtn = document.getElementById('contactPopupClose');
+				var form = document.getElementById('contactPopupForm');
+				var submitBtn = document.getElementById('contactPopupSubmit');
+				var errorEl = document.getElementById('contactPopupError');
+				var successEl = document.getElementById('contactPopupSuccess');
+				var serviceField = document.getElementById('popupService');
+				var messageField = document.getElementById('popupMessage');
+
+				if (!trigger || !backdrop || !form) return;
+
+				var focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+				function setServiceByPath() {
+					var path = window.location.pathname || '/';
+					var map = {
+						'/services/residential-turf': 'residential-turf',
+						'/services/putting-green': 'putting-green',
+						'/services/pet-turf': 'pet-turf',
+						'/services/commercial-turf': 'commercial-turf',
+						'/services/pavers': 'pavers',
+						'/services/drainage-grading': 'drainage-grading',
+						'/services/grass-removal': 'grass-removal'
+					};
+
+					if (map[path]) {
+						serviceField.value = map[path];
+						if (!messageField.value.trim()) {
+							messageField.value = 'Hi, I would like more details about ' + serviceField.options[serviceField.selectedIndex].text + '.';
+						}
+					}
+				}
+
+				function openPopup() {
+					setServiceByPath();
+					backdrop.classList.add('is-open');
+					backdrop.setAttribute('aria-hidden', 'false');
+					document.body.style.overflow = 'hidden';
+					localStorage.setItem(OPENED_ONCE_KEY, '1');
+					var firstFocusable = backdrop.querySelector(focusableSelector);
+					if (firstFocusable) firstFocusable.focus();
+				}
+
+				function closePopup(options) {
+					var shouldPersistDismiss = !options || options.persistDismiss !== false;
+					backdrop.classList.remove('is-open');
+					backdrop.setAttribute('aria-hidden', 'true');
+					document.body.style.overflow = '';
+					if (shouldPersistDismiss) {
+						localStorage.setItem(DISMISSED_KEY, '1');
+					}
+					trigger.focus();
+				}
+
+				function resetMessages() {
+					errorEl.style.display = 'none';
+					errorEl.textContent = '';
+					successEl.style.display = 'none';
+					successEl.textContent = '';
+				}
+
+				function showError(message) {
+					errorEl.textContent = message;
+					errorEl.style.display = 'block';
+					successEl.style.display = 'none';
+				}
+
+				function showSuccess(message) {
+					successEl.textContent = message;
+					successEl.style.display = 'block';
+					errorEl.style.display = 'none';
+				}
+
+				trigger.addEventListener('click', function () {
+					resetMessages();
+					openPopup();
+				});
+
+				closeBtn.addEventListener('click', function () {
+					closePopup({ persistDismiss: true });
+				});
+
+				backdrop.addEventListener('click', function (event) {
+					if (event.target === backdrop) {
+						closePopup({ persistDismiss: true });
+					}
+				});
+
+				document.addEventListener('keydown', function (event) {
+					if (!backdrop.classList.contains('is-open')) return;
+
+					if (event.key === 'Escape') {
+						closePopup({ persistDismiss: true });
+						return;
+					}
+
+					if (event.key !== 'Tab') return;
+					var focusable = Array.prototype.slice.call(backdrop.querySelectorAll(focusableSelector)).filter(function (el) {
+						return !el.disabled && el.offsetParent !== null;
+					});
+					if (!focusable.length) return;
+
+					var first = focusable[0];
+					var last = focusable[focusable.length - 1];
+
+					if (event.shiftKey && document.activeElement === first) {
+						event.preventDefault();
+						last.focus();
+					} else if (!event.shiftKey && document.activeElement === last) {
+						event.preventDefault();
+						first.focus();
+					}
+				});
+
+				form.addEventListener('submit', async function (event) {
+					event.preventDefault();
+					resetMessages();
+
+					var name = (document.getElementById('popupName').value || '').trim();
+					var email = (document.getElementById('popupEmail').value || '').trim();
+					var phone = (document.getElementById('popupPhone').value || '').trim();
+					var message = (document.getElementById('popupMessage').value || '').trim();
+					var service = (document.getElementById('popupService').value || '').trim();
+
+					if (!name || !email || !message) {
+						showError('Please fill in all required fields: Name, Email and Message.');
+						return;
+					}
+
+					var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+					if (!emailRegex.test(email)) {
+						showError('Please enter a valid email address.');
+						return;
+					}
+
+					submitBtn.disabled = true;
+					submitBtn.textContent = 'Sending...';
+
+					try {
+						var payload = {
+							formType: 'contact',
+							name: name,
+							email: email,
+							phone: phone,
+							message: message,
+							metadata: JSON.stringify({ service: service })
+						};
+
+						var response = await fetch('/admin/api/site/forms/submit', {
+							method: 'POST',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify(payload)
+						});
+
+						var result = await response.json();
+						if (!response.ok) {
+							throw new Error(result && result.error ? result.error : 'Could not send your message right now.');
+						}
+
+						showSuccess('Thanks! Your message was sent successfully. We will contact you soon.');
+						form.reset();
+						localStorage.setItem(DISMISSED_KEY, '1');
+
+						setTimeout(function () {
+							closePopup({ persistDismiss: true });
+						}, 1500);
+					} catch (error) {
+						showError(error && error.message ? error.message : 'Something went wrong. Please try again.');
+					} finally {
+						submitBtn.disabled = false;
+						submitBtn.textContent = 'Send Message';
+					}
+				});
+
+				setTimeout(function () {
+					var alreadyDismissed = localStorage.getItem(DISMISSED_KEY) === '1';
+					var openedOnce = localStorage.getItem(OPENED_ONCE_KEY) === '1';
+					if (!alreadyDismissed && !openedOnce) {
+						openPopup();
+					}
+				}, AUTO_OPEN_DELAY);
+			})();
+		</script>
 	</body>
 </html>

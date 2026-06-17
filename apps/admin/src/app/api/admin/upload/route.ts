@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
-import { r2 } from "@/lib/r2";
+import { isStorageConfigured } from "@/lib/r2";
 
 const IMAGE_MAX_SIZE = 5 * 1024 * 1024; // 5MB
 const VIDEO_MAX_SIZE = 200 * 1024 * 1024; // 200MB for hero videos
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
   try {
     const buffer = Buffer.from(await file.arrayBuffer());
 
-    if (r2) {
+    if (isStorageConfigured()) {
       const { compressAndUpload } = await import("@/lib/services/upload");
       // Videos and certain image slots skip compression
       const skipCompress =

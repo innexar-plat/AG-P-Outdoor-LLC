@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
-import { bucketName, r2 } from "@/lib/r2";
+import { getBucketName, getR2Client, isStorageConfigured } from "@/lib/r2";
 
 function buildCandidateKeys(rawKey: string): string[] {
   const normalized = rawKey.replace(/^\/+/, "");
@@ -32,9 +32,12 @@ export async function GET(
   const candidateKeys = buildCandidateKeys(objectKey);
   const rangeHeader = request.headers.get("range") ?? undefined;
 
-  if (!r2 || !bucketName) {
+  const r2 = getR2Client();
+  if (!isStorageConfigured() || !r2 || !getBucketName()) {
     return NextResponse.json({ data: null, error: "Not found" }, { status: 404 });
   }
+
+  const bucketName = getBucketName()!;
 
   for (const candidate of candidateKeys) {
     try {
